@@ -1,6 +1,6 @@
 "use client";
 
-import { School, FileText, Calendar, CheckCircle, ArrowRight } from "lucide-react";
+import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap } from "lucide-react";
 import Link from "next/link";
 
 const stats = [
@@ -156,6 +156,21 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-xs" style={{ color: "var(--muted)" }}>
                   AI ile mektup oluşturun
+                </div>
+              </div>
+            </Link>
+            <Link
+              href="/cv"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
+              style={{ backgroundColor: "var(--success-bg)", border: "1px solid rgba(34,197,94,0.25)" }}
+            >
+              <GraduationCap className="w-5 h-5" style={{ color: "var(--success)" }} />
+              <div>
+                <div className="text-sm font-medium" style={{ color: "var(--success)" }}>
+                  CV Olusturucu
+                </div>
+                <div className="text-xs" style={{ color: "var(--muted)" }}>
+                  AI ile CV&apos;nizi optimize edin
                 </div>
               </div>
             </Link>
