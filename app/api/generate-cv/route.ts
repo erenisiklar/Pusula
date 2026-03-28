@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateCV } from "@/lib/claude";
+import { generateCVWithGemini } from "@/lib/gemini";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,20 +20,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validFields = ["business", "engineering", "other"];
+    const validFields = ["business", "engineering", "other"] as const;
     const field = validFields.includes(targetField) ? targetField : "other";
 
-    const result = await generateCV({
+    const result = await generateCVWithGemini({
       rawContent: rawContent.trim(),
       targetField: field,
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json({
+      onePageCV: result.onePageCV,
+      harvardCV: result.harvardCV,
+      extractedData: result.extractedData,
+    });
   } catch (error) {
     console.error("CV generation error:", error);
-    return NextResponse.json(
-      { error: "CV olusturulurken bir hata olustu. Lutfen tekrar deneyin." },
-      { status: 500 }
-    );
+
+    const message =
+      error instanceof Error && error.message.includes("API key")
+        ? "Gemini API anahtari yapilandirilmamis. Lutfen GEMINI_API_KEY env degiskenini kontrol edin."
+        : "CV olusturulurken bir hata olustu. Lutfen tekrar deneyin.";
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
