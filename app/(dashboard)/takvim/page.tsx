@@ -1,41 +1,115 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { universities } from "@/lib/universities";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays } from "lucide-react";
+import type { University } from "@/types";
 
 const months = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
   "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
 ];
 
-const deadlines = [
-  { uni: "KTH Stockholm", date: "15 Ocak", month: 0, urgent: true },
-  { uni: "Bocconi (Erken)", date: "Ocak", month: 0, urgent: true },
-  { uni: "Sciences Po", date: "Şubat", month: 1, urgent: true },
-  { uni: "Politecnico Milano (Erken)", date: "Şubat", month: 1, urgent: false },
-  { uni: "RWTH Aachen", date: "1 Mart", month: 2, urgent: false },
-  { uni: "Politecnico Milano (Geç)", date: "Nisan", month: 3, urgent: false },
-  { uni: "TU Delft CS", date: "1 Nisan", month: 3, urgent: false },
-  { uni: "TU Delft Architecture", date: "1 Nisan", month: 3, urgent: false },
-  { uni: "Bocconi (Geç)", date: "Nisan", month: 3, urgent: false },
-  { uni: "ESSEC", date: "Nisan", month: 3, urgent: false },
-  { uni: "Groningen Business", date: "1 Mayıs", month: 4, urgent: false },
-  { uni: "Bologna Engineering", date: "Mayıs", month: 4, urgent: false },
-  { uni: "TU München CS", date: "31 Mayıs", month: 4, urgent: false },
-  { uni: "TU München Elektrik", date: "31 Mayıs", month: 4, urgent: false },
-  { uni: "IE University", date: "Haziran", month: 5, urgent: false },
-  { uni: "LMU München", date: "15 Temmuz", month: 6, urgent: false },
-];
+const monthMap: Record<string, number> = {
+  Ocak: 0, Şubat: 1, Mart: 2, Nisan: 3, Mayıs: 4, Haziran: 5,
+  Temmuz: 6, Ağustos: 7, Eylül: 8, Ekim: 9, Kasım: 10, Aralık: 11,
+};
+
+interface DeadlineEntry {
+  university: University;
+  month: number;
+  day: number | null;
+  label?: string;
+  sortKey: number; // month * 100 + (day ?? 99)
+}
+
+function parseDeadlines(uni: University): DeadlineEntry[] {
+  if (!uni.deadline) return [];
+  const results: DeadlineEntry[] = [];
+
+  const parts = uni.deadline.split(",").map((p) => p.trim());
+
+  for (const part of parts) {
+    const labelMatch = part.match(/\(([^)]+)\)/);
+    const label = labelMatch ? labelMatch[1] : undefined;
+    const clean = part.replace(/\([^)]+\)/, "").trim();
+
+    // "15 Ocak" or "1 Nisan" format
+    const dayMonthMatch = clean.match(/^(\d+)\s+(\S+)$/);
+    if (dayMonthMatch) {
+      const day = parseInt(dayMonthMatch[1]);
+      const month = monthMap[dayMonthMatch[2]];
+      if (month !== undefined) {
+        results.push({ university: uni, month, day, label, sortKey: month * 100 + day });
+      }
+      continue;
+    }
+
+    // "Ocak" month-only format
+    const month = monthMap[clean];
+    if (month !== undefined) {
+      results.push({ university: uni, month, day: null, label, sortKey: month * 100 + 99 });
+    }
+  }
+
+  return results;
+}
 
 export default function TakvimPage() {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  // Today: 2026-03-29
+  const today = new Date(2026, 2, 29);
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  const allDeadlines = useMemo(
+    () => universities.flatMap(parseDeadlines).sort((a, b) => a.sortKey - b.sortKey),
+    []
+  );
+
+  const monthDeadlines = useMemo(
+    () => allDeadlines.filter((d) => d.month === currentMonth),
+    [allDeadlines, currentMonth]
+  );
+
+  // Map from day number → deadline entries for current month
+  const deadlineDays = useMemo(() => {
+    const map: Record<number, DeadlineEntry[]> = {};
+    monthDeadlines.forEach((d) => {
+      if (d.day !== null) {
+        if (!map[d.day]) map[d.day] = [];
+        map[d.day].push(d);
+      }
+    });
+    return map;
+  }, [monthDeadlines]);
+
+  // Sidebar shows selected-day deadlines, or all month deadlines
+  const sidebarDeadlines = useMemo(() => {
+    if (selectedDay !== null && deadlineDays[selectedDay]) {
+      return deadlineDays[selectedDay];
+    }
+    return monthDeadlines;
+  }, [selectedDay, deadlineDays, monthDeadlines]);
+
+  // Upcoming deadlines from today onward
+  const todaySortKey = today.getMonth() * 100 + today.getDate();
+  const upcomingDeadlines = useMemo(
+    () => allDeadlines.filter((d) => d.sortKey >= todaySortKey).slice(0, 6),
+    [allDeadlines, todaySortKey]
+  );
 
   const daysInMonth = new Date(2026, currentMonth + 1, 0).getDate();
   const firstDay = new Date(2026, currentMonth, 1).getDay();
   const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
 
-  const monthDeadlines = deadlines.filter((d) => d.month === currentMonth);
+  function prevMonth() {
+    setCurrentMonth((m) => (m === 0 ? 11 : m - 1));
+    setSelectedDay(null);
+  }
+  function nextMonth() {
+    setCurrentMonth((m) => (m === 11 ? 0 : m + 1));
+    setSelectedDay(null);
+  }
 
   return (
     <div>
@@ -54,8 +128,8 @@ export default function TakvimPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={() => setCurrentMonth((m) => (m === 0 ? 11 : m - 1))}
-              className="p-1.5 rounded-lg hover:opacity-80"
+              onClick={prevMonth}
+              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
               style={{ backgroundColor: "var(--surface2)" }}
             >
               <ChevronLeft className="w-4 h-4" style={{ color: "var(--muted)" }} />
@@ -64,8 +138,8 @@ export default function TakvimPage() {
               {months[currentMonth]} 2026
             </h2>
             <button
-              onClick={() => setCurrentMonth((m) => (m === 11 ? 0 : m + 1))}
-              className="p-1.5 rounded-lg hover:opacity-80"
+              onClick={nextMonth}
+              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
               style={{ backgroundColor: "var(--surface2)" }}
             >
               <ChevronRight className="w-4 h-4" style={{ color: "var(--muted)" }} />
@@ -73,7 +147,7 @@ export default function TakvimPage() {
           </div>
 
           {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className="grid grid-cols-7 gap-1 mb-1">
             {["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((d) => (
               <div
                 key={d}
@@ -88,85 +162,195 @@ export default function TakvimPage() {
           {/* Days grid */}
           <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: adjustedFirstDay }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-10" />
+              <div key={`empty-${i}`} className="h-12" />
             ))}
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const day = i + 1;
-              const today = new Date();
-              const isToday =
-                today.getMonth() === currentMonth &&
-                today.getDate() === day &&
-                today.getFullYear() === 2026;
+              const hasDeadline = day in deadlineDays;
+              const isSelected = selectedDay === day;
+              const isTodayDay =
+                today.getMonth() === currentMonth && today.getDate() === day;
 
               return (
                 <div
                   key={day}
-                  className="h-10 flex items-center justify-center rounded-lg text-sm"
+                  onClick={() => setSelectedDay(isSelected ? null : day)}
+                  className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all"
                   style={{
-                    backgroundColor: isToday ? "var(--blue-bg)" : "transparent",
-                    color: isToday ? "var(--blue-light)" : "var(--text)",
-                    border: isToday ? "1px solid var(--blue-border)" : "1px solid transparent",
+                    backgroundColor: isSelected
+                      ? "var(--blue)"
+                      : isTodayDay
+                      ? "var(--blue-bg)"
+                      : hasDeadline
+                      ? "var(--surface2)"
+                      : "transparent",
+                    color: isSelected
+                      ? "var(--white)"
+                      : isTodayDay
+                      ? "var(--blue-light)"
+                      : "var(--text)",
+                    border: isSelected
+                      ? "1px solid var(--blue)"
+                      : isTodayDay
+                      ? "1px solid var(--blue-border)"
+                      : "1px solid transparent",
+                    cursor: hasDeadline ? "pointer" : "default",
                   }}
                 >
                   {day}
+                  {hasDeadline && (
+                    <div
+                      className="w-1.5 h-1.5 rounded-full absolute bottom-1.5"
+                      style={{
+                        backgroundColor: isSelected ? "var(--white)" : "var(--danger)",
+                      }}
+                    />
+                  )}
                 </div>
               );
             })}
           </div>
+
+          {/* Legend */}
+          <div
+            className="flex items-center gap-5 mt-4 pt-3 text-xs"
+            style={{ borderTop: "1px solid var(--border)", color: "var(--muted)" }}
+          >
+            <div className="flex items-center gap-1.5">
+              <div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: "var(--danger)" }}
+              />
+              Deadline var
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div
+                className="w-3 h-3 rounded"
+                style={{
+                  backgroundColor: "var(--blue-bg)",
+                  border: "1px solid var(--blue-border)",
+                }}
+              />
+              Bugün
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div
+                className="w-3 h-3 rounded"
+                style={{ backgroundColor: "var(--blue)" }}
+              />
+              Seçili gün
+            </div>
+          </div>
         </div>
 
-        {/* Deadline list */}
-        <div
-          className="rounded-xl p-5"
-          style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-        >
-          <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
-            {months[currentMonth]} Deadline&apos;ları
-          </h2>
+        {/* Sidebar */}
+        <div className="space-y-4">
+          {/* Month / selected day deadlines */}
+          <div
+            className="rounded-xl p-5"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <h2
+              className="font-semibold text-sm mb-3 flex items-center gap-2"
+              style={{ color: "var(--text)" }}
+            >
+              <CalendarDays className="w-4 h-4" style={{ color: "var(--blue)" }} />
+              {selectedDay !== null
+                ? `${selectedDay} ${months[currentMonth]}`
+                : `${months[currentMonth]} Deadline'ları`}
+            </h2>
 
-          {monthDeadlines.length === 0 ? (
-            <p className="text-sm" style={{ color: "var(--muted)" }}>
-              Bu ay için deadline yok.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {monthDeadlines.map((d) => (
-                <div
-                  key={d.uni}
-                  className="flex items-start gap-3 px-3 py-2.5 rounded-lg"
-                  style={{ backgroundColor: "var(--surface2)" }}
-                >
-                  <Clock
-                    className="w-4 h-4 mt-0.5 flex-shrink-0"
-                    style={{ color: d.urgent ? "var(--danger)" : "var(--gold)" }}
-                  />
-                  <div>
-                    <div className="text-sm font-medium" style={{ color: "var(--text)" }}>
-                      {d.uni}
-                    </div>
-                    <div className="text-xs" style={{ color: "var(--muted)" }}>
-                      {d.date}
+            {sidebarDeadlines.length === 0 ? (
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                Bu {selectedDay !== null ? "gün" : "ay"} için deadline yok.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {sidebarDeadlines.map((d, idx) => (
+                  <div
+                    key={`${d.university.id}-${idx}`}
+                    className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg"
+                    style={{ backgroundColor: "var(--surface2)" }}
+                  >
+                    <span className="text-base flex-shrink-0">{d.university.flag}</span>
+                    <div className="min-w-0 flex-1">
+                      <div
+                        className="text-xs font-medium truncate"
+                        style={{ color: "var(--text)" }}
+                      >
+                        {d.university.name}
+                      </div>
+                      <div className="text-[11px] truncate" style={{ color: "var(--muted)" }}>
+                        {d.university.program}
+                        {d.label ? ` · ${d.label}` : ""}
+                      </div>
+                      <div
+                        className="text-[11px] mt-0.5 font-medium"
+                        style={{ color: "var(--gold)" }}
+                      >
+                        {d.day !== null
+                          ? `${d.day} ${months[d.month]}`
+                          : months[d.month]}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <h2 className="font-semibold text-sm mt-6 mb-4" style={{ color: "var(--text)" }}>
-            Tüm Deadline&apos;lar
-          </h2>
-          <div className="space-y-2 max-h-80 overflow-y-auto">
-            {deadlines.map((d) => (
-              <div
-                key={d.uni}
-                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs"
-                style={{ backgroundColor: "var(--surface2)" }}
-              >
-                <span style={{ color: "var(--text)" }}>{d.uni}</span>
-                <span style={{ color: "var(--muted)" }}>{d.date}</span>
+                ))}
               </div>
-            ))}
+            )}
+          </div>
+
+          {/* Upcoming deadlines */}
+          <div
+            className="rounded-xl p-5"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <h2
+              className="font-semibold text-sm mb-3 flex items-center gap-2"
+              style={{ color: "var(--text)" }}
+            >
+              <Clock className="w-4 h-4" style={{ color: "var(--danger)" }} />
+              Yaklaşan Deadline'lar
+            </h2>
+            <div className="space-y-2">
+              {upcomingDeadlines.map((d, idx) => {
+                const isThisMonth = d.month === today.getMonth();
+                return (
+                  <div
+                    key={`upcoming-${d.university.id}-${idx}`}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg text-xs"
+                    style={{ backgroundColor: "var(--surface2)" }}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="flex-shrink-0">{d.university.flag}</span>
+                      <span className="truncate" style={{ color: "var(--text)" }}>
+                        {d.university.name}
+                      </span>
+                    </div>
+                    <span
+                      className="flex-shrink-0 ml-2 font-medium"
+                      style={{ color: isThisMonth ? "var(--danger)" : "var(--gold)" }}
+                    >
+                      {d.day !== null ? `${d.day} ${months[d.month]}` : months[d.month]}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div
+            className="flex items-start gap-2 px-3 py-2.5 rounded-lg text-xs"
+            style={{
+              backgroundColor: "var(--gold-bg)",
+              border: "1px solid var(--gold-border)",
+              color: "var(--gold)",
+            }}
+          >
+            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+            <span>
+              Tarihler tahminidir. Üniversitenin resmi sitesini kontrol edin.
+            </span>
           </div>
         </div>
       </div>
