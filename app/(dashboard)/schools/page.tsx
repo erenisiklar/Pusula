@@ -67,7 +67,7 @@ const statusConfig: Record<
 };
 
 export default function SchoolsPage() {
-  const [gpa, setGpa] = useState<number>(3.0);
+  const [gpa, setGpa] = useState<number>(75);
   const [langCert, setLangCert] = useState<string>("IELTS");
   const [langScore, setLangScore] = useState<number>(6.5);
   const [budget, setBudget] = useState<number>(5000);
@@ -159,13 +159,13 @@ export default function SchoolsPage() {
           <div>
             <label className="flex items-center gap-2 text-xs font-medium mb-2" style={{ color: "var(--muted)" }}>
               <GraduationCap className="w-3.5 h-3.5" />
-              GPA (4.0 üzerinden)
+              GPA (100 üzerinden)
             </label>
             <input
               type="number"
-              step="0.1"
+              step="1"
               min="0"
-              max="4"
+              max="100"
               value={gpa}
               onChange={(e) => setGpa(parseFloat(e.target.value) || 0)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
