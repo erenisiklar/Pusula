@@ -10,45 +10,28 @@ import {
 import type { CVData } from "./gemini";
 
 // --- Register Professional Fonts ---
-// EB Garamond (serif - elegant, Harvard-style)
+// Lato (sans-serif - modern, clean) from GitHub Google Fonts repo
 Font.register({
-  family: "EB Garamond",
+  family: "Lato",
   fonts: [
     {
-      src: "https://fonts.gstatic.com/s/ebgaramond/v27/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-6_RUA4V-e6yHgQ.ttf",
+      src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf",
       fontWeight: 400,
     },
     {
-      src: "https://fonts.gstatic.com/s/ebgaramond/v27/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-2fRUA4V-e6yHgQ.ttf",
+      src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Bold.ttf",
       fontWeight: 700,
     },
     {
-      src: "https://fonts.gstatic.com/s/ebgaramond/v27/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QI96WamXgXFI.ttf",
+      src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Italic.ttf",
       fontStyle: "italic",
       fontWeight: 400,
     },
   ],
 });
 
-// Lato (sans-serif - modern, clean)
-Font.register({
-  family: "Lato",
-  fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/lato/v24/S6uyw4BMUTPHjx4wXg.ttf",
-      fontWeight: 400,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/lato/v24/S6u9w4BMUTPHh6UVSwiPGQ.ttf",
-      fontWeight: 700,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/lato/v24/S6u8w4BMUTPHjxsAXC-q.ttf",
-      fontStyle: "italic",
-      fontWeight: 400,
-    },
-  ],
-});
+// Times-Roman is built-in to @react-pdf/renderer (no registration needed)
+// Used for Harvard CV as a classic serif academic font
 
 // --- Color Constants (Pusula brand) ---
 const COLORS = {
@@ -148,7 +131,7 @@ const onePageStyles = StyleSheet.create({
 // ======================================
 const harvardStyles = StyleSheet.create({
   page: {
-    fontFamily: "EB Garamond",
+    fontFamily: "Times-Roman",
     fontSize: 10.5,
     color: COLORS.black,
     paddingTop: 40,
