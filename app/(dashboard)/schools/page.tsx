@@ -15,7 +15,11 @@ import {
   Trophy,
 } from "lucide-react";
 
-const countries = ["Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç", "İngiltere", "İsviçre", "Belçika", "Avusturya"];
+const countries = [
+  "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
+  "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
+  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan", "Türkiye",
+];
 const departments = [
   "Tümü",
   "Bilgisayar Mühendisliği",
