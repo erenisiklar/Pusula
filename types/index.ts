@@ -1,3 +1,9 @@
+export interface UniversityRanking {
+  source: "FT" | "QS";
+  rank: number;
+  year: number;
+}
+
 export interface University {
   id: string;
   name: string;
@@ -14,6 +20,7 @@ export interface University {
   website?: string;
   deadline?: string;
   flag: string;
+  rankings?: UniversityRanking[];
 }
 
 export interface UserProfile {
