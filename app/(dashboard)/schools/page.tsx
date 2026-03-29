@@ -22,15 +22,17 @@ const countries = [
 ];
 const departments = [
   "Tümü",
-  "Bilgisayar Mühendisliği",
-  "Mühendislik",
   "İşletme",
+  "Bilgisayar Mühendisliği",
+  "Makine Mühendisliği",
+  "Elektrik-Elektronik Mühendisliği",
+  "Mühendislik",
   "Mimarlık",
   "Ekonomi",
   "Siyaset Bilimi",
   "Uluslararası İlişkiler",
-  "Elektrik-Elektronik Mühendisliği",
-  "Makine Mühendisliği",
+  "Tıp",
+  "Hukuk",
 ];
 const langCerts = ["IELTS", "TOEFL", "TestDaF"];
 
