@@ -11,15 +11,14 @@ export function calculateEligibility(
   let budgetScore = 0;
   let budgetDetail = "";
 
-  // GPA calculation
-  const normalizedGPA = (student.gpa / 4) * 100;
-  if (normalizedGPA >= university.requiredGPA) {
+  // GPA calculation (student.gpa is already on 100-point scale)
+  if (student.gpa >= university.requiredGPA) {
     gpaScore = 25;
-    gpaDetail = `GPA'nız (${student.gpa}) gereksinimleri karşılıyor`;
+    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimleri karşılıyor`;
   } else {
-    const diff = university.requiredGPA - normalizedGPA;
+    const diff = university.requiredGPA - student.gpa;
     gpaScore = Math.max(-25, 25 - Math.round(diff) * 3);
-    gpaDetail = `GPA'nız (${student.gpa}) gereksinimin ${diff.toFixed(1)} puan altında`;
+    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimin ${diff.toFixed(1)} puan altında`;
   }
 
   // Language calculation
