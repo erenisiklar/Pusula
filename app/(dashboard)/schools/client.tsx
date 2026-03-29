@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { calculateEligibility, getStatusLabel } from "@/lib/eligibility";
 import type { University, EligibilityResult, EligibilityStatus, StudentInput } from "@/types";
+import { Trophy } from "lucide-react";
 import {
   ChevronDown,
   ChevronUp,
@@ -13,7 +14,11 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-const countries = ["Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç"];
+const countries = [
+  "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
+  "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
+  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan",
+];
 const departments = [
   "Tümü",
   "Bilgisayar Mühendisliği",
@@ -25,6 +30,8 @@ const departments = [
   "Uluslararası İlişkiler",
   "Elektrik-Elektronik Mühendisliği",
   "Makine Mühendisliği",
+  "Tıp",
+  "Hukuk",
 ];
 const langCerts = ["IELTS", "TOEFL", "TestDaF"];
 
@@ -366,6 +373,26 @@ function UniversityCard({
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Rankings badges */}
+          {university.rankings && university.rankings.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              {university.rankings.map((r) => (
+                <span
+                  key={r.source}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
+                  style={{
+                    backgroundColor: "var(--gold-bg)",
+                    border: "1px solid var(--gold-border)",
+                    color: "var(--gold-light)",
+                  }}
+                >
+                  <Trophy className="w-2.5 h-2.5" />
+                  {r.source} #{r.rank}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Score circle */}
           <div className="text-center">
             <div
@@ -430,6 +457,24 @@ function UniversityCard({
               maxScore={10}
             />
           </div>
+
+          {university.rankings && university.rankings.length > 0 && (
+            <div
+              className="flex items-center gap-3 rounded-lg px-3 py-2"
+              style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}
+            >
+              <Trophy className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--gold)" }} />
+              <div className="flex gap-4 text-xs">
+                {university.rankings.map((r) => (
+                  <span key={r.source} style={{ color: "var(--gold-light)" }}>
+                    {r.source === "FT" ? "Financial Times" : r.source} Sıralaması:{" "}
+                    <strong style={{ color: "var(--white)" }}>#{r.rank}</strong>
+                    <span style={{ color: "var(--gold)", opacity: 0.7 }}> ({r.year})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-4 text-xs" style={{ color: "var(--muted)" }}>
             <span>
