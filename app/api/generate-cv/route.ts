@@ -20,6 +20,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY is not set");
+      return NextResponse.json(
+        { error: "Gemini API anahtari yapilandirilmamis. Lutfen GEMINI_API_KEY env degiskenini kontrol edin." },
+        { status: 500 }
+      );
+    }
+
     const validFields = ["business", "engineering", "other"] as const;
     const field = validFields.includes(targetField) ? targetField : "other";
 
@@ -34,12 +42,22 @@ export async function POST(request: NextRequest) {
       extractedData: result.extractedData,
     });
   } catch (error) {
-    console.error("CV generation error:", error);
+    console.error("CV generation error:", error instanceof Error ? error.message : error);
+    console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error instanceof Error ? error : {}), 2));
 
-    const message =
-      error instanceof Error && error.message.includes("API key")
-        ? "Gemini API anahtari yapilandirilmamis. Lutfen GEMINI_API_KEY env degiskenini kontrol edin."
-        : "CV olusturulurken bir hata olustu. Lutfen tekrar deneyin.";
+    let message = "CV olusturulurken bir hata olustu. Lutfen tekrar deneyin.";
+
+    if (error instanceof Error) {
+      if (error.message.includes("API key") || error.message.includes("API_KEY")) {
+        message = "Gemini API anahtari gecersiz. Lutfen GEMINI_API_KEY degerini kontrol edin.";
+      } else if (error.message.includes("quota") || error.message.includes("rate")) {
+        message = "API istek limiti asildi. Lutfen birkacdakika bekleyip tekrar deneyin.";
+      } else if (error.message.includes("model")) {
+        message = "Model bulunamadi. Lutfen API yapilandirmasini kontrol edin.";
+      } else {
+        message = `Hata: ${error.message}`;
+      }
+    }
 
     return NextResponse.json({ error: message }, { status: 500 });
   }
