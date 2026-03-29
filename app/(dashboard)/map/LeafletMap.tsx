@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { University } from "@/types";
 import { universityMapData } from "@/lib/university-map-data";
 
@@ -17,9 +17,26 @@ interface Props {
   onSelect: (uni: SelectedUni | null) => void;
 }
 
+const TILE_LAYERS = {
+  dark: {
+    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: "abcd",
+    label: "Harita",
+  },
+  satellite: {
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP",
+    subdomains: undefined,
+    label: "Uydu",
+  },
+};
+
 export default function LeafletMap({ universities, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
+  const tileLayerRef = useRef<import("leaflet").TileLayer | null>(null);
+  const [isSatellite, setIsSatellite] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -28,6 +45,7 @@ export default function LeafletMap({ universities, onSelect }: Props) {
 
     (async () => {
       L = (await import("leaflet")).default;
+      await import("leaflet/dist/leaflet.css");
 
       // Fix default icon paths broken by webpack
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,28 +56,25 @@ export default function LeafletMap({ universities, onSelect }: Props) {
         shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
       });
 
-      // Import leaflet CSS
-      await import("leaflet/dist/leaflet.css");
-
       const map = L.map(containerRef.current!, {
         center: [50.0, 10.0],
         zoom: 4,
-        zoomControl: true,
+        zoomControl: false,
         attributionControl: true,
       });
 
       mapRef.current = map;
 
-      // Dark tile layer
-      L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: "abcd",
-          maxZoom: 19,
-        }
-      ).addTo(map);
+      // Zoom control — top right
+      L.control.zoom({ position: "topright" }).addTo(map);
+
+      // Initial tile layer (dark)
+      const tile = L.tileLayer(TILE_LAYERS.dark.url, {
+        attribution: TILE_LAYERS.dark.attribution,
+        subdomains: TILE_LAYERS.dark.subdomains,
+        maxZoom: 19,
+      }).addTo(map);
+      tileLayerRef.current = tile;
 
       // Add markers
       universities.forEach((uni) => {
@@ -68,7 +83,6 @@ export default function LeafletMap({ universities, onSelect }: Props) {
 
         const color = mapData.countryColor;
 
-        // SVG circle marker
         const svgIcon = L.divIcon({
           className: "",
           html: `
@@ -80,7 +94,6 @@ export default function LeafletMap({ universities, onSelect }: Props) {
               border: 2.5px solid rgba(255,255,255,0.85);
               box-shadow: 0 2px 8px rgba(0,0,0,0.5);
               cursor: pointer;
-              transition: transform 0.15s;
               display: flex;
               align-items: center;
               justify-content: center;
@@ -95,12 +108,10 @@ export default function LeafletMap({ universities, onSelect }: Props) {
           `,
           iconSize: [28, 28],
           iconAnchor: [14, 14],
-          popupAnchor: [0, -16],
         });
 
         const marker = L.marker([mapData.lat, mapData.lng], { icon: svgIcon }).addTo(map);
 
-        // Tooltip (university name on hover)
         marker.bindTooltip(
           `<div style="
             font-size: 12px;
@@ -142,15 +153,53 @@ export default function LeafletMap({ universities, onSelect }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Switch tile layer when isSatellite changes
+  useEffect(() => {
+    const map = mapRef.current;
+    const currentTile = tileLayerRef.current;
+    if (!map || !currentTile) return;
+
+    import("leaflet").then(({ default: L }) => {
+      currentTile.remove();
+      const layer = isSatellite ? TILE_LAYERS.satellite : TILE_LAYERS.dark;
+      const newTile = L.tileLayer(layer.url, {
+        attribution: layer.attribution,
+        ...(layer.subdomains ? { subdomains: layer.subdomains } : {}),
+        maxZoom: 19,
+      }).addTo(map);
+      tileLayerRef.current = newTile;
+    });
+  }, [isSatellite]);
+
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        minHeight: 500,
-        backgroundColor: "#0a0f1e",
-      }}
-    />
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 500 }}>
+      <div
+        ref={containerRef}
+        style={{ width: "100%", height: "100%", minHeight: 500, backgroundColor: "#0a0f1e" }}
+      />
+
+      {/* Satellite toggle button */}
+      <button
+        onClick={() => setIsSatellite((v) => !v)}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 1000,
+          padding: "6px 12px",
+          borderRadius: 8,
+          fontSize: 12,
+          fontWeight: 600,
+          cursor: "pointer",
+          border: "1px solid rgba(255,255,255,0.2)",
+          backgroundColor: isSatellite ? "rgba(59,130,246,0.9)" : "rgba(17,24,39,0.9)",
+          color: "#f0f4ff",
+          backdropFilter: "blur(4px)",
+          transition: "background-color 0.2s",
+        }}
+      >
+        {isSatellite ? "Harita" : "Uydu"}
+      </button>
+    </div>
   );
 }
