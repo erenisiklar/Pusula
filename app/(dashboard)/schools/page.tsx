@@ -18,7 +18,7 @@ import {
 const countries = [
   "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
   "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
-  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan", "Türkiye",
+  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan",
 ];
 const departments = [
   "Tümü",
