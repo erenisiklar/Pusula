@@ -2,31 +2,33 @@
 
 import { useState, useMemo } from "react";
 import { universities } from "@/lib/universities";
-import { Search, Users, TrendingUp, Award, AlertTriangle } from "lucide-react";
+import { Search, Users, TrendingUp, Award, AlertTriangle, ArrowUpRight, ArrowDownRight, Minus, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 interface AcceptanceData {
   universityId: string;
   acceptanceRate: number; // percentage
   totalApplicants: number;
   avgGPA: number; // out of 4.0
+  trend: number; // yıllık değişim (+ artış, - azalış, 0 sabit)
 }
 
 const acceptanceData: AcceptanceData[] = [
-  { universityId: "tu-delft-cs",        acceptanceRate: 25, totalApplicants: 3200, avgGPA: 3.4 },
-  { universityId: "tu-delft-arch",      acceptanceRate: 20, totalApplicants: 1800, avgGPA: 3.5 },
-  { universityId: "groningen-business", acceptanceRate: 48, totalApplicants: 2100, avgGPA: 3.0 },
-  { universityId: "polimi-cs",          acceptanceRate: 28, totalApplicants: 4200, avgGPA: 3.3 },
-  { universityId: "polimi-arch",        acceptanceRate: 22, totalApplicants: 2400, avgGPA: 3.4 },
-  { universityId: "bocconi-economics",  acceptanceRate: 13, totalApplicants: 6800, avgGPA: 3.7 },
-  { universityId: "bologna-eng",        acceptanceRate: 58, totalApplicants: 2800, avgGPA: 2.9 },
-  { universityId: "tum-cs",             acceptanceRate: 14, totalApplicants: 5100, avgGPA: 3.6 },
-  { universityId: "tum-ee",             acceptanceRate: 17, totalApplicants: 3400, avgGPA: 3.5 },
-  { universityId: "lmu-business",       acceptanceRate: 26, totalApplicants: 3800, avgGPA: 3.2 },
-  { universityId: "rwth-aachen",        acceptanceRate: 32, totalApplicants: 2700, avgGPA: 3.2 },
-  { universityId: "sciences-po",        acceptanceRate: 9,  totalApplicants: 9200, avgGPA: 3.8 },
-  { universityId: "essec",              acceptanceRate: 11, totalApplicants: 7400, avgGPA: 3.7 },
-  { universityId: "ie-university",      acceptanceRate: 38, totalApplicants: 2900, avgGPA: 3.1 },
-  { universityId: "kth-stockholm",      acceptanceRate: 34, totalApplicants: 2200, avgGPA: 3.3 },
+  { universityId: "tu-delft-cs",        acceptanceRate: 25, totalApplicants: 3200, avgGPA: 3.4, trend: -2 },
+  { universityId: "tu-delft-arch",      acceptanceRate: 20, totalApplicants: 1800, avgGPA: 3.5, trend: -1 },
+  { universityId: "groningen-business", acceptanceRate: 48, totalApplicants: 2100, avgGPA: 3.0, trend:  3 },
+  { universityId: "polimi-cs",          acceptanceRate: 28, totalApplicants: 4200, avgGPA: 3.3, trend: -3 },
+  { universityId: "polimi-arch",        acceptanceRate: 22, totalApplicants: 2400, avgGPA: 3.4, trend:  0 },
+  { universityId: "bocconi-economics",  acceptanceRate: 13, totalApplicants: 6800, avgGPA: 3.7, trend: -2 },
+  { universityId: "bologna-eng",        acceptanceRate: 58, totalApplicants: 2800, avgGPA: 2.9, trend:  2 },
+  { universityId: "tum-cs",             acceptanceRate: 14, totalApplicants: 5100, avgGPA: 3.6, trend: -1 },
+  { universityId: "tum-ee",             acceptanceRate: 17, totalApplicants: 3400, avgGPA: 3.5, trend:  0 },
+  { universityId: "lmu-business",       acceptanceRate: 26, totalApplicants: 3800, avgGPA: 3.2, trend:  1 },
+  { universityId: "rwth-aachen",        acceptanceRate: 32, totalApplicants: 2700, avgGPA: 3.2, trend: -2 },
+  { universityId: "sciences-po",        acceptanceRate: 9,  totalApplicants: 9200, avgGPA: 3.8, trend: -1 },
+  { universityId: "essec",              acceptanceRate: 11, totalApplicants: 7400, avgGPA: 3.7, trend:  0 },
+  { universityId: "ie-university",      acceptanceRate: 38, totalApplicants: 2900, avgGPA: 3.1, trend:  4 },
+  { universityId: "kth-stockholm",      acceptanceRate: 34, totalApplicants: 2200, avgGPA: 3.3, trend: -2 },
 ];
 
 type Difficulty = "Çok Rekabetçi" | "Rekabetçi" | "Orta" | "Erişilebilir";
@@ -69,6 +71,28 @@ interface EnrichedEntry extends AcceptanceData {
   university: ReturnType<typeof universities.find> & object;
   difficulty: Difficulty;
   accepted: number;
+}
+
+function TrendBadge({ trend }: { trend: number }) {
+  if (trend === 0) {
+    return (
+      <span className="flex items-center gap-0.5 text-[11px] font-medium" style={{ color: "var(--muted)" }}>
+        <Minus className="w-3 h-3" /> Sabit
+      </span>
+    );
+  }
+  const isUp = trend > 0;
+  return (
+    <span
+      className="flex items-center gap-0.5 text-[11px] font-medium"
+      style={{ color: isUp ? "var(--success)" : "var(--danger)" }}
+    >
+      {isUp
+        ? <ArrowUpRight className="w-3 h-3" />
+        : <ArrowDownRight className="w-3 h-3" />}
+      {isUp ? "+" : ""}{trend}% geçen yıla göre
+    </span>
+  );
 }
 
 const countries = ["Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç"];
@@ -251,7 +275,7 @@ export default function AcceptancePage() {
           </div>
         )}
 
-        {filtered.map((d) => {
+        {filtered.map((d: EnrichedEntry) => {
           const cfg = difficultyConfig[d.difficulty];
           return (
             <div
@@ -300,28 +324,46 @@ export default function AcceptancePage() {
                       %{d.acceptanceRate}
                     </span>
                   </div>
+
+                  <div className="mt-1.5">
+                    <TrendBadge trend={d.trend} />
+                  </div>
                 </div>
 
-                {/* Stats */}
-                <div className="flex gap-6 flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-sm font-bold" style={{ color: "var(--text)" }}>
-                      {d.totalApplicants.toLocaleString()}
+                {/* Stats + link */}
+                <div className="flex items-center gap-6 flex-shrink-0">
+                  <div className="flex gap-6">
+                    <div className="text-center">
+                      <div className="text-sm font-bold" style={{ color: "var(--text)" }}>
+                        {d.totalApplicants.toLocaleString()}
+                      </div>
+                      <div className="text-[11px]" style={{ color: "var(--muted)" }}>başvuran</div>
                     </div>
-                    <div className="text-[11px]" style={{ color: "var(--muted)" }}>başvuran</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-bold" style={{ color: "var(--success)" }}>
-                      {d.accepted.toLocaleString()}
+                    <div className="text-center">
+                      <div className="text-sm font-bold" style={{ color: "var(--success)" }}>
+                        {d.accepted.toLocaleString()}
+                      </div>
+                      <div className="text-[11px]" style={{ color: "var(--muted)" }}>kabul</div>
                     </div>
-                    <div className="text-[11px]" style={{ color: "var(--muted)" }}>kabul</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-bold" style={{ color: "var(--text)" }}>
-                      {d.avgGPA.toFixed(1)}
+                    <div className="text-center">
+                      <div className="text-sm font-bold" style={{ color: "var(--text)" }}>
+                        {d.avgGPA.toFixed(1)}
+                      </div>
+                      <div className="text-[11px]" style={{ color: "var(--muted)" }}>ort. GPA</div>
                     </div>
-                    <div className="text-[11px]" style={{ color: "var(--muted)" }}>ort. GPA</div>
                   </div>
+                  <Link
+                    href="/schools"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 flex-shrink-0"
+                    style={{
+                      backgroundColor: "var(--blue-bg)",
+                      border: "1px solid var(--blue-border)",
+                      color: "var(--blue-light)",
+                    }}
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Eligibility
+                  </Link>
                 </div>
               </div>
             </div>
