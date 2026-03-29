@@ -1,5 +1,5 @@
 export interface UniversityRanking {
-  source: "FT" | "QS";
+  source: string; // "QS" | "FT" | "THE" vb.
   rank: number;
   year: number;
 }
