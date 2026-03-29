@@ -27,10 +27,13 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const buffer = await renderToBuffer(doc as any);
 
+    const safeName = (extractedData.personalInfo.fullName || "CV")
+      .replace(/[^a-zA-Z0-9 ]/g, "")
+      .replace(/\s+/g, "_");
     const fileName =
       variant === "harvard"
-        ? `${extractedData.personalInfo.fullName || "CV"}_Harvard.pdf`
-        : `${extractedData.personalInfo.fullName || "CV"}_OnePage.pdf`;
+        ? `${safeName}_Harvard.pdf`
+        : `${safeName}_OnePage.pdf`;
 
     return new NextResponse(new Uint8Array(buffer), {
       status: 200,

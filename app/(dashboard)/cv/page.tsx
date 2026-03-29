@@ -54,10 +54,13 @@ export default function CVPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
+      const safeName = (extractedData.personalInfo.fullName || "CV")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
+        .replace(/\s+/g, "_");
       a.download =
         variant === "harvard"
-          ? `${extractedData.personalInfo.fullName || "CV"}_Harvard.pdf`
-          : `${extractedData.personalInfo.fullName || "CV"}_OnePage.pdf`;
+          ? `${safeName}_Harvard.pdf`
+          : `${safeName}_OnePage.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
