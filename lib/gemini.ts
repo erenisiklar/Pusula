@@ -71,7 +71,7 @@ async function extractCVData(
   targetField: "business" | "engineering" | "other"
 ): Promise<CVData> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.1,
@@ -118,7 +118,7 @@ async function generateOnePageCV(
   targetField: string
 ): Promise<string> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     generationConfig: {
       temperature: 0.3,
       maxOutputTokens: 2000,
@@ -169,7 +169,7 @@ async function generateHarvardCV(
   targetField: string
 ): Promise<string> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     generationConfig: {
       temperature: 0.3,
       maxOutputTokens: 3000,
