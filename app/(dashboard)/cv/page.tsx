@@ -15,6 +15,7 @@ import {
   Database,
   ChevronDown,
   ChevronUp,
+  Download,
 } from "lucide-react";
 import type { CVData } from "@/lib/gemini";
 
@@ -32,8 +33,41 @@ export default function CVPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleDownloadPDF(variant: "onepage" | "harvard") {
+    if (!extractedData) return;
+    setPdfLoading(true);
+    try {
+      const res = await fetch("/api/generate-cv-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ extractedData, variant }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "PDF olusturulamadi");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        variant === "harvard"
+          ? `${extractedData.personalInfo.fullName || "CV"}_Harvard.pdf`
+          : `${extractedData.personalInfo.fullName || "CV"}_OnePage.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "PDF indirilemedi");
+    } finally {
+      setPdfLoading(false);
+    }
+  }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -438,21 +472,39 @@ Liderlik: Yazilim Kulubu Baskani (2024-2025)`}
               </button>
             </div>
             {hasResults && (
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
-                style={{
-                  backgroundColor: "var(--surface2)",
-                  color: "var(--muted)",
-                }}
-              >
-                {copied ? (
-                  <Check className="w-3.5 h-3.5" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-                {copied ? "Kopyalandi" : "Kopyala"}
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handleDownloadPDF(activeTab === "harvard" ? "harvard" : "onepage")}
+                  disabled={pdfLoading || !extractedData}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
+                  style={{
+                    backgroundColor: "var(--blue)",
+                    color: "var(--white)",
+                  }}
+                >
+                  {pdfLoading ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Download className="w-3.5 h-3.5" />
+                  )}
+                  PDF Indir
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+                  style={{
+                    backgroundColor: "var(--surface2)",
+                    color: "var(--muted)",
+                  }}
+                >
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                  {copied ? "Kopyalandi" : "Kopyala"}
+                </button>
+              </div>
             )}
           </div>
 
