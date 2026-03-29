@@ -43,22 +43,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("CV generation error:", error instanceof Error ? error.message : error);
-    console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error instanceof Error ? error : {}), 2));
 
-    let message = "CV olusturulurken bir hata olustu. Lutfen tekrar deneyin.";
-
-    if (error instanceof Error) {
-      if (error.message.includes("API key") || error.message.includes("API_KEY")) {
-        message = "Gemini API anahtari gecersiz. Lutfen GEMINI_API_KEY degerini kontrol edin.";
-      } else if (error.message.includes("quota") || error.message.includes("rate")) {
-        message = "API istek limiti asildi. Lutfen birkacdakika bekleyip tekrar deneyin.";
-      } else if (error.message.includes("model")) {
-        message = "Model bulunamadi. Lutfen API yapilandirmasini kontrol edin.";
-      } else {
-        message = `Hata: ${error.message}`;
-      }
-    }
-
-    return NextResponse.json({ error: message }, { status: 500 });
+    const rawMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: `Hata: ${rawMessage}` }, { status: 500 });
   }
 }
