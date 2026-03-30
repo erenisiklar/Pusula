@@ -457,7 +457,7 @@ function UniversityCard({
               maxScore={20}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <DetailBox
               label="Sıralama"
               score={breakdown.rankingScore}
@@ -469,6 +469,12 @@ function UniversityCard({
               score={breakdown.acceptanceScore}
               detail={breakdown.acceptanceDetail}
               maxScore={10}
+            />
+            <DetailBox
+              label="Ülke Sistemi"
+              score={breakdown.countryScore}
+              detail={breakdown.countryDetail}
+              maxScore={8}
             />
           </div>
 

@@ -29,6 +29,8 @@ export interface University {
   rankings?: UniversityRanking[];
   acceptanceRate?: number; // 0-100, e.g. 15 = 15%
   competitiveness?: "very_high" | "high" | "medium" | "low"; // selectivity level
+  dataVerified?: boolean; // true if data comes from official source
+  programRestricted?: boolean; // true for numerus fixus, NC-limited, concours programs
 }
 
 export interface UserProfile {
@@ -58,11 +60,13 @@ export interface EligibilityResult {
     budgetScore: number;
     rankingScore: number;
     acceptanceScore: number;
+    countryScore: number;
     gpaDetail: string;
     languageDetail: string;
     budgetDetail: string;
     rankingDetail: string;
     acceptanceDetail: string;
+    countryDetail: string;
   };
 }
 
