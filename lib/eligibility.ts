@@ -1,4 +1,5 @@
 import type { University, StudentInput, EligibilityResult, EligibilityStatus } from "@/types";
+import { countryModifiers } from "./country-modifiers";
 
 export function calculateEligibility(
   student: StudentInput,
@@ -14,9 +15,10 @@ export function calculateEligibility(
   let rankingDetail = "";
   let acceptanceScore = 0;
   let acceptanceDetail = "";
+  let countryScore = 0;
+  let countryDetail = "";
 
   // ── GPA (gradual, max +30) ──
-  // GPA is on 100-point scale. Reward exceeding the requirement, penalize falling short.
   const gpaDiff = student.gpa - university.requiredGPA;
   if (gpaDiff >= 10) {
     gpaScore = 30;
@@ -46,7 +48,6 @@ export function calculateEligibility(
     const studentLang = student.languageCert.toLowerCase();
     let matched = false;
 
-    // Check acceptedLanguages array first (new system)
     if (university.acceptedLanguages && university.acceptedLanguages.length > 0) {
       for (const lang of university.acceptedLanguages) {
         if (lang.test.toLowerCase() === studentLang) {
@@ -57,7 +58,6 @@ export function calculateEligibility(
             languageDetail = `${student.languageCert} puanınız (${student.languageScore}) yeterli (min: ${lang.minScore})`;
           } else {
             const langDiff = student.languageScore - reqScore;
-            // Gradual penalty based on how far below
             if (langDiff >= -0.5) {
               languageScore = -10;
               languageDetail = `${student.languageCert} puanınız (${student.languageScore}) minimuma çok yakın (${lang.minScore})`;
@@ -70,13 +70,11 @@ export function calculateEligibility(
         }
       }
       if (!matched) {
-        // Student has a cert type not in acceptedLanguages
         const accepted = university.acceptedLanguages.map((l) => l.test).join(", ");
         languageScore = -30;
         languageDetail = `${accepted} gerekli, sizde ${student.languageCert} var`;
       }
     } else {
-      // Fallback to old single-language system
       const reqLang = university.requiredLanguage.toLowerCase();
       const isCompatible =
         (reqLang.includes("ielts") && studentLang.includes("ielts")) ||
@@ -119,7 +117,6 @@ export function calculateEligibility(
   }
 
   // ── Ranking difficulty modifier (max -15, min 0) ──
-  // Higher-ranked schools are harder to get into
   if (university.rankings && university.rankings.length > 0) {
     const bestRank = Math.min(...university.rankings.map((r) => r.rank));
     if (bestRank <= 5) {
@@ -154,7 +151,7 @@ export function calculateEligibility(
     }
   }
 
-  // ── Competitiveness modifier (separate from ranking, based on school's own selectivity) ──
+  // ── Competitiveness modifier ──
   let competitivenessScore = 0;
   if (university.competitiveness === "very_high") {
     competitivenessScore = -5;
@@ -162,11 +159,25 @@ export function calculateEligibility(
     competitivenessScore = -2;
   }
 
+  // ── Country modifier (admission system differences) ──
+  const modifier = countryModifiers[university.country];
+  if (modifier) {
+    gpaScore = Math.round(gpaScore * modifier.gpaWeight);
+    languageScore = Math.round(languageScore * modifier.languageWeight);
+    countryScore = modifier.systemBonus;
+    countryDetail = modifier.description;
+
+    if (university.programRestricted) {
+      countryScore -= 5;
+      countryDetail += " (Kısıtlı kontenjan programı)";
+    }
+  }
+
   const totalScore = Math.max(
     0,
     Math.min(
       100,
-      40 + gpaScore + languageScore + budgetScore + rankingScore + acceptanceScore + competitivenessScore
+      38 + gpaScore + languageScore + budgetScore + rankingScore + acceptanceScore + competitivenessScore + countryScore
     )
   );
 
@@ -186,11 +197,13 @@ export function calculateEligibility(
       budgetScore,
       rankingScore,
       acceptanceScore,
+      countryScore,
       gpaDetail,
       languageDetail,
       budgetDetail,
       rankingDetail,
       acceptanceDetail,
+      countryDetail,
     },
   };
 }
