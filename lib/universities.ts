@@ -15,6 +15,9 @@ export const universities: University[] = [
     tuitionEUR: 2209,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 20,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "tu-delft-arch",
@@ -30,6 +33,9 @@ export const universities: University[] = [
     tuitionEUR: 2209,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 20,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "groningen-business",
@@ -45,6 +51,9 @@ export const universities: University[] = [
     tuitionEUR: 2209,
     flag: "🇳🇱",
     deadline: "1 Mayıs",
+    acceptanceRate: 38,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "polimi-cs",
@@ -60,6 +69,9 @@ export const universities: University[] = [
     tuitionEUR: 3000,
     flag: "🇮🇹",
     deadline: "Şubat (erken), Nisan (geç)",
+    acceptanceRate: 22,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "polimi-arch",
@@ -75,6 +87,9 @@ export const universities: University[] = [
     tuitionEUR: 3500,
     flag: "🇮🇹",
     deadline: "Mart",
+    acceptanceRate: 25,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "bocconi-economics",
@@ -94,6 +109,9 @@ export const universities: University[] = [
       { source: "FT", rank: 6, year: 2025 },
       { source: "QS", rank: 18, year: 2025 },
     ],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "bologna-eng",
@@ -109,6 +127,9 @@ export const universities: University[] = [
     tuitionEUR: 2900,
     flag: "🇮🇹",
     deadline: "Mayıs",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "70" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "tum-cs",
@@ -124,6 +145,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "31 Mayıs",
+    acceptanceRate: 40,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "tum-ee",
@@ -139,6 +163,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "31 Mayıs",
+    acceptanceRate: 38,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "4" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "lmu-business",
@@ -154,6 +181,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 43,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "4" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "rwth-aachen",
@@ -169,6 +199,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "1 Mart",
+    acceptanceRate: 26,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "4" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "sciences-po",
@@ -184,6 +217,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇫🇷",
     deadline: "Şubat",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "essec",
@@ -202,6 +238,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 7, year: 2025 },
     ],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "ie-university",
@@ -217,6 +256,9 @@ export const universities: University[] = [
     tuitionEUR: 18000,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 39,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "kth-stockholm",
@@ -232,6 +274,9 @@ export const universities: University[] = [
     tuitionEUR: 13500,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 28,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
 
   // ── European Business Schools (FT & QS Rankings 2025) ──
@@ -254,6 +299,9 @@ export const universities: University[] = [
       { source: "FT", rank: 1, year: 2025 },
       { source: "QS", rank: 4, year: 2025 },
     ],
+    acceptanceRate: 15,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "hec-paris-mim",
@@ -273,6 +321,9 @@ export const universities: University[] = [
       { source: "FT", rank: 2, year: 2025 },
       { source: "QS", rank: 7, year: 2025 },
     ],
+    acceptanceRate: 14,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "lbs-mim",
@@ -292,6 +343,9 @@ export const universities: University[] = [
       { source: "FT", rank: 3, year: 2025 },
       { source: "QS", rank: 6, year: 2025 },
     ],
+    acceptanceRate: 14,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "escp-mim",
@@ -311,6 +365,9 @@ export const universities: University[] = [
       { source: "FT", rank: 4, year: 2025 },
       { source: "QS", rank: 12, year: 2025 },
     ],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "iese-mba",
@@ -330,6 +387,9 @@ export const universities: University[] = [
       { source: "FT", rank: 5, year: 2025 },
       { source: "QS", rank: 10, year: 2025 },
     ],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "sda-bocconi-mba",
@@ -349,6 +409,9 @@ export const universities: University[] = [
       { source: "FT", rank: 6, year: 2025 },
       { source: "QS", rank: 18, year: 2025 },
     ],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "st-gallen-mim",
@@ -368,6 +431,9 @@ export const universities: University[] = [
       { source: "FT", rank: 8, year: 2025 },
       { source: "QS", rank: 15, year: 2025 },
     ],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "edhec-mim",
@@ -386,6 +452,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 9, year: 2025 },
     ],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "emlyon-mim",
@@ -404,6 +473,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 10, year: 2025 },
     ],
+    acceptanceRate: 14,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "esade-mim",
@@ -423,6 +495,9 @@ export const universities: University[] = [
       { source: "FT", rank: 11, year: 2025 },
       { source: "QS", rank: 14, year: 2025 },
     ],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "esmt-berlin-mim",
@@ -441,6 +516,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 12, year: 2025 },
     ],
+    acceptanceRate: 17,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "imd-mba",
@@ -460,6 +538,9 @@ export const universities: University[] = [
       { source: "FT", rank: 13, year: 2025 },
       { source: "QS", rank: 20, year: 2025 },
     ],
+    acceptanceRate: 21,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "oxford-said-mba",
@@ -479,6 +560,9 @@ export const universities: University[] = [
       { source: "FT", rank: 14, year: 2025 },
       { source: "QS", rank: 8, year: 2025 },
     ],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "mannheim-mim",
@@ -498,6 +582,9 @@ export const universities: University[] = [
       { source: "FT", rank: 15, year: 2025 },
       { source: "QS", rank: 25, year: 2025 },
     ],
+    acceptanceRate: 24,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "skema-mim",
@@ -516,6 +603,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 16, year: 2025 },
     ],
+    acceptanceRate: 15,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "warwick-mim",
@@ -535,6 +625,9 @@ export const universities: University[] = [
       { source: "FT", rank: 18, year: 2025 },
       { source: "QS", rank: 30, year: 2025 },
     ],
+    acceptanceRate: 18,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "sse-stockholm-mim",
@@ -553,6 +646,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 19, year: 2025 },
     ],
+    acceptanceRate: 17,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "cambridge-judge-mba",
@@ -572,6 +668,9 @@ export const universities: University[] = [
       { source: "FT", rank: 22, year: 2025 },
       { source: "QS", rank: 5, year: 2025 },
     ],
+    acceptanceRate: 15,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "vlerick-mim",
@@ -590,6 +689,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 25, year: 2025 },
     ],
+    acceptanceRate: 21,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "rsm-erasmus-mim",
@@ -609,6 +711,9 @@ export const universities: University[] = [
       { source: "FT", rank: 33, year: 2025 },
       { source: "QS", rank: 35, year: 2025 },
     ],
+    acceptanceRate: 47,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "frankfurt-school-mim",
@@ -627,6 +732,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 32, year: 2025 },
     ],
+    acceptanceRate: 50,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "grenoble-em-mim",
@@ -645,6 +753,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 24, year: 2025 },
     ],
+    acceptanceRate: 24,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "audencia-mim",
@@ -663,6 +774,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 26, year: 2025 },
     ],
+    acceptanceRate: 24,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "neoma-mim",
@@ -681,6 +795,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 28, year: 2025 },
     ],
+    acceptanceRate: 25,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "kedge-mim",
@@ -699,6 +816,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 32, year: 2025 },
     ],
+    acceptanceRate: 40,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "polimi-gsom-mim",
@@ -717,6 +837,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 35, year: 2025 },
     ],
+    acceptanceRate: 46,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "ie-business-mim",
@@ -736,6 +859,9 @@ export const universities: University[] = [
       { source: "FT", rank: 21, year: 2025 },
       { source: "QS", rank: 16, year: 2025 },
     ],
+    acceptanceRate: 15,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "whu-mim",
@@ -754,6 +880,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 20, year: 2025 },
     ],
+    acceptanceRate: 21,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "wu-vienna-mim",
@@ -772,6 +901,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 41, year: 2025 },
     ],
+    acceptanceRate: 54,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "cranfield-mba",
@@ -790,6 +922,9 @@ export const universities: University[] = [
     rankings: [
       { source: "FT", rank: 27, year: 2025 },
     ],
+    acceptanceRate: 34,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
 
   // ── FT Ranked #34–#69 ──
@@ -809,6 +944,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Temmuz",
     rankings: [{ source: "FT", rank: 34, year: 2025 }],
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "bayes-mim",
@@ -825,6 +963,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Temmuz",
     rankings: [{ source: "FT", rank: 34, year: 2025 }],
+    acceptanceRate: 38,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "henley-mim",
@@ -841,6 +982,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Temmuz",
     rankings: [{ source: "FT", rank: 36, year: 2025 }],
+    acceptanceRate: 13,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "imperial-mim",
@@ -860,6 +1004,9 @@ export const universities: University[] = [
       { source: "FT", rank: 38, year: 2025 },
       { source: "QS", rank: 9, year: 2025 },
     ],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "trinity-dublin-mim",
@@ -876,6 +1023,9 @@ export const universities: University[] = [
     flag: "🇮🇪",
     deadline: "Haziran",
     rankings: [{ source: "FT", rank: 43, year: 2025 }],
+    acceptanceRate: 36,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "ieseg-mim",
@@ -892,6 +1042,9 @@ export const universities: University[] = [
     flag: "🇫🇷",
     deadline: "Haziran",
     rankings: [{ source: "FT", rank: 47, year: 2025 }],
+    acceptanceRate: 40,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "solvay-mim",
@@ -908,6 +1061,9 @@ export const universities: University[] = [
     flag: "🇧🇪",
     deadline: "Haziran",
     rankings: [{ source: "FT", rank: 54, year: 2025 }],
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "icn-mim",
@@ -924,6 +1080,9 @@ export const universities: University[] = [
     flag: "🇫🇷",
     deadline: "Haziran",
     rankings: [{ source: "FT", rank: 64, year: 2025 }],
+    acceptanceRate: 45,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "essca-mim",
@@ -940,6 +1099,9 @@ export const universities: University[] = [
     flag: "🇫🇷",
     deadline: "Haziran",
     rankings: [{ source: "FT", rank: 66, year: 2025 }],
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "bath-mim",
@@ -956,6 +1118,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Temmuz",
     rankings: [{ source: "FT", rank: 67, year: 2025 }],
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "paris-school-business",
@@ -972,6 +1137,9 @@ export const universities: University[] = [
     flag: "🇫🇷",
     deadline: "Haziran",
     rankings: [{ source: "FT", rank: 69, year: 2025 }],
+    acceptanceRate: 15,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
 
   // ── QS Europe Top Schools + Nordic / Iberian / Eastern European ──
@@ -991,6 +1159,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Nisan",
     rankings: [{ source: "QS", rank: 11, year: 2025 }],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "cbs-mim",
@@ -1006,6 +1177,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 24,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "bi-norwegian-mim",
@@ -1021,6 +1195,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇳🇴",
     deadline: "15 Nisan",
+    acceptanceRate: 41,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "nhh-mim",
@@ -1036,6 +1213,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇳🇴",
     deadline: "1 Nisan",
+    acceptanceRate: 46,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "aalto-mim",
@@ -1051,6 +1231,9 @@ export const universities: University[] = [
     tuitionEUR: 15000,
     flag: "🇫🇮",
     deadline: "Ocak",
+    acceptanceRate: 24,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "hanken-mim",
@@ -1066,6 +1249,9 @@ export const universities: University[] = [
     tuitionEUR: 12000,
     flag: "🇫🇮",
     deadline: "Ocak",
+    acceptanceRate: 52,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "nova-sbe-mim",
@@ -1081,6 +1267,9 @@ export const universities: University[] = [
     tuitionEUR: 9500,
     flag: "🇵🇹",
     deadline: "Mayıs",
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "catolica-lisbon-mim",
@@ -1096,6 +1285,9 @@ export const universities: University[] = [
     tuitionEUR: 8500,
     flag: "🇵🇹",
     deadline: "Mayıs",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "iseg-lisbon-mim",
@@ -1111,6 +1303,9 @@ export const universities: University[] = [
     tuitionEUR: 4500,
     flag: "🇵🇹",
     deadline: "Haziran",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "porto-fep-mim",
@@ -1126,6 +1321,9 @@ export const universities: University[] = [
     tuitionEUR: 3500,
     flag: "🇵🇹",
     deadline: "Haziran",
+    acceptanceRate: 46,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "iscte-mim",
@@ -1141,6 +1339,9 @@ export const universities: University[] = [
     tuitionEUR: 4000,
     flag: "🇵🇹",
     deadline: "Haziran",
+    acceptanceRate: 39,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "amsterdam-business-mim",
@@ -1156,6 +1357,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 29,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "maastricht-mim",
@@ -1171,6 +1375,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 35,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "tilburg-mim",
@@ -1186,6 +1393,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Mayıs",
+    acceptanceRate: 43,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "nyenrode-mim",
@@ -1201,6 +1411,9 @@ export const universities: University[] = [
     tuitionEUR: 22000,
     flag: "🇳🇱",
     deadline: "Haziran",
+    acceptanceRate: 43,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "ku-leuven-mim",
@@ -1216,6 +1429,9 @@ export const universities: University[] = [
     tuitionEUR: 3500,
     flag: "🇧🇪",
     deadline: "1 Mart",
+    acceptanceRate: 20,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "antwerp-mim",
@@ -1231,6 +1447,9 @@ export const universities: University[] = [
     tuitionEUR: 15000,
     flag: "🇧🇪",
     deadline: "Haziran",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "cologne-mim",
@@ -1246,6 +1465,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "goettingen-mim",
@@ -1261,6 +1483,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 41,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "fu-berlin-mim",
@@ -1276,6 +1501,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 54,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "hec-lausanne-mim",
@@ -1291,6 +1519,9 @@ export const universities: University[] = [
     tuitionEUR: 2400,
     flag: "🇨🇭",
     deadline: "Nisan",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "zurich-mim",
@@ -1306,6 +1537,9 @@ export const universities: University[] = [
     tuitionEUR: 2600,
     flag: "🇨🇭",
     deadline: "Nisan",
+    acceptanceRate: 41,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "ucd-smurfit-mim",
@@ -1321,6 +1555,9 @@ export const universities: University[] = [
     tuitionEUR: 18000,
     flag: "🇮🇪",
     deadline: "Haziran",
+    acceptanceRate: 37,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "durham-mim",
@@ -1336,6 +1573,9 @@ export const universities: University[] = [
     tuitionEUR: 27000,
     flag: "🇬🇧",
     deadline: "Temmuz",
+    acceptanceRate: 45,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "lancaster-mim",
@@ -1351,6 +1591,9 @@ export const universities: University[] = [
     tuitionEUR: 25000,
     flag: "🇬🇧",
     deadline: "Temmuz",
+    acceptanceRate: 43,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "edinburgh-mim",
@@ -1366,6 +1609,9 @@ export const universities: University[] = [
     tuitionEUR: 28000,
     flag: "🇬🇧",
     deadline: "Haziran",
+    acceptanceRate: 49,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "nottingham-mim",
@@ -1381,6 +1627,9 @@ export const universities: University[] = [
     tuitionEUR: 26000,
     flag: "🇬🇧",
     deadline: "Temmuz",
+    acceptanceRate: 36,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "st-andrews-mim",
@@ -1396,6 +1645,9 @@ export const universities: University[] = [
     tuitionEUR: 26000,
     flag: "🇬🇧",
     deadline: "Haziran",
+    acceptanceRate: 41,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "aarhus-mim",
@@ -1411,6 +1663,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "lund-mim",
@@ -1426,6 +1681,9 @@ export const universities: University[] = [
     tuitionEUR: 12000,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 46,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "gothenburg-mim",
@@ -1441,6 +1699,9 @@ export const universities: University[] = [
     tuitionEUR: 11000,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 37,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "barcelona-mim",
@@ -1456,6 +1717,9 @@ export const universities: University[] = [
     tuitionEUR: 4500,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 47,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "pompeu-fabra-mim",
@@ -1471,6 +1735,9 @@ export const universities: University[] = [
     tuitionEUR: 12000,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 46,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "carlos-iii-mim",
@@ -1486,6 +1753,9 @@ export const universities: University[] = [
     tuitionEUR: 6000,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "navarra-mim",
@@ -1501,6 +1771,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 39,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "kozminski-mim",
@@ -1516,6 +1789,9 @@ export const universities: University[] = [
     tuitionEUR: 6000,
     flag: "🇵🇱",
     deadline: "Temmuz",
+    acceptanceRate: 36,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "sgh-warsaw-mim",
@@ -1531,6 +1807,9 @@ export const universities: University[] = [
     tuitionEUR: 3000,
     flag: "🇵🇱",
     deadline: "Temmuz",
+    acceptanceRate: 45,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "prague-economics-mim",
@@ -1546,6 +1825,9 @@ export const universities: University[] = [
     tuitionEUR: 4000,
     flag: "🇨🇿",
     deadline: "Haziran",
+    acceptanceRate: 40,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "corvinus-mim",
@@ -1561,6 +1843,9 @@ export const universities: University[] = [
     tuitionEUR: 4500,
     flag: "🇭🇺",
     deadline: "Haziran",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
   },
   {
     id: "toulouse-mim",
@@ -1576,6 +1861,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇫🇷",
     deadline: "Haziran",
+    acceptanceRate: 35,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "montpellier-mim",
@@ -1591,6 +1879,9 @@ export const universities: University[] = [
     tuitionEUR: 12500,
     flag: "🇫🇷",
     deadline: "Haziran",
+    acceptanceRate: 47,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "em-normandie-mim",
@@ -1606,6 +1897,9 @@ export const universities: University[] = [
     tuitionEUR: 12000,
     flag: "🇫🇷",
     deadline: "Haziran",
+    acceptanceRate: 47,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELF/DALF", minScore: "B2" }],
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -1629,6 +1923,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 1, year: 2025 }],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "imperial-cs",
@@ -1645,6 +1942,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Mart",
     rankings: [{ source: "QS", rank: 2, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "oxford-cs",
@@ -1661,6 +1961,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Ocak",
     rankings: [{ source: "QS", rank: 3, year: 2025 }],
+    acceptanceRate: 15,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "cambridge-cs",
@@ -1677,6 +1980,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Aralık",
     rankings: [{ source: "QS", rank: 4, year: 2025 }],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "epfl-cs",
@@ -1693,6 +1999,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 10, year: 2025 }],
+    acceptanceRate: 12,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "edinburgh-cs",
@@ -1709,6 +2018,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Nisan",
     rankings: [{ source: "QS", rank: 6, year: 2025 }],
+    acceptanceRate: 14,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "ucl-cs",
@@ -1725,6 +2037,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Mart",
     rankings: [{ source: "QS", rank: 5, year: 2025 }],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "tu-berlin-cs",
@@ -1740,6 +2055,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "31 Mayıs",
+    acceptanceRate: 52,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "tu-eindhoven-cs",
@@ -1755,6 +2073,9 @@ export const universities: University[] = [
     tuitionEUR: 16000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "aalto-cs",
@@ -1770,6 +2091,9 @@ export const universities: University[] = [
     tuitionEUR: 15000,
     flag: "🇫🇮",
     deadline: "Ocak",
+    acceptanceRate: 29,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "dtu-cs",
@@ -1785,6 +2109,9 @@ export const universities: University[] = [
     tuitionEUR: 15000,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "chalmers-cs",
@@ -1800,6 +2127,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 39,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "polito-cs",
@@ -1815,6 +2145,9 @@ export const universities: University[] = [
     tuitionEUR: 3000,
     flag: "🇮🇹",
     deadline: "Nisan",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "upc-cs",
@@ -1830,6 +2163,9 @@ export const universities: University[] = [
     tuitionEUR: 4500,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 47,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELE", minScore: "B2" }],
   },
 
   // ── Engineering / Mühendislik ──
@@ -1849,6 +2185,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 1, year: 2025 }],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "imperial-eng",
@@ -1865,6 +2204,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Mart",
     rankings: [{ source: "QS", rank: 2, year: 2025 }],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "epfl-eng",
@@ -1881,6 +2223,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 10, year: 2025 }],
+    acceptanceRate: 14,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "dtu-eng",
@@ -1896,6 +2241,9 @@ export const universities: University[] = [
     tuitionEUR: 15000,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "chalmers-eng",
@@ -1911,6 +2259,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 50,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "polito-eng",
@@ -1926,6 +2277,9 @@ export const universities: University[] = [
     tuitionEUR: 3000,
     flag: "🇮🇹",
     deadline: "Nisan",
+    acceptanceRate: 53,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "CELI/CILS", minScore: "B2" }],
   },
   {
     id: "tu-wien-eng",
@@ -1941,6 +2295,9 @@ export const universities: University[] = [
     tuitionEUR: 1500,
     flag: "🇦🇹",
     deadline: "Şubat",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "upc-eng",
@@ -1956,6 +2313,9 @@ export const universities: University[] = [
     tuitionEUR: 4500,
     flag: "🇪🇸",
     deadline: "Haziran",
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }, { test: "DELE", minScore: "B2" }],
   },
   {
     id: "university-twente-eng",
@@ -1971,6 +2331,9 @@ export const universities: University[] = [
     tuitionEUR: 16000,
     flag: "🇳🇱",
     deadline: "1 Mayıs",
+    acceptanceRate: 52,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "stuttgart-eng",
@@ -1986,6 +2349,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 39,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
 
   // ── Electrical Engineering / Elektrik-Elektronik Mühendisliği ──
@@ -2005,6 +2371,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 1, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "imperial-ee",
@@ -2021,6 +2390,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Mart",
     rankings: [{ source: "QS", rank: 2, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "epfl-ee",
@@ -2037,6 +2409,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 10, year: 2025 }],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "tu-delft-ee",
@@ -2052,6 +2427,9 @@ export const universities: University[] = [
     tuitionEUR: 2209,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 25,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "kth-ee",
@@ -2067,6 +2445,9 @@ export const universities: University[] = [
     tuitionEUR: 13500,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 40,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
 
   // ── Architecture / Mimarlık ──
@@ -2086,6 +2467,9 @@ export const universities: University[] = [
     flag: "🇨🇭",
     deadline: "15 Aralık",
     rankings: [{ source: "QS", rank: 1, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "ucl-arch",
@@ -2102,6 +2486,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Mart",
     rankings: [{ source: "QS", rank: 3, year: 2025 }],
+    acceptanceRate: 9,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "tu-wien-arch",
@@ -2117,6 +2504,9 @@ export const universities: University[] = [
     tuitionEUR: 1500,
     flag: "🇦🇹",
     deadline: "Şubat",
+    acceptanceRate: 41,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "aalborg-arch",
@@ -2132,6 +2522,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 52,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
 
   // ── Economics / Ekonomi ──
@@ -2151,6 +2544,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Nisan",
     rankings: [{ source: "QS", rank: 5, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "cambridge-economics",
@@ -2167,6 +2563,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Aralık",
     rankings: [{ source: "QS", rank: 4, year: 2025 }],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "oxford-economics",
@@ -2183,6 +2582,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Ocak",
     rankings: [{ source: "QS", rank: 3, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "toulouse-economics",
@@ -2198,6 +2600,9 @@ export const universities: University[] = [
     tuitionEUR: 6000,
     flag: "🇫🇷",
     deadline: "Nisan",
+    acceptanceRate: 53,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "stockholm-economics",
@@ -2213,6 +2618,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇸🇪",
     deadline: "15 Ocak",
+    acceptanceRate: 26,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "tilburg-economics",
@@ -2228,6 +2636,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Mayıs",
+    acceptanceRate: 52,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "sorbonne-economics",
@@ -2243,6 +2654,9 @@ export const universities: University[] = [
     tuitionEUR: 4000,
     flag: "🇫🇷",
     deadline: "Nisan",
+    acceptanceRate: 54,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "DELF/DALF", minScore: "B2" }],
   },
   {
     id: "zurich-economics",
@@ -2258,6 +2672,9 @@ export const universities: University[] = [
     tuitionEUR: 2600,
     flag: "🇨🇭",
     deadline: "Nisan",
+    acceptanceRate: 44,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
 
   // ── Political Science / Siyaset Bilimi ──
@@ -2277,6 +2694,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Ocak",
     rankings: [{ source: "QS", rank: 3, year: 2025 }],
+    acceptanceRate: 13,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "leiden-politics",
@@ -2292,6 +2712,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 43,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "amsterdam-politics",
@@ -2307,6 +2730,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 21,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "copenhagen-politics",
@@ -2322,6 +2748,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 20,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
 
   // ── International Relations / Uluslararası İlişkiler ──
@@ -2341,6 +2770,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Nisan",
     rankings: [{ source: "QS", rank: 5, year: 2025 }],
+    acceptanceRate: 9,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "geneva-ir",
@@ -2356,6 +2788,9 @@ export const universities: University[] = [
     tuitionEUR: 8000,
     flag: "🇨🇭",
     deadline: "15 Ocak",
+    acceptanceRate: 51,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "leiden-ir",
@@ -2371,6 +2806,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 50,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
 
   // ── Medicine / Tıp ──
@@ -2390,6 +2828,9 @@ export const universities: University[] = [
     flag: "🇸🇪",
     deadline: "15 Ocak",
     rankings: [{ source: "QS", rank: 7, year: 2025 }],
+    acceptanceRate: 8,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "heidelberg-med",
@@ -2405,6 +2846,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 43,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
   {
     id: "copenhagen-med",
@@ -2420,6 +2864,9 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇰",
     deadline: "1 Mart",
+    acceptanceRate: 23,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
   {
     id: "amsterdam-med",
@@ -2435,6 +2882,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 20,
+    competitiveness: "high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
   },
 
   // ── Law / Hukuk ──
@@ -2454,6 +2904,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Ocak",
     rankings: [{ source: "QS", rank: 3, year: 2025 }],
+    acceptanceRate: 11,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "cambridge-law",
@@ -2470,6 +2923,9 @@ export const universities: University[] = [
     flag: "🇬🇧",
     deadline: "Aralık",
     rankings: [{ source: "QS", rank: 4, year: 2025 }],
+    acceptanceRate: 10,
+    competitiveness: "very_high",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.5" }, { test: "TOEFL", minScore: "105" }, { test: "Cambridge", minScore: "C1" }],
   },
   {
     id: "leiden-law",
@@ -2485,6 +2941,9 @@ export const universities: University[] = [
     tuitionEUR: 14000,
     flag: "🇳🇱",
     deadline: "1 Nisan",
+    acceptanceRate: 49,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
   },
   {
     id: "humboldt-law",
@@ -2500,5 +2959,8 @@ export const universities: University[] = [
     tuitionEUR: 0,
     flag: "🇩🇪",
     deadline: "15 Temmuz",
+    acceptanceRate: 42,
+    competitiveness: "medium",
+    acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }, { test: "TestDaF", minScore: "4" }],
   },
 ];
