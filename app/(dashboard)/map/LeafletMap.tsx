@@ -62,7 +62,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       await import("leaflet/dist/leaflet.css");
       await import("leaflet.markercluster");
       await import("leaflet.markercluster/dist/MarkerCluster.css");
-      await import("leaflet.markercluster/dist/MarkerClusterDefault.css");
+      await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
 
       // Fix broken default icons from webpack
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
