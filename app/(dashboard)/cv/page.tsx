@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   FileText,
   Loader2,
-  Copy,
-  Check,
   Upload,
   X,
   Briefcase,
@@ -16,60 +14,70 @@ import {
   ChevronDown,
   ChevronUp,
   Download,
+  ExternalLink,
 } from "lucide-react";
 import type { CVData } from "@/lib/gemini";
 
 type TargetField = "business" | "engineering" | "other";
-type ActiveTab = "onepage" | "harvard";
 
 export default function CVPage() {
   const [rawContent, setRawContent] = useState("");
   const [targetField, setTargetField] = useState<TargetField>("other");
-  const [activeTab, setActiveTab] = useState<ActiveTab>("onepage");
-  const [onePageCV, setOnePageCV] = useState("");
-  const [harvardCV, setHarvardCV] = useState("");
   const [extractedData, setExtractedData] = useState<CVData | null>(null);
   const [showExtracted, setShowExtracted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function handleDownloadPDF(variant: "onepage" | "harvard") {
-    if (!extractedData) return;
-    setPdfLoading(true);
+  // PDF blob URLs for both variants
+  const [onePagePdfUrl, setOnePagePdfUrl] = useState<string | null>(null);
+  const [harvardPdfUrl, setHarvardPdfUrl] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (onePagePdfUrl) URL.revokeObjectURL(onePagePdfUrl);
+      if (harvardPdfUrl) URL.revokeObjectURL(harvardPdfUrl);
+    };
+  }, [onePagePdfUrl, harvardPdfUrl]);
+
+  async function fetchPdfBlob(
+    data: CVData,
+    variant: "onepage" | "harvard"
+  ): Promise<string | null> {
     try {
       const res = await fetch("/api/generate-cv-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ extractedData, variant }),
+        body: JSON.stringify({ extractedData: data, variant }),
       });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "PDF olusturulamadi");
-      }
+      if (!res.ok) return null;
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      const safeName = (extractedData.personalInfo.fullName || "CV")
-        .replace(/[^a-zA-Z0-9 ]/g, "")
-        .replace(/\s+/g, "_");
-      a.download =
-        variant === "harvard"
-          ? `${safeName}_Harvard.pdf`
-          : `${safeName}_OnePage.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "PDF indirilemedi");
-    } finally {
-      setPdfLoading(false);
+      return URL.createObjectURL(blob);
+    } catch {
+      return null;
     }
+  }
+
+  function handleDownload(url: string, variant: "onepage" | "harvard") {
+    const safeName = (extractedData?.personalInfo.fullName || "CV")
+      .replace(/[^a-zA-Z0-9 ]/g, "")
+      .replace(/\s+/g, "_");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download =
+      variant === "harvard"
+        ? `${safeName}_Harvard.pdf`
+        : `${safeName}_OnePage.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function handleOpenPdf(url: string) {
+    window.open(url, "_blank");
   }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -121,12 +129,17 @@ export default function CVPage() {
 
     setError("");
     setLoading(true);
-    setOnePageCV("");
-    setHarvardCV("");
     setExtractedData(null);
     setShowExtracted(false);
 
+    // Cleanup old blob URLs
+    if (onePagePdfUrl) URL.revokeObjectURL(onePagePdfUrl);
+    if (harvardPdfUrl) URL.revokeObjectURL(harvardPdfUrl);
+    setOnePagePdfUrl(null);
+    setHarvardPdfUrl(null);
+
     try {
+      // Step 1: Generate CV data via AI
       const res = await fetch("/api/generate-cv", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -134,27 +147,27 @@ export default function CVPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Bir hata olustu");
-      setOnePageCV(data.onePageCV);
-      setHarvardCV(data.harvardCV);
+
       setExtractedData(data.extractedData);
-      setActiveTab("onepage");
+
+      // Step 2: Generate both PDFs in parallel
+      setPdfLoading(true);
+      const [onepageUrl, harvardUrl] = await Promise.all([
+        fetchPdfBlob(data.extractedData, "onepage"),
+        fetchPdfBlob(data.extractedData, "harvard"),
+      ]);
+      setOnePagePdfUrl(onepageUrl);
+      setHarvardPdfUrl(harvardUrl);
+      setPdfLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Bir hata olustu");
     } finally {
       setLoading(false);
+      setPdfLoading(false);
     }
   }
 
-  async function handleCopy() {
-    const text = activeTab === "onepage" ? onePageCV : harvardCV;
-    if (!text) return;
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  const currentCV = activeTab === "onepage" ? onePageCV : harvardCV;
-  const hasResults = onePageCV || harvardCV;
+  const hasResults = onePagePdfUrl || harvardPdfUrl;
 
   const fieldOptions: {
     value: TargetField;
@@ -185,7 +198,7 @@ export default function CVPage() {
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
         CV iceriginizi girin — Gemini AI ile analiz edilip iki farkli formatta
-        optimize edilir
+        PDF olusturulur
       </p>
 
       <div className="grid grid-cols-2 gap-6">
@@ -422,108 +435,48 @@ Liderlik: Yazilim Kulubu Baskani (2024-2025)`}
           </div>
         </div>
 
-        {/* Right: Output */}
-        <div
-          className="rounded-xl p-5 flex flex-col"
-          style={{
-            backgroundColor: "var(--surface)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          {/* Tabs + Copy */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex gap-1">
-              <button
-                onClick={() => setActiveTab("onepage")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{
-                  backgroundColor:
-                    activeTab === "onepage"
-                      ? "var(--blue-bg)"
-                      : "transparent",
-                  border:
-                    activeTab === "onepage"
-                      ? "1px solid var(--blue-border)"
-                      : "1px solid transparent",
-                  color:
-                    activeTab === "onepage"
-                      ? "var(--blue)"
-                      : "var(--muted)",
-                }}
-              >
-                Tek Sayfa CV
-              </button>
-              <button
-                onClick={() => setActiveTab("harvard")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{
-                  backgroundColor:
-                    activeTab === "harvard"
-                      ? "var(--gold-bg)"
-                      : "transparent",
-                  border:
-                    activeTab === "harvard"
-                      ? "1px solid var(--gold-border)"
-                      : "1px solid transparent",
-                  color:
-                    activeTab === "harvard"
-                      ? "var(--gold)"
-                      : "var(--muted)",
-                }}
-              >
-                Harvard CV
-              </button>
-            </div>
-            {hasResults && (
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => handleDownloadPDF(activeTab === "harvard" ? "harvard" : "onepage")}
-                  disabled={pdfLoading || !extractedData}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
-                  style={{
-                    backgroundColor: "var(--blue)",
-                    color: "var(--white)",
-                  }}
-                >
-                  {pdfLoading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Download className="w-3.5 h-3.5" />
-                  )}
-                  PDF Indir
-                </button>
-                <button
-                  onClick={handleCopy}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
-                  style={{
-                    backgroundColor: "var(--surface2)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  {copied ? (
-                    <Check className="w-3.5 h-3.5" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5" />
-                  )}
-                  {copied ? "Kopyalandi" : "Kopyala"}
-                </button>
-              </div>
-            )}
-          </div>
+        {/* Right: PDF Previews */}
+        <div className="space-y-4">
+          {hasResults ? (
+            <>
+              {/* One-Page CV Preview */}
+              <PdfPreviewCard
+                title="Tek Sayfa CV"
+                subtitle="Modern iki kolonlu tasarim"
+                accentColor="var(--blue)"
+                accentBg="var(--blue-bg)"
+                accentBorder="var(--blue-border)"
+                pdfUrl={onePagePdfUrl}
+                loading={pdfLoading}
+                onDownload={() =>
+                  onePagePdfUrl && handleDownload(onePagePdfUrl, "onepage")
+                }
+                onOpen={() => onePagePdfUrl && handleOpenPdf(onePagePdfUrl)}
+              />
 
-          {/* CV Content */}
-          {currentCV ? (
+              {/* Harvard CV Preview */}
+              <PdfPreviewCard
+                title="Harvard CV"
+                subtitle="Akademik ve detayli format"
+                accentColor="var(--gold)"
+                accentBg="var(--gold-bg)"
+                accentBorder="var(--gold-border)"
+                pdfUrl={harvardPdfUrl}
+                loading={pdfLoading}
+                onDownload={() =>
+                  harvardPdfUrl && handleDownload(harvardPdfUrl, "harvard")
+                }
+                onOpen={() => harvardPdfUrl && handleOpenPdf(harvardPdfUrl)}
+              />
+            </>
+          ) : (
             <div
-              className="text-sm leading-relaxed whitespace-pre-wrap overflow-y-auto flex-1"
+              className="rounded-xl p-5 flex flex-col items-center justify-center min-h-[500px]"
               style={{
-                color: "var(--text)",
-                maxHeight: "calc(100vh - 280px)",
+                backgroundColor: "var(--surface)",
+                border: "1px solid var(--border)",
               }}
             >
-              {currentCV}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center flex-1 text-center min-h-[400px]">
               {loading ? (
                 <>
                   <Loader2
@@ -537,16 +490,16 @@ Liderlik: Yazilim Kulubu Baskani (2024-2025)`}
                     className="text-xs mt-1"
                     style={{ color: "var(--muted)", opacity: 0.6 }}
                   >
-                    Icerik analiz ediliyor, veriler yapilandiriliyor ve iki CV
-                    formati uretiliyor.
+                    Icerik analiz ediliyor, veriler yapilandiriliyor ve PDF&apos;ler
+                    uretiliyor.
                   </p>
                   <div
                     className="flex flex-col gap-1.5 mt-4 text-xs"
                     style={{ color: "var(--muted)", opacity: 0.5 }}
                   >
                     <span>1. Veri cikarimi ve yapilandirma...</span>
-                    <span>2. Tek sayfa CV uretimi...</span>
-                    <span>3. Harvard CV uretimi...</span>
+                    <span>2. Tek Sayfa CV PDF uretimi...</span>
+                    <span>3. Harvard CV PDF uretimi...</span>
                   </div>
                 </>
               ) : (
@@ -563,29 +516,25 @@ Liderlik: Yazilim Kulubu Baskani (2024-2025)`}
                     className="text-xs mt-2"
                     style={{ color: "var(--muted)", opacity: 0.6 }}
                   >
-                    3 adimli pipeline ile iki farkli format olusturulacaktir:
+                    Iki farkli PDF formati otomatik olusturulacaktir:
                   </p>
                   <div
                     className="flex flex-col gap-2 mt-4 text-xs text-left"
                     style={{ color: "var(--muted)", opacity: 0.6 }}
                   >
                     <div className="flex items-center gap-2">
-                      <Database className="w-3.5 h-3.5" />
-                      Adim 1: Icerik analizi ve veri cikarimi (JSON)
-                    </div>
-                    <div className="flex items-center gap-2">
                       <div
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: "var(--blue)" }}
                       />
-                      Adim 2: Tek Sayfa CV — Modern ve ozlu
+                      Tek Sayfa CV — Modern iki kolonlu tasarim
                     </div>
                     <div className="flex items-center gap-2">
                       <div
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: "var(--gold)" }}
                       />
-                      Adim 3: Harvard CV — Akademik ve detayli
+                      Harvard CV — Akademik ve detayli
                     </div>
                   </div>
                 </>
@@ -593,6 +542,130 @@ Liderlik: Yazilim Kulubu Baskani (2024-2025)`}
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ====== PDF Preview Card Component ====== */
+function PdfPreviewCard({
+  title,
+  subtitle,
+  accentColor,
+  accentBg,
+  accentBorder,
+  pdfUrl,
+  loading,
+  onDownload,
+  onOpen,
+}: {
+  title: string;
+  subtitle: string;
+  accentColor: string;
+  accentBg: string;
+  accentBorder: string;
+  pdfUrl: string | null;
+  loading: boolean;
+  onDownload: () => void;
+  onOpen: () => void;
+}) {
+  return (
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{
+        backgroundColor: "var(--surface)",
+        border: `1px solid var(--border)`,
+      }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: "1px solid var(--border)" }}
+      >
+        <div className="flex items-center gap-2">
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: accentColor }}
+          />
+          <div>
+            <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
+              {title}
+            </p>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
+              {subtitle}
+            </p>
+          </div>
+        </div>
+        {pdfUrl && (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={onOpen}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor: accentBg,
+                border: `1px solid ${accentBorder}`,
+                color: accentColor,
+              }}
+            >
+              <ExternalLink className="w-3 h-3" />
+              Ac
+            </button>
+            <button
+              onClick={onDownload}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor: accentColor,
+                color: "var(--white)",
+              }}
+            >
+              <Download className="w-3 h-3" />
+              Indir
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* PDF Preview Area */}
+      <div
+        className="relative cursor-pointer"
+        onClick={onOpen}
+        style={{ height: 320 }}
+      >
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <Loader2
+              className="w-6 h-6 animate-spin mb-2"
+              style={{ color: accentColor, opacity: 0.6 }}
+            />
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
+              PDF olusturuluyor...
+            </p>
+          </div>
+        ) : pdfUrl ? (
+          <>
+            <iframe
+              src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+              className="w-full h-full border-0 pointer-events-none"
+              title={title}
+              style={{ backgroundColor: "#f5f5f5" }}
+            />
+            {/* Clickable overlay */}
+            <div
+              className="absolute inset-0 transition-colors hover:bg-black/5"
+              style={{ cursor: "pointer" }}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full">
+            <FileText
+              className="w-8 h-8 mb-2"
+              style={{ color: "var(--muted)", opacity: 0.3 }}
+            />
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
+              PDF olusturulamadi
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
