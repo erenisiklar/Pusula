@@ -410,38 +410,54 @@ export default function CVPage() {
           </div>
         )}
 
-        {/* STEP 2: Experience */}
-        {step === 2 && (
-          <div>
-            {data.experience.length === 0 && (
-              <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henuz is deneyimi eklenmedi. Yoksa bu adimi atlayabilirsiniz.
-              </p>
-            )}
-            {data.experience.map((exp, i) => (
-              <EntryCard key={i} index={i} onRemove={() => update("experience", data.experience.filter((_, j) => j !== i))}>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="Sirket / Kurum" value={exp.company} onChange={(v) => {
-                    const copy = [...data.experience]; copy[i] = { ...copy[i], company: v }; update("experience", copy);
-                  }} placeholder="TurkTech Yazilim" fullWidth />
-                  <Field label="Pozisyon" value={exp.role} onChange={(v) => {
-                    const copy = [...data.experience]; copy[i] = { ...copy[i], role: v }; update("experience", copy);
-                  }} placeholder="Yazilim Stajyeri" fullWidth />
-                  <Field label="Baslangic" value={exp.startDate || ""} onChange={(v) => {
-                    const copy = [...data.experience]; copy[i] = { ...copy[i], startDate: v }; update("experience", copy);
-                  }} placeholder="Haziran 2025" />
-                  <Field label="Bitis" value={exp.endDate || ""} onChange={(v) => {
-                    const copy = [...data.experience]; copy[i] = { ...copy[i], endDate: v }; update("experience", copy);
-                  }} placeholder="Agustos 2025" />
-                  <StringListField label="Gorevler / Basarilar" items={exp.bullets || []} onChange={(items) => {
-                    const copy = [...data.experience]; copy[i] = { ...copy[i], bullets: items }; update("experience", copy);
-                  }} placeholder="React ile portal gelistirdim..." />
-                </div>
-              </EntryCard>
-            ))}
-            <AddButton label="Deneyim Ekle" onClick={() => update("experience", [...data.experience, emptyExperience()])} />
-          </div>
-        )}
+            {/* Text Input */}
+            <div>
+              <label
+                className="text-xs font-medium block mb-1.5"
+                style={{ color: "var(--muted)" }}
+              >
+                CV Icerigi
+              </label>
+              <textarea
+                value={rawContent}
+                onChange={(e) => {
+                  setRawContent(e.target.value);
+                  if (fileName) setFileName("");
+                }}
+                placeholder={`Mevcut CV'nizi buraya yapistirin veya bilgilerinizi serbest formatta yazin...
+
+Ornek:
+Ad: Eren Isiklar
+Egitim: Istanbul Teknik Universitesi, Bilgisayar Muhendisligi, 85/100 GPA (2022-2026)
+Staj: ABC Teknoloji - Yazilim Muhendisi Stajyeri (Yaz 2025)
+- React ve Node.js ile e-ticaret platformu gelistirdim
+- Kullanici sayisini %30 artiran ozellikler ekledim
+Projeler: Makine ogrenmesi ile duygu analizi projesi, Python, TensorFlow
+Beceriler: Python, JavaScript, SQL, Git, Docker
+Sertifikalar: IELTS 7.0, AWS Cloud Practitioner
+Liderlik: Yazilim Kulubu Baskani (2024-2025)`}
+                rows={12}
+                className="w-full px-3 py-2.5 rounded-lg text-sm outline-none resize-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text)",
+                }}
+              />
+              <div className="flex justify-end mt-1">
+                <span
+                  className="text-xs"
+                  style={{
+                    color:
+                      rawContent.trim().length < 50
+                        ? "var(--muted)"
+                        : "var(--success)",
+                  }}
+                >
+                  {rawContent.trim().length} karakter
+                </span>
+              </div>
+            </div>
 
         {/* STEP 3: Projects */}
         {step === 3 && (

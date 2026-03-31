@@ -1,26 +1,7 @@
-import { CheckCircle } from "lucide-react";
+import { getAcceptanceStats } from "@/lib/supabase/queries";
+import AcceptanceClient from "./client";
 
-export default function AcceptancePage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>
-        Kabul Oranları
-      </h1>
-      <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
-        Üniversitelerin geçmiş yıl kabul oranları ve istatistikleri
-      </p>
-      <div
-        className="rounded-xl p-12 flex flex-col items-center justify-center text-center"
-        style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-      >
-        <CheckCircle className="w-12 h-12 mb-4" style={{ color: "var(--muted)", opacity: 0.3 }} />
-        <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
-          Bu sayfa yakında aktif olacak.
-        </p>
-        <p className="text-xs mt-1" style={{ color: "var(--muted)", opacity: 0.6 }}>
-          Kabul oranları ve başvuru istatistikleri eklenecektir.
-        </p>
-      </div>
-    </div>
-  );
+export default async function AcceptancePage() {
+  const stats = await getAcceptanceStats();
+  return <AcceptanceClient stats={stats} />;
 }

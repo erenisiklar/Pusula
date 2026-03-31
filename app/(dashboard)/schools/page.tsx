@@ -12,20 +12,27 @@ import {
   Languages,
   Wallet,
   AlertTriangle,
+  Trophy,
 } from "lucide-react";
 
-const countries = ["Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç"];
+const countries = [
+  "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
+  "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
+  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan",
+];
 const departments = [
   "Tümü",
-  "Bilgisayar Mühendisliği",
-  "Mühendislik",
   "İşletme",
+  "Bilgisayar Mühendisliği",
+  "Makine Mühendisliği",
+  "Elektrik-Elektronik Mühendisliği",
+  "Mühendislik",
   "Mimarlık",
   "Ekonomi",
   "Siyaset Bilimi",
   "Uluslararası İlişkiler",
-  "Elektrik-Elektronik Mühendisliği",
-  "Makine Mühendisliği",
+  "Tıp",
+  "Hukuk",
 ];
 const langCerts = ["IELTS", "TOEFL", "TestDaF"];
 
@@ -60,7 +67,7 @@ const statusConfig: Record<
 };
 
 export default function SchoolsPage() {
-  const [gpa, setGpa] = useState<number>(3.0);
+  const [gpa, setGpa] = useState<number>(75);
   const [langCert, setLangCert] = useState<string>("IELTS");
   const [langScore, setLangScore] = useState<number>(6.5);
   const [budget, setBudget] = useState<number>(5000);
@@ -152,13 +159,13 @@ export default function SchoolsPage() {
           <div>
             <label className="flex items-center gap-2 text-xs font-medium mb-2" style={{ color: "var(--muted)" }}>
               <GraduationCap className="w-3.5 h-3.5" />
-              GPA (4.0 üzerinden)
+              GPA (100 üzerinden)
             </label>
             <input
               type="number"
-              step="0.1"
+              step="1"
               min="0"
-              max="4"
+              max="100"
               value={gpa}
               onChange={(e) => setGpa(parseFloat(e.target.value) || 0)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
@@ -367,6 +374,27 @@ function UniversityCard({
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Ranking badges */}
+          {university.rankings && university.rankings.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              {university.rankings.map((r) => (
+                <span
+                  key={r.source}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
+                  style={{
+                    backgroundColor: "var(--gold-bg)",
+                    border: "1px solid var(--gold-border)",
+                    color: "var(--gold-light)",
+                  }}
+                  title={`${r.source} European Business School Ranking ${r.year}`}
+                >
+                  <Trophy className="w-2.5 h-2.5" />
+                  {r.source} #{r.rank}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Score circle */}
           <div className="text-center">
             <div
@@ -416,7 +444,7 @@ function UniversityCard({
               label="GPA"
               score={breakdown.gpaScore}
               detail={breakdown.gpaDetail}
-              maxScore={25}
+              maxScore={30}
             />
             <DetailBox
               label="Dil"
@@ -432,13 +460,62 @@ function UniversityCard({
             />
           </div>
 
-          <div className="flex gap-4 text-xs" style={{ color: "var(--muted)" }}>
+          {(breakdown.rankingScore !== 0 || breakdown.acceptanceScore !== 0) && (
+            <div className="grid grid-cols-2 gap-3">
+              {breakdown.rankingScore !== 0 && (
+                <DetailBox
+                  label="Rekabet"
+                  score={breakdown.rankingScore}
+                  detail={breakdown.rankingDetail}
+                  maxScore={0}
+                />
+              )}
+              {breakdown.acceptanceScore !== 0 && (
+                <DetailBox
+                  label="Kabul Oranı"
+                  score={breakdown.acceptanceScore}
+                  detail={breakdown.acceptanceDetail}
+                  maxScore={5}
+                />
+              )}
+            </div>
+          )}
+
+          {university.rankings && university.rankings.length > 0 && (
+            <div
+              className="flex items-center gap-3 rounded-lg px-3 py-2"
+              style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}
+            >
+              <Trophy className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--gold)" }} />
+              <div className="flex gap-4 text-xs">
+                {university.rankings.map((r) => (
+                  <span key={r.source} style={{ color: "var(--gold-light)" }}>
+                    {r.source === "FT" ? "Financial Times" : "QS"} Avrupa Sıralaması:{" "}
+                    <strong style={{ color: "var(--white)" }}>#{r.rank}</strong>
+                    <span style={{ color: "var(--gold)", opacity: 0.7 }}> ({r.year})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-4 text-xs" style={{ color: "var(--muted)" }}>
             <span>
               Gerekli GPA: <strong style={{ color: "var(--text)" }}>{university.requiredGPA}/100</strong>
             </span>
             <span>
-              Dil: <strong style={{ color: "var(--text)" }}>{university.requiredLanguage} {university.requiredLanguageScore}</strong>
+              Dil:{" "}
+              <strong style={{ color: "var(--text)" }}>
+                {university.acceptedLanguages && university.acceptedLanguages.length > 0
+                  ? university.acceptedLanguages.map((l) => `${l.test} ${l.minScore}`).join(" / ")
+                  : `${university.requiredLanguage} ${university.requiredLanguageScore}`}
+              </strong>
             </span>
+            {university.acceptanceRate != null && (
+              <span>
+                Kabul oranı: <strong style={{ color: "var(--text)" }}>%{university.acceptanceRate}</strong>
+              </span>
+            )}
             {university.deadline && (
               <span>
                 Son başvuru: <strong style={{ color: "var(--text)" }}>{university.deadline}</strong>

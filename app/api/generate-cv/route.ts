@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("CV generation error:", error instanceof Error ? error.message : error);
-    console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error instanceof Error ? error : {}), 2));
 
     const rawMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ error: `Hata: ${rawMessage}` }, { status: 500 });
