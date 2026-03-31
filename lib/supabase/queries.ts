@@ -51,7 +51,7 @@ export async function getAcceptanceStats(): Promise<AcceptanceRow[]> {
       universityId: row.university_id as string,
       acceptanceRate: row.acceptance_rate as number,
       totalApplicants: row.total_applicants as number,
-      avgGPA: row.avg_gpa as number,
+      avgGPA: ((row.avg_gpa as number) <= 4 ? Math.round((row.avg_gpa as number) * 25) : (row.avg_gpa as number)),
       trend: row.trend as number,
       university: mapUniversity(uni),
     };
