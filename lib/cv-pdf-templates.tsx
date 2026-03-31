@@ -44,87 +44,14 @@ const COLORS = {
 };
 
 // ======================================
-// ONE-PAGE CV STYLES (Modern, Clean)
+// ONE-PAGE CV — Modern Two-Column Layout
 // ======================================
-const onePageStyles = StyleSheet.create({
-  page: {
-    fontFamily: "Lato",
-    fontSize: 9.5,
-    color: COLORS.black,
-    paddingTop: 36,
-    paddingBottom: 36,
-    paddingHorizontal: 40,
-    lineHeight: 1.4,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: 700,
-    textAlign: "center",
-    color: COLORS.black,
-    marginBottom: 4,
-    letterSpacing: 1,
-  },
-  contactLine: {
-    fontSize: 8.5,
-    textAlign: "center",
-    color: COLORS.medGray,
-    marginBottom: 2,
-  },
-  divider: {
-    borderBottomWidth: 0.8,
-    borderBottomColor: COLORS.black,
-    marginTop: 12,
-    marginBottom: 6,
-  },
-  sectionTitle: {
-    fontSize: 10.5,
-    fontWeight: 700,
-    textTransform: "uppercase" as const,
-    letterSpacing: 1.5,
-    color: COLORS.black,
-  },
-  entryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 5,
-  },
-  entryTitle: {
-    fontSize: 9.5,
-    fontWeight: 700,
-    color: COLORS.black,
-  },
-  entrySubtitle: {
-    fontSize: 9,
-    fontStyle: "italic",
-    color: COLORS.darkGray,
-  },
-  entryDate: {
-    fontSize: 8.5,
-    color: COLORS.medGray,
-    textAlign: "right" as const,
-  },
-  bullet: {
-    fontSize: 9,
-    color: COLORS.darkGray,
-    marginLeft: 10,
-    marginTop: 1.5,
-  },
-  skillRow: {
-    flexDirection: "row",
-    marginTop: 3,
-  },
-  skillLabel: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: COLORS.black,
-    width: 90,
-  },
-  skillValue: {
-    fontSize: 9,
-    color: COLORS.darkGray,
-    flex: 1,
-  },
-});
+const SIDEBAR_WIDTH = 185;
+const SIDEBAR_BG = "#1e293b"; // Dark navy sidebar
+const SIDEBAR_ACCENT = "#3b82f6"; // Pusula blue
+const SIDEBAR_TEXT = "#e2e8f0";
+const SIDEBAR_MUTED = "#94a3b8";
+const MAIN_BG = "#ffffff";
 
 // ======================================
 // HARVARD CV STYLES (Formal, Academic)
@@ -260,177 +187,678 @@ function ContactLine({
 }
 
 // ======================================
-// ONE-PAGE CV Document
+// ONE-PAGE CV Document — Modern Sidebar
 // ======================================
 
+/* Sidebar section with blue accent line */
+function SidebarSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <View style={{ marginBottom: 14 }}>
+      <Text
+        style={{
+          fontFamily: "Lato",
+          fontSize: 9,
+          fontWeight: 700,
+          color: SIDEBAR_ACCENT,
+          textTransform: "uppercase" as const,
+          letterSpacing: 2,
+          marginBottom: 6,
+        }}
+      >
+        {title}
+      </Text>
+      <View
+        style={{
+          borderTopWidth: 1,
+          borderTopColor: "rgba(59,130,246,0.4)",
+          paddingTop: 6,
+        }}
+      >
+        {children}
+      </View>
+    </View>
+  );
+}
+
+/* Skill bar (visual indicator) */
+function SkillTag({ label }: { label: string }) {
+  return (
+    <View
+      style={{
+        backgroundColor: "rgba(59,130,246,0.15)",
+        borderRadius: 3,
+        paddingHorizontal: 6,
+        paddingVertical: 2.5,
+        marginRight: 4,
+        marginBottom: 4,
+      }}
+    >
+      <Text
+        style={{
+          fontFamily: "Lato",
+          fontSize: 7.5,
+          color: "#93c5fd",
+        }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+/* Main content section header */
+function MainSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <View style={{ marginBottom: 10 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 6,
+        }}
+      >
+        <View
+          style={{
+            width: 3,
+            height: 12,
+            backgroundColor: SIDEBAR_ACCENT,
+            marginRight: 6,
+            borderRadius: 1,
+          }}
+        />
+        <Text
+          style={{
+            fontFamily: "Lato",
+            fontSize: 11,
+            fontWeight: 700,
+            color: COLORS.black,
+            textTransform: "uppercase" as const,
+            letterSpacing: 1.5,
+          }}
+        >
+          {title}
+        </Text>
+      </View>
+      <View
+        style={{
+          borderTopWidth: 0.5,
+          borderTopColor: "#e2e8f0",
+          paddingTop: 4,
+        }}
+      >
+        {children}
+      </View>
+    </View>
+  );
+}
+
 export function OnePageCVDocument({ data }: { data: CVData }) {
-  const s = onePageStyles;
+  const info = data.personalInfo;
+
   return (
     <Document>
-      <Page size="A4" style={s.page}>
-        <ContactLine data={data.personalInfo} styles={s} />
+      <Page
+        size="A4"
+        style={{
+          fontFamily: "Lato",
+          fontSize: 9,
+          flexDirection: "row",
+          color: COLORS.black,
+          lineHeight: 1.4,
+        }}
+      >
+        {/* ====== LEFT SIDEBAR ====== */}
+        <View
+          style={{
+            width: SIDEBAR_WIDTH,
+            backgroundColor: SIDEBAR_BG,
+            paddingTop: 32,
+            paddingBottom: 28,
+            paddingHorizontal: 16,
+          }}
+        >
+          {/* Name + Title area */}
+          <View style={{ marginBottom: 16, alignItems: "center" }}>
+            {/* Initials circle */}
+            <View
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 28,
+                backgroundColor: SIDEBAR_ACCENT,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 10,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: COLORS.white,
+                }}
+              >
+                {(info.fullName || "N")
+                  .split(" ")
+                  .map((w) => w[0])
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase()}
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontFamily: "Lato",
+                fontSize: 14,
+                fontWeight: 700,
+                color: COLORS.white,
+                textAlign: "center",
+                marginBottom: 2,
+              }}
+            >
+              {info.fullName || "Name"}
+            </Text>
+            {data.education?.[0]?.field && (
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 8,
+                  color: SIDEBAR_ACCENT,
+                  textAlign: "center",
+                }}
+              >
+                {data.education[0].field}
+              </Text>
+            )}
+          </View>
 
-        {/* Education */}
-        {data.education?.length > 0 && (
-          <Section title="Education" styles={s}>
-            {data.education.map((edu, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{edu.institution}</Text>
-                    <Text style={s.entrySubtitle}>
-                      {[edu.degree, edu.field].filter(Boolean).join(", ")}
-                      {edu.gpa ? ` | GPA: ${edu.gpa}` : ""}
+          {/* Contact */}
+          <SidebarSection title="Contact">
+            {info.email && (
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 7.5,
+                  color: SIDEBAR_TEXT,
+                  marginBottom: 4,
+                }}
+              >
+                {info.email}
+              </Text>
+            )}
+            {info.phone && (
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 7.5,
+                  color: SIDEBAR_TEXT,
+                  marginBottom: 4,
+                }}
+              >
+                {info.phone}
+              </Text>
+            )}
+            {info.location && (
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 7.5,
+                  color: SIDEBAR_TEXT,
+                  marginBottom: 4,
+                }}
+              >
+                {info.location}
+              </Text>
+            )}
+            {info.linkedin && (
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 7.5,
+                  color: SIDEBAR_MUTED,
+                  marginBottom: 4,
+                }}
+              >
+                {info.linkedin}
+              </Text>
+            )}
+            {info.website && (
+              <Text
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: 7.5,
+                  color: SIDEBAR_MUTED,
+                  marginBottom: 4,
+                }}
+              >
+                {info.website}
+              </Text>
+            )}
+          </SidebarSection>
+
+          {/* Skills (as tags) */}
+          {data.skills?.technical && data.skills.technical.length > 0 && (
+            <SidebarSection title="Skills">
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                }}
+              >
+                {data.skills.technical.map((skill, i) => (
+                  <SkillTag key={i} label={skill} />
+                ))}
+              </View>
+            </SidebarSection>
+          )}
+
+          {/* Languages */}
+          {data.skills?.languages && data.skills.languages.length > 0 && (
+            <SidebarSection title="Languages">
+              {data.skills.languages.map((lang, i) => (
+                <View
+                  key={i}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 5,
+                      height: 5,
+                      borderRadius: 2.5,
+                      backgroundColor: SIDEBAR_ACCENT,
+                      marginRight: 6,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: 8,
+                      color: SIDEBAR_TEXT,
+                    }}
+                  >
+                    {lang}
+                  </Text>
+                </View>
+              ))}
+            </SidebarSection>
+          )}
+
+          {/* Certifications */}
+          {data.skills?.certifications &&
+            data.skills.certifications.length > 0 && (
+              <SidebarSection title="Certifications">
+                {data.skills.certifications.map((cert, i) => (
+                  <Text
+                    key={i}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: 7.5,
+                      color: SIDEBAR_TEXT,
+                      marginBottom: 3,
+                    }}
+                  >
+                    {cert}
+                  </Text>
+                ))}
+              </SidebarSection>
+            )}
+
+          {/* Other Skills */}
+          {data.skills?.other && data.skills.other.length > 0 && (
+            <SidebarSection title="Other">
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                {data.skills.other.map((s, i) => (
+                  <SkillTag key={i} label={s} />
+                ))}
+              </View>
+            </SidebarSection>
+          )}
+        </View>
+
+        {/* ====== RIGHT MAIN CONTENT ====== */}
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: MAIN_BG,
+            paddingTop: 32,
+            paddingBottom: 28,
+            paddingLeft: 22,
+            paddingRight: 28,
+          }}
+        >
+          {/* Education */}
+          {data.education?.length > 0 && (
+            <MainSection title="Education">
+              {data.education.map((edu, i) => (
+                <View key={i} style={{ marginBottom: 6 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 9.5,
+                          fontWeight: 700,
+                          color: COLORS.black,
+                        }}
+                      >
+                        {edu.institution}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 8.5,
+                          fontStyle: "italic",
+                          color: COLORS.darkGray,
+                        }}
+                      >
+                        {[edu.degree, edu.field].filter(Boolean).join(", ")}
+                        {edu.gpa ? ` | GPA: ${edu.gpa}` : ""}
+                      </Text>
+                    </View>
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8,
+                        color: COLORS.medGray,
+                      }}
+                    >
+                      {[edu.startDate, edu.endDate]
+                        .filter(Boolean)
+                        .join(" - ")}
                     </Text>
                   </View>
-                  <Text style={s.entryDate}>
-                    {[edu.startDate, edu.endDate].filter(Boolean).join(" - ")}
-                  </Text>
+                  {edu.highlights?.map((h, j) => (
+                    <Text
+                      key={j}
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8.5,
+                        color: COLORS.darkGray,
+                        marginLeft: 8,
+                        marginTop: 1.5,
+                      }}
+                    >
+                      {"•  "}
+                      {h}
+                    </Text>
+                  ))}
                 </View>
-                {edu.highlights?.map((h, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {h}
-                  </Text>
-                ))}
-              </View>
-            ))}
-          </Section>
-        )}
+              ))}
+            </MainSection>
+          )}
 
-        {/* Experience */}
-        {data.experience?.length > 0 && (
-          <Section title="Experience" styles={s}>
-            {data.experience.map((exp, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{exp.company}</Text>
-                    <Text style={s.entrySubtitle}>{exp.role}</Text>
+          {/* Experience */}
+          {data.experience?.length > 0 && (
+            <MainSection title="Experience">
+              {data.experience.map((exp, i) => (
+                <View key={i} style={{ marginBottom: 6 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 9.5,
+                          fontWeight: 700,
+                          color: COLORS.black,
+                        }}
+                      >
+                        {exp.company}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 8.5,
+                          fontStyle: "italic",
+                          color: SIDEBAR_ACCENT,
+                        }}
+                      >
+                        {exp.role}
+                      </Text>
+                    </View>
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8,
+                        color: COLORS.medGray,
+                      }}
+                    >
+                      {[exp.startDate, exp.endDate]
+                        .filter(Boolean)
+                        .join(" - ")}
+                    </Text>
                   </View>
-                  <Text style={s.entryDate}>
-                    {[exp.startDate, exp.endDate].filter(Boolean).join(" - ")}
-                  </Text>
+                  {exp.bullets?.map((b, j) => (
+                    <Text
+                      key={j}
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8.5,
+                        color: COLORS.darkGray,
+                        marginLeft: 8,
+                        marginTop: 1.5,
+                      }}
+                    >
+                      {"•  "}
+                      {b}
+                    </Text>
+                  ))}
                 </View>
-                {exp.bullets?.map((b, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {b}
-                  </Text>
-                ))}
-              </View>
-            ))}
-          </Section>
-        )}
+              ))}
+            </MainSection>
+          )}
 
-        {/* Projects */}
-        {data.projects?.length > 0 && (
-          <Section title="Projects" styles={s}>
-            {data.projects.map((proj, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <Text style={s.entryTitle}>
-                    {proj.name}
-                    {proj.technologies ? ` | ${proj.technologies}` : ""}
-                  </Text>
-                </View>
-                {proj.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {proj.description}
-                  </Text>
-                )}
-                {proj.highlights?.map((h, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {h}
-                  </Text>
-                ))}
-              </View>
-            ))}
-          </Section>
-        )}
-
-        {/* Leadership & Activities */}
-        {data.leadership?.length > 0 && (
-          <Section title="Leadership & Activities" styles={s}>
-            {data.leadership.map((lead, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{lead.organization}</Text>
-                    <Text style={s.entrySubtitle}>{lead.role}</Text>
+          {/* Projects */}
+          {data.projects?.length > 0 && (
+            <MainSection title="Projects">
+              {data.projects.map((proj, i) => (
+                <View key={i} style={{ marginBottom: 6 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginBottom: 2,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 9.5,
+                        fontWeight: 700,
+                        color: COLORS.black,
+                      }}
+                    >
+                      {proj.name}
+                    </Text>
+                    {proj.technologies && (
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 7.5,
+                          color: SIDEBAR_ACCENT,
+                          marginLeft: 6,
+                        }}
+                      >
+                        {proj.technologies}
+                      </Text>
+                    )}
                   </View>
-                  {lead.period && (
-                    <Text style={s.entryDate}>{lead.period}</Text>
+                  {proj.description && (
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8.5,
+                        color: COLORS.darkGray,
+                        marginLeft: 8,
+                        marginTop: 1,
+                      }}
+                    >
+                      {"•  "}
+                      {proj.description}
+                    </Text>
+                  )}
+                  {proj.highlights?.map((h, j) => (
+                    <Text
+                      key={j}
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8.5,
+                        color: COLORS.darkGray,
+                        marginLeft: 8,
+                        marginTop: 1.5,
+                      }}
+                    >
+                      {"•  "}
+                      {h}
+                    </Text>
+                  ))}
+                </View>
+              ))}
+            </MainSection>
+          )}
+
+          {/* Leadership & Activities */}
+          {data.leadership?.length > 0 && (
+            <MainSection title="Leadership & Activities">
+              {data.leadership.map((lead, i) => (
+                <View key={i} style={{ marginBottom: 5 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 9.5,
+                          fontWeight: 700,
+                          color: COLORS.black,
+                        }}
+                      >
+                        {lead.organization}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 8.5,
+                          fontStyle: "italic",
+                          color: SIDEBAR_ACCENT,
+                        }}
+                      >
+                        {lead.role}
+                      </Text>
+                    </View>
+                    {lead.period && (
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 8,
+                          color: COLORS.medGray,
+                        }}
+                      >
+                        {lead.period}
+                      </Text>
+                    )}
+                  </View>
+                  {lead.description && (
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8.5,
+                        color: COLORS.darkGray,
+                        marginLeft: 8,
+                        marginTop: 1.5,
+                      }}
+                    >
+                      {"•  "}
+                      {lead.description}
+                    </Text>
                   )}
                 </View>
-                {lead.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {lead.description}
-                  </Text>
-                )}
-              </View>
-            ))}
-          </Section>
-        )}
+              ))}
+            </MainSection>
+          )}
 
-        {/* Awards */}
-        {data.awards?.length > 0 && (
-          <Section title="Awards & Honors" styles={s}>
-            {data.awards.map((award, i) => (
-              <View key={i} style={s.entryRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={s.entryTitle}>
-                    {award.title}
-                    {award.issuer ? ` - ${award.issuer}` : ""}
-                  </Text>
+          {/* Awards */}
+          {data.awards?.length > 0 && (
+            <MainSection title="Awards & Honors">
+              {data.awards.map((award, i) => (
+                <View
+                  key={i}
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 4,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 9,
+                        fontWeight: 700,
+                        color: COLORS.black,
+                      }}
+                    >
+                      {award.title}
+                    </Text>
+                    {award.issuer && (
+                      <Text
+                        style={{
+                          fontFamily: "Lato",
+                          fontSize: 8,
+                          color: COLORS.darkGray,
+                          fontStyle: "italic",
+                        }}
+                      >
+                        {award.issuer}
+                      </Text>
+                    )}
+                  </View>
+                  {award.date && (
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 8,
+                        color: COLORS.medGray,
+                      }}
+                    >
+                      {award.date}
+                    </Text>
+                  )}
                 </View>
-                {award.date && <Text style={s.entryDate}>{award.date}</Text>}
-              </View>
-            ))}
-          </Section>
-        )}
-
-        {/* Skills */}
-        {data.skills && (
-          <Section title="Skills" styles={s}>
-            {data.skills.technical && data.skills.technical.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Technical</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.technical.join(", ")}
-                </Text>
-              </View>
-            )}
-            {data.skills.languages && data.skills.languages.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Languages</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.languages.join(", ")}
-                </Text>
-              </View>
-            )}
-            {data.skills.certifications &&
-              data.skills.certifications.length > 0 && (
-                <View style={s.skillRow}>
-                  <Text style={s.skillLabel}>Certifications</Text>
-                  <Text style={s.skillValue}>
-                    {data.skills.certifications.join(", ")}
-                  </Text>
-                </View>
-              )}
-            {data.skills.other && data.skills.other.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Other</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.other.join(", ")}
-                </Text>
-              </View>
-            )}
-          </Section>
-        )}
+              ))}
+            </MainSection>
+          )}
+        </View>
       </Page>
     </Document>
   );
