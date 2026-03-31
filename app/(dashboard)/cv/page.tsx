@@ -303,7 +303,7 @@ export default function CVPage() {
 
 Ornek:
 Ad: Eren Isiklar
-Egitim: Istanbul Teknik Universitesi, Bilgisayar Muhendisligi, 3.6 GPA (2022-2026)
+Egitim: Istanbul Teknik Universitesi, Bilgisayar Muhendisligi, 85/100 GPA (2022-2026)
 Staj: ABC Teknoloji - Yazilim Muhendisi Stajyeri (Yaz 2025)
 - React ve Node.js ile e-ticaret platformu gelistirdim
 - Kullanici sayisini %30 artiran ozellikler ekledim

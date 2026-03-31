@@ -27,7 +27,7 @@ Name: ${params.studentName}
 University: ${params.university}
 Program: ${params.program}
 Country: ${params.country}
-GPA: ${params.gpa}/4.0
+GPA: ${params.gpa}/100
 Key Strengths: ${params.strengths}
 Personal Motivation: ${params.motivation}
 
