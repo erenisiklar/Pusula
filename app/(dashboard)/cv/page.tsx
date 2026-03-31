@@ -19,6 +19,7 @@ import {
   Loader2,
   FileText,
   AlertTriangle,
+  Check,
 } from "lucide-react";
 import type { CVData } from "@/lib/gemini";
 
@@ -208,11 +209,14 @@ function StringListField({
 export default function CVPage() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<CVData>(initialCVData);
+  const [enhancedData, setEnhancedData] = useState<CVData | null>(null);
 
   // PDF preview state
   const [onePageUrl, setOnePageUrl] = useState<string | null>(null);
   const [harvardUrl, setHarvardUrl] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [enhancing, setEnhancing] = useState(false);
+  const [enhanceError, setEnhanceError] = useState("");
 
   // Cleanup blob URLs
   useEffect(() => {
@@ -235,22 +239,48 @@ export default function CVPage() {
     }));
   }
 
-  // Generate PDFs
+  // Enhance + Generate PDFs
   const generatePdfs = useCallback(async () => {
     if (onePageUrl) URL.revokeObjectURL(onePageUrl);
     if (harvardUrl) URL.revokeObjectURL(harvardUrl);
     setOnePageUrl(null);
     setHarvardUrl(null);
+    setEnhanceError("");
+    setEnhancing(true);
     setPdfLoading(true);
 
     try {
+      // Step 1: AI Enhancement
+      let finalData = data;
+      try {
+        const enhanceRes = await fetch("/api/enhance-cv", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cvData: data }),
+        });
+        if (enhanceRes.ok) {
+          const { enhancedData: ed } = await enhanceRes.json();
+          if (ed) {
+            finalData = ed;
+            setEnhancedData(ed);
+          }
+        }
+      } catch {
+        // Enhancement failed — use raw data
+      }
+      setEnhancing(false);
+
+      // Step 2: Generate both PDFs in parallel
       const [op, hv] = await Promise.all([
-        fetchPdf(data, "onepage"),
-        fetchPdf(data, "harvard"),
+        fetchPdf(finalData, "onepage"),
+        fetchPdf(finalData, "harvard"),
       ]);
       setOnePageUrl(op);
       setHarvardUrl(hv);
+    } catch {
+      setEnhanceError("PDF oluşturulurken bir hata oluştu.");
     } finally {
+      setEnhancing(false);
       setPdfLoading(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -603,7 +633,7 @@ export default function CVPage() {
               </h2>
               <button
                 onClick={generatePdfs}
-                disabled={pdfLoading}
+                disabled={pdfLoading || enhancing}
                 className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{
                   backgroundColor: "var(--blue-bg)",
@@ -611,10 +641,53 @@ export default function CVPage() {
                   color: "var(--blue)",
                 }}
               >
-                {pdfLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Eye className="w-3 h-3" />}
+                {(pdfLoading || enhancing) ? <Loader2 className="w-3 h-3 animate-spin" /> : <Eye className="w-3 h-3" />}
                 Yeniden Oluştur
               </button>
             </div>
+
+            {/* AI Enhancement Status */}
+            {enhancing && (
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-lg text-xs mb-4"
+                style={{
+                  backgroundColor: "var(--blue-bg)",
+                  border: "1px solid var(--blue-border)",
+                  color: "var(--blue)",
+                }}
+              >
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>AI içeriğinizi profesyonelleştiriyor — yazım düzeltme, İngilizce&apos;ye çeviri, aksiyon fiilleri ekleniyor...</span>
+              </div>
+            )}
+
+            {enhancedData && !enhancing && !pdfLoading && (
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-lg text-xs mb-4"
+                style={{
+                  backgroundColor: "var(--success-bg)",
+                  border: "1px solid rgba(22,163,74,0.25)",
+                  color: "var(--success)",
+                }}
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>İçerik AI tarafından optimize edildi — yazım düzeltildi, profesyonel dil kullanıldı, tarih formatları standartlaştırıldı.</span>
+              </div>
+            )}
+
+            {enhanceError && (
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-lg text-xs mb-4"
+                style={{
+                  backgroundColor: "var(--danger-bg)",
+                  border: "1px solid rgba(220,38,38,0.25)",
+                  color: "var(--danger)",
+                }}
+              >
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>{enhanceError}</span>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <PdfCard
@@ -624,8 +697,8 @@ export default function CVPage() {
                 accentBg="var(--blue-bg)"
                 accentBorder="var(--blue-border)"
                 pdfUrl={onePageUrl}
-                loading={pdfLoading}
-                extractedData={data}
+                loading={pdfLoading || enhancing}
+                extractedData={enhancedData || data}
                 variant="onepage"
               />
               <PdfCard
@@ -635,8 +708,8 @@ export default function CVPage() {
                 accentBg="var(--gold-bg)"
                 accentBorder="var(--gold-border)"
                 pdfUrl={harvardUrl}
-                loading={pdfLoading}
-                extractedData={data}
+                loading={pdfLoading || enhancing}
+                extractedData={enhancedData || data}
                 variant="harvard"
               />
             </div>
