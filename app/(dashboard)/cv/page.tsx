@@ -24,14 +24,14 @@ import type { CVData } from "@/lib/gemini";
 
 /* ====== Step definitions ====== */
 const STEPS = [
-  { label: "Kisisel Bilgiler", icon: User },
-  { label: "Egitim", icon: GraduationCap },
-  { label: "Is Deneyimi", icon: Briefcase },
+  { label: "Kişisel Bilgiler", icon: User },
+  { label: "Eğitim", icon: GraduationCap },
+  { label: "İş Deneyimi", icon: Briefcase },
   { label: "Projeler", icon: FolderOpen },
   { label: "Aktiviteler", icon: Users },
   { label: "Beceriler & Diller", icon: Wrench },
-  { label: "Oduller", icon: Award },
-  { label: "Onizleme", icon: Eye },
+  { label: "Ödüller", icon: Award },
+  { label: "Önizleme", icon: Eye },
 ];
 
 /* ====== Helpers ====== */
@@ -124,7 +124,7 @@ function EntryCard({
         onClick={onRemove}
         className="absolute top-3 right-3 p-1 rounded hover:opacity-70 transition-opacity"
         style={{ color: "var(--danger)" }}
-        title="Kaldir"
+        title="Kaldır"
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>
@@ -273,10 +273,10 @@ export default function CVPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>
-        CV Olusturucu
+        CV Oluşturucu
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
-        Bilgilerinizi adim adim girin — profesyonel PDF CV&apos;ler otomatik olusturulur
+        Bilgilerinizi adım adım girin — profesyonel PDF CV&apos;ler otomatik oluşturulur
       </p>
 
       {/* Progress Bar */}
@@ -334,7 +334,7 @@ export default function CVPage() {
               {STEPS[step].label}
             </h2>
             <span className="text-xs ml-auto" style={{ color: "var(--muted)" }}>
-              Adim {step + 1} / {STEPS.length}
+              Adım {step + 1} / {STEPS.length}
             </span>
           </div>
         )}
@@ -342,10 +342,10 @@ export default function CVPage() {
         {/* STEP 0: Personal Info */}
         {step === 0 && (
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Ad Soyad *" value={data.personalInfo.fullName} onChange={(v) => updatePersonal("fullName", v)} placeholder="Elif Yilmaz" fullWidth />
+            <Field label="Ad Soyad *" value={data.personalInfo.fullName} onChange={(v) => updatePersonal("fullName", v)} placeholder="Elif Yılmaz" fullWidth />
             <Field label="E-posta" value={data.personalInfo.email || ""} onChange={(v) => updatePersonal("email", v)} placeholder="elif@email.com" />
             <Field label="Telefon" value={data.personalInfo.phone || ""} onChange={(v) => updatePersonal("phone", v)} placeholder="+90 532 111 2233" />
-            <Field label="Konum" value={data.personalInfo.location || ""} onChange={(v) => updatePersonal("location", v)} placeholder="Istanbul, Turkiye" fullWidth />
+            <Field label="Konum" value={data.personalInfo.location || ""} onChange={(v) => updatePersonal("location", v)} placeholder="İstanbul, Türkiye" fullWidth />
             <Field label="LinkedIn" value={data.personalInfo.linkedin || ""} onChange={(v) => updatePersonal("linkedin", v)} placeholder="linkedin.com/in/..." />
             <Field label="Web Sitesi" value={data.personalInfo.website || ""} onChange={(v) => updatePersonal("website", v)} placeholder="github.com/..." />
 
@@ -355,8 +355,8 @@ export default function CVPage() {
               <div className="flex gap-2">
                 {([
                   { value: "business" as const, label: "Business / Ekonomi" },
-                  { value: "engineering" as const, label: "Muhendislik / STEM" },
-                  { value: "other" as const, label: "Diger / Genel" },
+                  { value: "engineering" as const, label: "Mühendislik / STEM" },
+                  { value: "other" as const, label: "Diğer / Genel" },
                 ]).map((opt) => (
                   <button
                     key={opt.value}
@@ -388,25 +388,25 @@ export default function CVPage() {
                   <Field label="Derece" value={edu.degree || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], degree: v }; update("education", copy);
                   }} placeholder="Lise / Lisans" />
-                  <Field label="Bolum / Alan" value={edu.field || ""} onChange={(v) => {
+                  <Field label="Bölüm / Alan" value={edu.field || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], field: v }; update("education", copy);
                   }} placeholder="Fen Bilimleri" />
                   <Field label="GPA" value={edu.gpa || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], gpa: v }; update("education", copy);
                   }} placeholder="3.8/4.0" />
-                  <Field label="Baslangic" value={edu.startDate || ""} onChange={(v) => {
+                  <Field label="Başlangıç" value={edu.startDate || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], startDate: v }; update("education", copy);
                   }} placeholder="2022" />
-                  <Field label="Bitis" value={edu.endDate || ""} onChange={(v) => {
+                  <Field label="Bitiş" value={edu.endDate || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], endDate: v }; update("education", copy);
                   }} placeholder="2026" />
-                  <StringListField label="Basarilar / Notlar" items={edu.highlights || []} onChange={(items) => {
+                  <StringListField label="Başarılar / Notlar" items={edu.highlights || []} onChange={(items) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], highlights: items }; update("education", copy);
                   }} placeholder="Onur listesi, AP dersleri..." />
                 </div>
               </EntryCard>
             ))}
-            <AddButton label="Egitim Ekle" onClick={() => update("education", [...data.education, emptyEducation()])} />
+            <AddButton label="Eğitim Ekle" onClick={() => update("education", [...data.education, emptyEducation()])} />
           </div>
         )}
 
@@ -415,27 +415,27 @@ export default function CVPage() {
           <div>
             {data.experience.length === 0 && (
               <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henuz is deneyimi eklenmedi. Yoksa bu adimi atlayabilirsiniz.
+                Henüz iş deneyimi eklenmedi. Yoksa bu adımı atlayabilirsiniz.
               </p>
             )}
             {data.experience.map((exp, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("experience", data.experience.filter((_, j) => j !== i))}>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Sirket / Kurum" value={exp.company} onChange={(v) => {
+                  <Field label="Şirket / Kurum" value={exp.company} onChange={(v) => {
                     const copy = [...data.experience]; copy[i] = { ...copy[i], company: v }; update("experience", copy);
-                  }} placeholder="TurkTech Yazilim" fullWidth />
+                  }} placeholder="TurkTech Yazılım" fullWidth />
                   <Field label="Pozisyon" value={exp.role} onChange={(v) => {
                     const copy = [...data.experience]; copy[i] = { ...copy[i], role: v }; update("experience", copy);
-                  }} placeholder="Yazilim Stajyeri" fullWidth />
-                  <Field label="Baslangic" value={exp.startDate || ""} onChange={(v) => {
+                  }} placeholder="Yazılım Stajyeri" fullWidth />
+                  <Field label="Başlangıç" value={exp.startDate || ""} onChange={(v) => {
                     const copy = [...data.experience]; copy[i] = { ...copy[i], startDate: v }; update("experience", copy);
                   }} placeholder="Haziran 2025" />
-                  <Field label="Bitis" value={exp.endDate || ""} onChange={(v) => {
+                  <Field label="Bitiş" value={exp.endDate || ""} onChange={(v) => {
                     const copy = [...data.experience]; copy[i] = { ...copy[i], endDate: v }; update("experience", copy);
-                  }} placeholder="Agustos 2025" />
-                  <StringListField label="Gorevler / Basarilar" items={exp.bullets || []} onChange={(items) => {
+                  }} placeholder="Ağustos 2025" />
+                  <StringListField label="Görevler / Başarılar" items={exp.bullets || []} onChange={(items) => {
                     const copy = [...data.experience]; copy[i] = { ...copy[i], bullets: items }; update("experience", copy);
-                  }} placeholder="React ile portal gelistirdim..." />
+                  }} placeholder="React ile portal geliştirdim..." />
                 </div>
               </EntryCard>
             ))}
@@ -448,26 +448,26 @@ export default function CVPage() {
           <div>
             {data.projects.length === 0 && (
               <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henuz proje eklenmedi. Yoksa bu adimi atlayabilirsiniz.
+                Henüz proje eklenmedi. Yoksa bu adımı atlayabilirsiniz.
               </p>
             )}
             {data.projects.map((proj, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("projects", data.projects.filter((_, j) => j !== i))}>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Proje Adi" value={proj.name} onChange={(v) => {
+                  <Field label="Proje Adı" value={proj.name} onChange={(v) => {
                     const copy = [...data.projects]; copy[i] = { ...copy[i], name: v }; update("projects", copy);
-                  }} placeholder="Duygu Analizi Uygulamasi" fullWidth />
+                  }} placeholder="Duygu Analizi Uygulaması" fullWidth />
                   <Field label="Teknolojiler" value={proj.technologies || ""} onChange={(v) => {
                     const copy = [...data.projects]; copy[i] = { ...copy[i], technologies: v }; update("projects", copy);
                   }} placeholder="Python, TensorFlow" fullWidth />
                   <div className="col-span-2">
-                    <label className={labelClass} style={labelStyle}>Aciklama</label>
+                    <label className={labelClass} style={labelStyle}>Açıklama</label>
                     <textarea
                       value={proj.description || ""}
                       onChange={(e) => {
                         const copy = [...data.projects]; copy[i] = { ...copy[i], description: e.target.value }; update("projects", copy);
                       }}
-                      placeholder="Projenin kisa aciklamasi..."
+                      placeholder="Projenin kısa açıklaması..."
                       rows={2}
                       className={`${inputClass} resize-none`}
                       style={inputStyle}
@@ -475,7 +475,7 @@ export default function CVPage() {
                   </div>
                   <StringListField label="Detaylar" items={proj.highlights || []} onChange={(items) => {
                     const copy = [...data.projects]; copy[i] = { ...copy[i], highlights: items }; update("projects", copy);
-                  }} placeholder="Proje detayi..." />
+                  }} placeholder="Proje detayı..." />
                 </div>
               </EntryCard>
             ))}
@@ -488,7 +488,7 @@ export default function CVPage() {
           <div>
             {data.leadership.length === 0 && (
               <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henuz aktivite eklenmedi. Yoksa bu adimi atlayabilirsiniz.
+                Henüz aktivite eklenmedi. Yoksa bu adımı atlayabilirsiniz.
               </p>
             )}
             {data.leadership.map((lead, i) => (
@@ -496,21 +496,21 @@ export default function CVPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Organizasyon" value={lead.organization} onChange={(v) => {
                     const copy = [...data.leadership]; copy[i] = { ...copy[i], organization: v }; update("leadership", copy);
-                  }} placeholder="Yazilim Kulubu" fullWidth />
+                  }} placeholder="Yazılım Kulübü" fullWidth />
                   <Field label="Rol" value={lead.role} onChange={(v) => {
                     const copy = [...data.leadership]; copy[i] = { ...copy[i], role: v }; update("leadership", copy);
-                  }} placeholder="Baskan" />
-                  <Field label="Donem" value={lead.period || ""} onChange={(v) => {
+                  }} placeholder="Başkan" />
+                  <Field label="Dönem" value={lead.period || ""} onChange={(v) => {
                     const copy = [...data.leadership]; copy[i] = { ...copy[i], period: v }; update("leadership", copy);
                   }} placeholder="2024 - 2025" />
                   <div className="col-span-2">
-                    <label className={labelClass} style={labelStyle}>Aciklama</label>
+                    <label className={labelClass} style={labelStyle}>Açıklama</label>
                     <textarea
                       value={lead.description || ""}
                       onChange={(e) => {
                         const copy = [...data.leadership]; copy[i] = { ...copy[i], description: e.target.value }; update("leadership", copy);
                       }}
-                      placeholder="Gorev ve basarilariniz..."
+                      placeholder="Görev ve başarılarınız..."
                       rows={2}
                       className={`${inputClass} resize-none`}
                       style={inputStyle}
@@ -545,8 +545,8 @@ export default function CVPage() {
               onChange={(items) => update("skills", { ...data.skills, certifications: items })}
             />
             <SkillsTextarea
-              label="Diger Beceriler"
-              placeholder="Takim calismasi, Proje yonetimi, Sunum..."
+              label="Diğer Beceriler"
+              placeholder="Takım çalışması, Proje yönetimi, Sunum..."
               items={data.skills.other || []}
               onChange={(items) => update("skills", { ...data.skills, other: items })}
             />
@@ -558,29 +558,29 @@ export default function CVPage() {
           <div>
             {data.awards.length === 0 && (
               <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henuz odul eklenmedi. Yoksa bu adimi atlayabilirsiniz.
+                Henüz ödül eklenmedi. Yoksa bu adımı atlayabilirsiniz.
               </p>
             )}
             {data.awards.map((award, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("awards", data.awards.filter((_, j) => j !== i))}>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Odul Adi" value={award.title} onChange={(v) => {
+                  <Field label="Ödül Adı" value={award.title} onChange={(v) => {
                     const copy = [...data.awards]; copy[i] = { ...copy[i], title: v }; update("awards", copy);
-                  }} placeholder="TUBITAK Proje Yarismasi Birincilik" fullWidth />
+                  }} placeholder="TÜBİTAK Proje Yarışması Birincilik" fullWidth />
                   <Field label="Veren Kurum" value={award.issuer || ""} onChange={(v) => {
                     const copy = [...data.awards]; copy[i] = { ...copy[i], issuer: v }; update("awards", copy);
-                  }} placeholder="TUBITAK" />
+                  }} placeholder="TÜBİTAK" />
                   <Field label="Tarih" value={award.date || ""} onChange={(v) => {
                     const copy = [...data.awards]; copy[i] = { ...copy[i], date: v }; update("awards", copy);
                   }} placeholder="2025" />
                   <div className="col-span-2">
-                    <label className={labelClass} style={labelStyle}>Aciklama</label>
+                    <label className={labelClass} style={labelStyle}>Açıklama</label>
                     <textarea
                       value={award.description || ""}
                       onChange={(e) => {
                         const copy = [...data.awards]; copy[i] = { ...copy[i], description: e.target.value }; update("awards", copy);
                       }}
-                      placeholder="Odul hakkinda kisa bilgi..."
+                      placeholder="Ödül hakkında kısa bilgi..."
                       rows={2}
                       className={`${inputClass} resize-none`}
                       style={inputStyle}
@@ -589,7 +589,7 @@ export default function CVPage() {
                 </div>
               </EntryCard>
             ))}
-            <AddButton label="Odul Ekle" onClick={() => update("awards", [...data.awards, emptyAward()])} />
+            <AddButton label="Ödül Ekle" onClick={() => update("awards", [...data.awards, emptyAward()])} />
           </div>
         )}
 
@@ -599,7 +599,7 @@ export default function CVPage() {
             <div className="flex items-center gap-2 mb-5">
               <Eye className="w-5 h-5" style={{ color: "var(--blue)" }} />
               <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
-                CV Onizleme
+                CV Önizleme
               </h2>
               <button
                 onClick={generatePdfs}
@@ -612,14 +612,14 @@ export default function CVPage() {
                 }}
               >
                 {pdfLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Eye className="w-3 h-3" />}
-                Yeniden Olustur
+                Yeniden Oluştur
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <PdfCard
                 title="Tek Sayfa CV"
-                subtitle="Modern iki kolonlu tasarim"
+                subtitle="Modern iki kolonlu tasarım"
                 accentColor="var(--blue)"
                 accentBg="var(--blue-bg)"
                 accentBorder="var(--blue-border)"
@@ -630,7 +630,7 @@ export default function CVPage() {
               />
               <PdfCard
                 title="Harvard CV"
-                subtitle="Akademik ve detayli format"
+                subtitle="Akademik ve detaylı format"
                 accentColor="var(--gold)"
                 accentBg="var(--gold-bg)"
                 accentBorder="var(--gold-border)"
@@ -652,8 +652,8 @@ export default function CVPage() {
             >
               <AlertTriangle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
               <span>
-                Olusturulan CV&apos;yi gonderim oncesi mutlaka kontrol edin.
-                Universitenin resmi gereksinimlerini dogrulayin.
+                Oluşturulan CV&apos;yi gönderim öncesi mutlaka kontrol edin.
+                Üniversitenin resmi gereksinimlerini doğrulayın.
               </span>
             </div>
           </div>
@@ -680,7 +680,7 @@ export default function CVPage() {
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: "var(--blue)", color: "var(--white)" }}
             >
-              {step === STEPS.length - 2 ? "Onizle" : "Ileri"}
+              {step === STEPS.length - 2 ? "Önizle" : "İleri"}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -694,7 +694,7 @@ export default function CVPage() {
               style={{ backgroundColor: "var(--surface2)", color: "var(--text)" }}
             >
               <ChevronLeft className="w-4 h-4" />
-              Duzenle
+              Düzenle
             </button>
           </div>
         )}
@@ -842,7 +842,7 @@ function PdfCard({
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full">
             <Loader2 className="w-6 h-6 animate-spin mb-2" style={{ color: accentColor, opacity: 0.6 }} />
-            <p className="text-xs" style={{ color: "var(--muted)" }}>PDF olusturuluyor...</p>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>PDF oluşturuluyor...</p>
           </div>
         ) : pdfUrl ? (
           <>
@@ -857,7 +857,7 @@ function PdfCard({
         ) : (
           <div className="flex flex-col items-center justify-center h-full">
             <FileText className="w-8 h-8 mb-2" style={{ color: "var(--muted)", opacity: 0.3 }} />
-            <p className="text-xs" style={{ color: "var(--muted)" }}>PDF olusturulamadi</p>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>PDF oluşturulamadı</p>
           </div>
         )}
       </div>
