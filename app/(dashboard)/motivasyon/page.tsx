@@ -7,7 +7,7 @@ import { FileText, Loader2, Copy, Check } from "lucide-react";
 export default function MotivasyonPage() {
   const [studentName, setStudentName] = useState("");
   const [selectedUni, setSelectedUni] = useState(universities[0].id);
-  const [gpa, setGpa] = useState(3.0);
+  const [gpa, setGpa] = useState(75);
   const [strengths, setStrengths] = useState("");
   const [motivation, setMotivation] = useState("");
   const [letter, setLetter] = useState("");
@@ -112,13 +112,13 @@ export default function MotivasyonPage() {
 
           <div>
             <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
-              GPA (4.0 üzerinden)
+              GPA (100 üzerinden)
             </label>
             <input
               type="number"
-              step="0.1"
+              step="1"
               min="0"
-              max="4"
+              max="100"
               value={gpa}
               onChange={(e) => setGpa(parseFloat(e.target.value) || 0)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
