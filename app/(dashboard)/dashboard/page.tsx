@@ -27,14 +27,13 @@ export default function DashboardPage() {
       <div
         className="rounded-xl p-6 mb-6"
         style={{
-          background: "linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%)",
-          border: "1px solid var(--border)",
+          background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)",
         }}
       >
-        <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: "#ffffff" }}>
           Hoş geldin! 👋
         </h1>
-        <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
+        <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>
           Avrupa&apos;daki hayalindeki üniversiteye giden yolculuğuna başla.
         </p>
 
@@ -42,17 +41,17 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3">
           <div
             className="flex-1 h-2 rounded-full overflow-hidden"
-            style={{ backgroundColor: "var(--surface2)" }}
+            style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
           >
             <div
               className="h-full rounded-full transition-all"
               style={{
                 width: `${progress}%`,
-                background: "linear-gradient(90deg, var(--blue), var(--gold))",
+                background: "linear-gradient(90deg, #3b82f6, var(--gold))",
               }}
             />
           </div>
-          <span className="text-xs font-medium" style={{ color: "var(--muted)" }}>
+          <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>
             %{progress}
           </span>
         </div>

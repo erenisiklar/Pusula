@@ -96,11 +96,11 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
           return L.divIcon({
             html: `<div style="
               width:36px;height:36px;border-radius:50%;
-              background:rgba(17,24,39,0.95);
-              border:2px solid rgba(255,255,255,0.2);
+              background:rgba(30,64,175,0.95);
+              border:2px solid rgba(30,64,175,0.3);
               display:flex;align-items:center;justify-content:center;
-              font-size:13px;font-weight:700;color:#f0f4ff;
-              box-shadow:0 2px 8px rgba(0,0,0,0.5);
+              font-size:13px;font-weight:700;color:#ffffff;
+              box-shadow:0 2px 8px rgba(30,64,175,0.3);
             ">${count}</div>`,
             iconSize: [36, 36] as [number, number],
             iconAnchor: [18, 18] as [number, number],
@@ -178,7 +178,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         const marker = L.marker([mapData.lat, mapData.lng], { icon: normalIcon });
 
         marker.bindTooltip(
-          `<div style="font-size:12px;font-weight:600;color:#f0f4ff;background:#111827;border:1px solid rgba(255,255,255,0.1);padding:4px 8px;border-radius:6px;white-space:nowrap;">${uni.name}</div>`,
+          `<div style="font-size:12px;font-weight:600;color:#1e293b;background:#ffffff;border:1px solid rgba(30,64,175,0.12);padding:4px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${uni.name}</div>`,
           { direction: "top", offset: [0, -8] as [number, number], className: "", permanent: false, opacity: 1 }
         );
 
@@ -224,7 +224,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
     <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 500 }}>
       <div
         ref={containerRef}
-        style={{ width: "100%", height: "100%", minHeight: 500, backgroundColor: "#0a0f1e" }}
+        style={{ width: "100%", height: "100%", minHeight: 500, backgroundColor: "#f1f5f9" }}
       />
 
       {/* Satellite / map toggle */}
@@ -240,9 +240,9 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
           fontSize: 12,
           fontWeight: 600,
           cursor: "pointer",
-          border: "1px solid rgba(255,255,255,0.15)",
-          backgroundColor: isSatellite ? "rgba(59,130,246,0.9)" : "rgba(17,24,39,0.9)",
-          color: "#f0f4ff",
+          border: "1px solid rgba(30,64,175,0.15)",
+          backgroundColor: isSatellite ? "rgba(30,64,175,0.9)" : "rgba(255,255,255,0.95)",
+          color: isSatellite ? "#ffffff" : "#1e293b",
           backdropFilter: "blur(4px)",
           transition: "background-color 0.2s",
         }}

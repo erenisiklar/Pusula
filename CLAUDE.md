@@ -7,15 +7,15 @@ Türkiye'den Avrupa üniversitelerine başvurmak isteyen öğrenciler için AI d
 ## Renk Paleti — ASLA DEĞİŞTİRME
 
 ```
---bg: #0a0f1e | --surface: #111827 | --surface2: #1a2236 | --border: rgba(255,255,255,0.08)
---text: #f0f4ff | --muted: #8892a8 | --white: #ffffff
---blue: #3b82f6 | --blue-light: #60a5fa | --blue-bg: rgba(59,130,246,0.10) | --blue-border: rgba(59,130,246,0.25)
---gold: #f59e0b | --gold-light: #fbbf24 | --gold-bg: rgba(245,158,11,0.10) | --gold-border: rgba(245,158,11,0.25)
---success: #22c55e | --success-bg: rgba(34,197,94,0.10)
---danger: #ef4444 | --danger-bg: rgba(239,68,68,0.10)
+--bg: #f8fafc | --surface: #ffffff | --surface2: #f1f5f9 | --border: rgba(30,64,175,0.08)
+--text: #1e293b | --muted: #64748b | --white: #ffffff
+--blue: #1e40af | --blue-light: #3b82f6 | --blue-bg: rgba(30,64,175,0.06) | --blue-border: rgba(30,64,175,0.15)
+--gold: #d97706 | --gold-light: #b45309 | --gold-bg: rgba(217,119,6,0.06) | --gold-border: rgba(217,119,6,0.15)
+--success: #16a34a | --success-bg: rgba(22,163,74,0.06)
+--danger: #dc2626 | --danger-bg: rgba(220,38,38,0.06)
 ```
 
-Primary buton → blue. Vurgu/premium → gold. Başarı → success. Hata → danger. **Mor/turuncu/pembe YASAK.**
+Primary buton → blue (navy). Vurgu/premium → gold. Başarı → success. Hata → danger. **Mor/turuncu/pembe YASAK.**
 
 ## Stack
 
