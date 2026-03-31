@@ -865,186 +865,253 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
 }
 
 // ======================================
-// HARVARD CV Document
+// HARVARD CV Document — User Template Match
 // ======================================
 
+const H = {
+  // Colors matching user's template
+  headerRed: "#8b0000", // Dark red for section titles
+  black: "#000000",
+  darkGray: "#333333",
+  medGray: "#555555",
+};
+
+/* Harvard section header: centered, uppercase, underlined, dark red */
+function HarvardSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View style={{ marginTop: 14, marginBottom: 6 }}>
+      <Text
+        style={{
+          fontFamily: "Times-Roman",
+          fontSize: 11,
+          fontWeight: 700,
+          textAlign: "center" as const,
+          color: H.headerRed,
+          textDecoration: "underline" as const,
+          textTransform: "uppercase" as const,
+          letterSpacing: 1,
+          marginBottom: 8,
+        }}
+      >
+        {title}
+      </Text>
+      {children}
+    </View>
+  );
+}
+
+/* Harvard entry row: title+location left, date right */
+function HarvardEntry({
+  title,
+  subtitle,
+  date,
+  description,
+  bullets,
+}: {
+  title: string;
+  subtitle?: string;
+  date?: string;
+  description?: string;
+  bullets?: string[];
+}) {
+  return (
+    <View style={{ marginBottom: 8 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <Text style={{ fontFamily: "Times-Roman", fontSize: 10.5, fontWeight: 700, color: H.black, flex: 1 }}>
+          {title}
+        </Text>
+        {date && (
+          <Text style={{ fontFamily: "Times-Roman", fontSize: 10, color: H.darkGray, textAlign: "right" as const, minWidth: 120 }}>
+            {date}
+          </Text>
+        )}
+      </View>
+      {subtitle && (
+        <Text style={{ fontFamily: "Times-Roman", fontSize: 10, fontStyle: "italic", color: H.medGray, marginTop: 1 }}>
+          {subtitle}
+        </Text>
+      )}
+      {description && (
+        <Text style={{ fontFamily: "Times-Roman", fontSize: 10, fontStyle: "italic", color: H.medGray, marginTop: 2 }}>
+          {description}
+        </Text>
+      )}
+      {bullets && bullets.length > 0 && bullets.map((b, i) => (
+        <View key={i} style={{ flexDirection: "row", marginTop: 2, paddingLeft: 16 }}>
+          <Text style={{ fontFamily: "Times-Roman", fontSize: 10, color: H.black, width: 12 }}>•</Text>
+          <Text style={{ fontFamily: "Times-Roman", fontSize: 10, color: H.black, flex: 1 }}>{b}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export function HarvardCVDocument({ data }: { data: CVData }) {
-  const s = harvardStyles;
+  const info = data.personalInfo;
+
   return (
     <Document>
-      <Page size="A4" style={s.page}>
-        <ContactLine data={data.personalInfo} styles={s} />
+      <Page
+        size="A4"
+        style={{
+          fontFamily: "Times-Roman",
+          fontSize: 10,
+          color: H.black,
+          paddingTop: 36,
+          paddingBottom: 30,
+          paddingHorizontal: 50,
+          lineHeight: 1.35,
+        }}
+      >
+        {/* ===== HEADER ===== */}
+        <View style={{ alignItems: "center", marginBottom: 4 }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 700,
+              textDecoration: "underline" as const,
+              textTransform: "uppercase" as const,
+              letterSpacing: 1.5,
+              marginBottom: 4,
+            }}
+          >
+            {info.fullName || "NAME"}
+          </Text>
+          {info.location && (
+            <Text style={{ fontSize: 9.5, color: H.darkGray, marginBottom: 1.5 }}>
+              {info.location}
+            </Text>
+          )}
+          {info.email && (
+            <Text style={{ fontSize: 9.5, color: H.darkGray, marginBottom: 1.5 }}>
+              Email: {info.email}
+            </Text>
+          )}
+          {info.phone && (
+            <Text style={{ fontSize: 9.5, color: H.darkGray, marginBottom: 1.5 }}>
+              Mobile Phone: {info.phone}
+            </Text>
+          )}
+          {(info.linkedin || info.website) && (
+            <Text style={{ fontSize: 9.5, color: H.darkGray, marginBottom: 1.5 }}>
+              {[info.linkedin, info.website].filter(Boolean).join(" / ")}
+            </Text>
+          )}
+        </View>
 
-        {/* Education */}
+        {/* ===== EDUCATION & QUALIFICATIONS ===== */}
         {data.education?.length > 0 && (
-          <Section title="Education" styles={s}>
+          <HarvardSection title="Education & Qualifications">
             {data.education.map((edu, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{edu.institution}</Text>
-                    <Text style={s.entrySubtitle}>
-                      {[edu.degree, edu.field].filter(Boolean).join(", ")}
-                      {edu.gpa ? ` | GPA: ${edu.gpa}` : ""}
-                    </Text>
-                  </View>
-                  <Text style={s.entryDate}>
-                    {[edu.startDate, edu.endDate].filter(Boolean).join(" - ")}
-                  </Text>
-                </View>
-                {edu.highlights?.map((h, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {h}
-                  </Text>
-                ))}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={[edu.institution, edu.field ? `– ${edu.field}` : ""].filter(Boolean).join(" ")}
+                date={[edu.startDate, edu.endDate].filter(Boolean).join(" – ")}
+                bullets={[
+                  ...(edu.degree ? [edu.degree] : []),
+                  ...(edu.gpa ? [`GPA: ${edu.gpa}`] : []),
+                  ...(edu.highlights || []),
+                ].filter(Boolean)}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Projects & Research */}
+        {/* ===== CERTIFICATES ===== */}
+        {data.skills?.certifications && data.skills.certifications.length > 0 && (
+          <HarvardSection title="Certificates">
+            {data.skills.certifications.map((cert, i) => (
+              <View key={i} style={{ flexDirection: "row", marginBottom: 3, paddingLeft: 16 }}>
+                <Text style={{ fontSize: 10, width: 12 }}>•</Text>
+                <Text style={{ fontSize: 10, flex: 1, fontWeight: 700 }}>{cert}</Text>
+              </View>
+            ))}
+          </HarvardSection>
+        )}
+
+        {/* ===== PROJECTS ===== */}
         {data.projects?.length > 0 && (
-          <Section title="Academic Projects & Research" styles={s}>
+          <HarvardSection title="Projects & Research">
             {data.projects.map((proj, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <Text style={s.entryTitle}>{proj.name}</Text>
-                </View>
-                {proj.technologies && (
-                  <Text style={s.entrySubtitle}>
-                    Technologies: {proj.technologies}
-                  </Text>
-                )}
-                {proj.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {proj.description}
-                  </Text>
-                )}
-                {proj.highlights?.map((h, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {h}
-                  </Text>
-                ))}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={proj.name}
+                subtitle={proj.technologies ? `Technologies: ${proj.technologies}` : undefined}
+                bullets={[
+                  ...(proj.description ? [proj.description] : []),
+                  ...(proj.highlights || []),
+                ]}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Professional Experience */}
+        {/* ===== WORK EXPERIENCES ===== */}
         {data.experience?.length > 0 && (
-          <Section title="Professional Experience" styles={s}>
+          <HarvardSection title="Work Experiences">
             {data.experience.map((exp, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{exp.company}</Text>
-                    <Text style={s.entrySubtitle}>{exp.role}</Text>
-                  </View>
-                  <Text style={s.entryDate}>
-                    {[exp.startDate, exp.endDate].filter(Boolean).join(" - ")}
-                  </Text>
-                </View>
-                {exp.bullets?.map((b, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {b}
-                  </Text>
-                ))}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={exp.company}
+                subtitle={exp.role}
+                date={[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}
+                bullets={exp.bullets}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Leadership & Activities */}
+        {/* ===== COMMUNITY SERVICE & SCHOOL CLUBS ===== */}
         {data.leadership?.length > 0 && (
-          <Section title="Extracurricular Activities & Leadership" styles={s}>
+          <HarvardSection title="Community Service & School Clubs">
             {data.leadership.map((lead, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{lead.organization}</Text>
-                    <Text style={s.entrySubtitle}>{lead.role}</Text>
-                  </View>
-                  {lead.period && (
-                    <Text style={s.entryDate}>{lead.period}</Text>
-                  )}
-                </View>
-                {lead.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {lead.description}
-                  </Text>
-                )}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={`${lead.organization}${lead.role ? ` – ${lead.role}` : ""}`}
+                date={lead.period}
+                bullets={lead.description ? [lead.description] : undefined}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Awards */}
+        {/* ===== AWARDS & HONORS ===== */}
         {data.awards?.length > 0 && (
-          <Section title="Awards, Honors & Competitions" styles={s}>
+          <HarvardSection title="Awards & Honors">
             {data.awards.map((award, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{award.title}</Text>
-                    {award.issuer && (
-                      <Text style={s.entrySubtitle}>{award.issuer}</Text>
-                    )}
-                  </View>
-                  {award.date && <Text style={s.entryDate}>{award.date}</Text>}
-                </View>
-                {award.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {award.description}
-                  </Text>
-                )}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={award.title}
+                subtitle={award.issuer}
+                date={award.date}
+                bullets={award.description ? [award.description] : undefined}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Skills & Certifications */}
+        {/* ===== SKILLS & INTERESTS ===== */}
         {data.skills && (
-          <Section title="Skills & Certifications" styles={s}>
+          <HarvardSection title="Skills & Interests">
             {data.skills.technical && data.skills.technical.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Technical Skills</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.technical.join(", ")}
-                </Text>
+              <View style={{ flexDirection: "row", marginBottom: 4, flexWrap: "wrap" }}>
+                <Text style={{ fontSize: 10, fontWeight: 700 }}>SKILLS: </Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>{data.skills.technical.join(", ")}</Text>
               </View>
             )}
             {data.skills.languages && data.skills.languages.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Languages</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.languages.join(", ")}
-                </Text>
+              <View style={{ flexDirection: "row", marginBottom: 4, flexWrap: "wrap" }}>
+                <Text style={{ fontSize: 10, fontWeight: 700 }}>LANGUAGES: </Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>{data.skills.languages.join(", ")}</Text>
               </View>
             )}
-            {data.skills.certifications &&
-              data.skills.certifications.length > 0 && (
-                <View style={s.skillRow}>
-                  <Text style={s.skillLabel}>Certifications</Text>
-                  <Text style={s.skillValue}>
-                    {data.skills.certifications.join(", ")}
-                  </Text>
-                </View>
-              )}
             {data.skills.other && data.skills.other.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Other Skills</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.other.join(", ")}
-                </Text>
+              <View style={{ flexDirection: "row", marginBottom: 4, flexWrap: "wrap" }}>
+                <Text style={{ fontSize: 10, fontWeight: 700 }}>INTERESTS: </Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>{data.skills.other.join(", ")}</Text>
               </View>
             )}
-          </Section>
+          </HarvardSection>
         )}
       </Page>
     </Document>
