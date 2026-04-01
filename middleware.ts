@@ -26,8 +26,23 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session — required for Supabase SSR
   await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+  const isAuthPage = pathname === "/giris" || pathname === "/kayit";
+  const isPublic =
+    pathname === "/" ||
+    isAuthPage ||
+    pathname.startsWith("/auth");
+
+  // Check for demo session cookie
+  const demoSession = request.cookies.get("demo_session");
+
+  if (!demoSession && !isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/giris";
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }
