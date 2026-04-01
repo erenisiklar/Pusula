@@ -2,8 +2,6 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/", "/giris", "/kayit", "/auth"];
-
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -28,27 +26,8 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const pathname = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
-  );
-  const isAuthPage = pathname === "/giris" || pathname === "/kayit";
-
-  if (!user && !isPublic) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/giris";
-    return NextResponse.redirect(url);
-  }
-
-  if (user && isAuthPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
+  // Refresh session — required for Supabase SSR
+  await supabase.auth.getUser();
 
   return supabaseResponse;
 }
