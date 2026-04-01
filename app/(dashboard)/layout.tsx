@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   GraduationCap,
   LayoutDashboard,
@@ -15,6 +17,8 @@ import {
   CheckCircle,
   Map,
   Compass,
+  UserCircle,
+  LogOut,
 } from "lucide-react";
 
 const navItems = [
@@ -29,6 +33,7 @@ const navItems = [
   { href: "/rankings", label: "Sıralamalar", icon: Trophy },
   { href: "/acceptance", label: "Kabul Oranları", icon: CheckCircle },
   { href: "/map", label: "Harita", icon: Map },
+  { href: "/profil", label: "Profil", icon: UserCircle },
 ];
 
 export default function DashboardLayout({
@@ -37,6 +42,22 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserEmail(user.email ?? "");
+    });
+  }, []);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/giris");
+    router.refresh();
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -85,11 +106,26 @@ export default function DashboardLayout({
 
         {/* Footer */}
         <div
-          className="px-4 py-3 text-xs border-t"
-          style={{ color: "rgba(255,255,255,0.4)", borderColor: "rgba(255,255,255,0.08)" }}
+          className="px-4 py-3 border-t"
+          style={{ borderColor: "var(--border)" }}
         >
-          <p>Pusula v1.0 MVP</p>
-          <p className="mt-1 opacity-70">Almanya · İtalya · Hollanda</p>
+          {userEmail && (
+            <p
+              className="text-xs mb-2 truncate"
+              style={{ color: "var(--muted)" }}
+              title={userEmail}
+            >
+              {userEmail}
+            </p>
+          )}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-xs w-full px-2 py-1.5 rounded"
+            style={{ color: "var(--muted)", background: "none", border: "none", cursor: "pointer" }}
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Çıkış Yap
+          </button>
         </div>
       </aside>
 
