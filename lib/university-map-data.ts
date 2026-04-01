@@ -136,6 +136,78 @@ export const universityMapData: UniversityMapData[] = [
     countryColor: "#ef4444",
   },
   {
+    // Boulevard de Constance, Jouy-en-Josas
+    id: "hec-paris",
+    lat: 48.7554, lng: 2.1706,
+    website: "https://www.hec.edu",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/HEC_Paris_main_building.jpg/1280px-HEC_Paris_main_building.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
+    // Route de Saclay, 91120 Palaiseau
+    id: "polytechnique",
+    lat: 48.7143, lng: 2.2130,
+    website: "https://programmes.polytechnique.edu/en/bachelor",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Ecole_polytechnique_-_panoramio.jpg/1280px-Ecole_polytechnique_-_panoramio.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
+    // 3 Rue Joliot-Curie, 91190 Gif-sur-Yvette
+    id: "centrale-supelec",
+    lat: 48.7102, lng: 2.1678,
+    website: "https://www.centralesupelec.fr/en",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/CentraleSup%C3%A9lec_campus.jpg/1280px-CentraleSup%C3%A9lec_campus.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
+    // 24 Avenue Gustave Delory, 59100 Roubaix (Lille campus)
+    id: "edhec-bba",
+    lat: 50.6887, lng: 3.1766,
+    website: "https://www.edhec.edu/en/programmes/bba",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/EDHEC_Business_School_Roubaix.jpg/1280px-EDHEC_Business_School_Roubaix.jpg",
+    durationYears: 4,
+    countryColor: "#a855f7",
+  },
+  {
+    // 23 Avenue Guy de Collongue, 69130 Écully (Lyon)
+    id: "emlyon-bba",
+    lat: 45.7730, lng: 4.7877,
+    website: "https://em-lyon.com/en/programs/bachelor",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Emlyon_Business_School.jpg/1280px-Emlyon_Business_School.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
+    // Place du Maréchal de Lattre de Tassigny, 75016 Paris
+    id: "paris-dauphine",
+    lat: 48.8651, lng: 2.2717,
+    website: "https://dauphine.psl.eu/en",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Universit%C3%A9_Paris-Dauphine.jpg/1280px-Universit%C3%A9_Paris-Dauphine.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
+    // 4 Place Jussieu, 75005 Paris (Campus Pierre et Marie Curie)
+    id: "sorbonne-sciences",
+    lat: 48.8477, lng: 2.3560,
+    website: "https://www.sorbonne-universite.fr/en",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Sorbonne_University_-_Pierre_and_Marie_Curie_Campus.jpg/1280px-Sorbonne_University_-_Pierre_and_Marie_Curie_Campus.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
+    // 20 Avenue Albert Einstein, 69621 Villeurbanne (Lyon)
+    id: "insa-lyon",
+    lat: 45.7827, lng: 4.8716,
+    website: "https://www.insa-lyon.fr/en",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/INSA_Lyon_-_Campus.jpg/1280px-INSA_Lyon_-_Campus.jpg",
+    durationYears: 3,
+    countryColor: "#a855f7",
+  },
+  {
     // Brinellvägen 8, 114 28 Stockholm
     id: "kth-stockholm",
     lat: 59.34987, lng: 18.07026,
