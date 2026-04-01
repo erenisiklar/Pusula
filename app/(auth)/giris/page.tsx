@@ -16,19 +16,9 @@ export default function GirisPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      setError("E-posta veya şifre hatalı.");
-      setLoading(false);
-    } else {
-      router.push("/dashboard");
-      router.refresh();
-    }
+    document.cookie = "demo_session=1; path=/; max-age=86400";
+    router.push("/dashboard");
+    router.refresh();
   }
 
   return (
