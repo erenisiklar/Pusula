@@ -50,7 +50,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
   const [mapReady, setMapReady]     = useState(false);
   const [isSatellite, setIsSatellite] = useState(false);
 
-  // Always keep onSelectRef current
   onSelectRef.current = onSelect;
 
   // ── Init map once ──────────────────────────────────────────────
@@ -64,7 +63,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       await import("leaflet.markercluster/dist/MarkerCluster.css");
       await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
 
-      // Fix broken default icons from webpack
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
@@ -85,7 +83,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       const tile = L.tileLayer(DARK_TILE.url, DARK_TILE.options).addTo(map);
       tileRef.current = tile;
 
-      // Dark-themed cluster group
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cluster = (L as any).markerClusterGroup({
         showCoverageOnHover: false,
@@ -136,7 +133,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         const color = mapData.countryColor;
         const eligibility = eligibilityMap.get(uni.id);
 
-        // Opacity + ring based on eligibility
         let opacity = 1;
         let ringColor = "rgba(255,255,255,0.85)";
 
@@ -183,11 +179,9 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         );
 
         marker.on("click", () => {
-          // Restore previous selection
           if (selectedRef.current && selectedRef.current.id !== uni.id) {
             selectedRef.current.marker.setIcon(selectedRef.current.normalIcon);
           }
-          // Animate selected pin
           marker.setIcon(makeIcon(true));
           selectedRef.current = { id: uni.id, marker, normalIcon };
 
@@ -227,7 +221,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         style={{ width: "100%", height: "100%", minHeight: 500, backgroundColor: "#f1f5f9" }}
       />
 
-      {/* Satellite / map toggle */}
       <button
         onClick={() => setIsSatellite((v) => !v)}
         style={{
@@ -247,7 +240,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
           transition: "background-color 0.2s",
         }}
       >
-        {isSatellite ? "🗺 Harita" : "🛰 Uydu"}
+        {isSatellite ? "Harita" : "Uydu"}
       </button>
     </div>
   );
