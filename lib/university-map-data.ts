@@ -4,8 +4,8 @@ export interface UniversityMapData {
   lng: number;
   website: string;
   imageUrl: string;
-  durationYears: number; // program süresi
-  countryColor: string;  // pin rengi
+  durationYears: number;
+  countryColor: string;
 }
 
 export const universityMapData: UniversityMapData[] = [

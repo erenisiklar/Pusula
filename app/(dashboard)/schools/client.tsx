@@ -33,7 +33,7 @@ const departments = [
   "Tıp",
   "Hukuk",
 ];
-const langCerts = ["IELTS", "TOEFL", "TestDaF"];
+const langCerts = ["IELTS", "TOEFL", "TestDaF", "Cambridge", "DELF/DALF", "DELE", "CELI/CILS"];
 
 const statusConfig: Record<
   EligibilityStatus,
@@ -66,7 +66,7 @@ const statusConfig: Record<
 };
 
 export default function SchoolsClient({ universities }: { universities: University[] }) {
-  const [gpa, setGpa] = useState<number>(3.0);
+  const [gpa, setGpa] = useState<number>(75);
   const [langCert, setLangCert] = useState<string>("IELTS");
   const [langScore, setLangScore] = useState<number>(6.5);
   const [budget, setBudget] = useState<number>(5000);
@@ -158,13 +158,13 @@ export default function SchoolsClient({ universities }: { universities: Universi
           <div>
             <label className="flex items-center gap-2 text-xs font-medium mb-2" style={{ color: "var(--muted)" }}>
               <GraduationCap className="w-3.5 h-3.5" />
-              GPA (4.0 üzerinden)
+              GPA (100 üzerinden)
             </label>
             <input
               type="number"
-              step="0.1"
+              step="1"
               min="0"
-              max="4"
+              max="100"
               value={gpa}
               onChange={(e) => setGpa(parseFloat(e.target.value) || 0)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none"
@@ -442,19 +442,39 @@ function UniversityCard({
               label="GPA"
               score={breakdown.gpaScore}
               detail={breakdown.gpaDetail}
-              maxScore={25}
+              maxScore={30}
             />
             <DetailBox
               label="Dil"
               score={breakdown.languageScore}
               detail={breakdown.languageDetail}
-              maxScore={25}
+              maxScore={40}
             />
             <DetailBox
               label="Bütçe"
               score={breakdown.budgetScore}
               detail={breakdown.budgetDetail}
+              maxScore={20}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <DetailBox
+              label="Sıralama"
+              score={breakdown.rankingScore}
+              detail={breakdown.rankingDetail}
+              maxScore={15}
+            />
+            <DetailBox
+              label="Kabul Oranı"
+              score={breakdown.acceptanceScore}
+              detail={breakdown.acceptanceDetail}
               maxScore={10}
+            />
+            <DetailBox
+              label="Ülke Sistemi"
+              score={breakdown.countryScore}
+              detail={breakdown.countryDetail}
+              maxScore={8}
             />
           </div>
 
@@ -476,13 +496,30 @@ function UniversityCard({
             </div>
           )}
 
-          <div className="flex gap-4 text-xs" style={{ color: "var(--muted)" }}>
+          <div className="flex flex-wrap gap-4 text-xs" style={{ color: "var(--muted)" }}>
             <span>
               Gerekli GPA: <strong style={{ color: "var(--text)" }}>{university.requiredGPA}/100</strong>
             </span>
-            <span>
-              Dil: <strong style={{ color: "var(--text)" }}>{university.requiredLanguage} {university.requiredLanguageScore}</strong>
-            </span>
+            {university.acceptedLanguages && university.acceptedLanguages.length > 0 ? (
+              <span>
+                Kabul edilen diller:{" "}
+                {university.acceptedLanguages.map((lang, i) => (
+                  <span key={lang.test}>
+                    {i > 0 && ", "}
+                    <strong style={{ color: "var(--text)" }}>{lang.test} {lang.minScore}</strong>
+                  </span>
+                ))}
+              </span>
+            ) : (
+              <span>
+                Dil: <strong style={{ color: "var(--text)" }}>{university.requiredLanguage} {university.requiredLanguageScore}</strong>
+              </span>
+            )}
+            {university.acceptanceRate !== undefined && (
+              <span>
+                Kabul oranı: <strong style={{ color: "var(--text)" }}>%{university.acceptanceRate}</strong>
+              </span>
+            )}
             {university.deadline && (
               <span>
                 Son başvuru: <strong style={{ color: "var(--text)" }}>{university.deadline}</strong>

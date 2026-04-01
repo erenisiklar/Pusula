@@ -63,17 +63,16 @@ export default function DashboardLayout({
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside
-        className="fixed left-0 top-0 h-screen flex flex-col border-r"
+        className="fixed left-0 top-0 h-screen flex flex-col"
         style={{
           width: 220,
-          backgroundColor: "var(--surface)",
-          borderColor: "var(--border)",
+          backgroundColor: "#0f1d3d",
         }}
       >
         {/* Logo */}
         <div className="flex items-center gap-2 px-5 py-5">
           <Compass className="w-6 h-6" style={{ color: "var(--gold)" }} />
-          <span className="text-lg font-bold tracking-tight" style={{ color: "var(--text)" }}>
+          <span className="text-lg font-bold tracking-tight" style={{ color: "#ffffff" }}>
             Pusula
             <span
               className="inline-block w-1.5 h-1.5 rounded-full ml-0.5 mb-2"
@@ -93,9 +92,9 @@ export default function DashboardLayout({
                 href={item.href}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                 style={{
-                  backgroundColor: isActive ? "var(--blue-bg)" : "transparent",
-                  color: isActive ? "var(--blue-light)" : "var(--muted)",
-                  borderLeft: isActive ? "2px solid var(--blue)" : "2px solid transparent",
+                  backgroundColor: isActive ? "rgba(59,130,246,0.15)" : "transparent",
+                  color: isActive ? "#ffffff" : "rgba(255,255,255,0.55)",
+                  borderLeft: isActive ? "2px solid var(--gold)" : "2px solid transparent",
                 }}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />

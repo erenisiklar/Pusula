@@ -4,6 +4,11 @@ export interface UniversityRanking {
   year: number;
 }
 
+export interface AcceptedLanguage {
+  test: string; // "IELTS" | "TOEFL" | "TestDaF" | "DELF" | "GMAT" | "GRE"
+  minScore: string;
+}
+
 export interface University {
   id: string;
   name: string;
@@ -13,14 +18,19 @@ export interface University {
   program: string;
   department: string;
   requiredGPA: number;
-  requiredLanguage: string;
+  requiredLanguage: string; // primary language requirement (kept for backward compat)
   requiredLanguageScore: string;
+  acceptedLanguages?: AcceptedLanguage[]; // all accepted language tests
   tuitionEUR: number;
   description?: string;
   website?: string;
   deadline?: string;
   flag: string;
   rankings?: UniversityRanking[];
+  acceptanceRate?: number; // 0-100, e.g. 15 = 15%
+  competitiveness?: "very_high" | "high" | "medium" | "low"; // selectivity level
+  dataVerified?: boolean; // true if data comes from official source
+  programRestricted?: boolean; // true for numerus fixus, NC-limited, concours programs
 }
 
 export interface UserProfile {
@@ -48,9 +58,15 @@ export interface EligibilityResult {
     gpaScore: number;
     languageScore: number;
     budgetScore: number;
+    rankingScore: number;
+    acceptanceScore: number;
+    countryScore: number;
     gpaDetail: string;
     languageDetail: string;
     budgetDetail: string;
+    rankingDetail: string;
+    acceptanceDetail: string;
+    countryDetail: string;
   };
 }
 
