@@ -4,7 +4,7 @@ import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap } fr
 import Link from "next/link";
 
 const stats = [
-  { label: "Lisans Programı", value: "150", icon: School, color: "var(--blue)" },
+  { label: "Lisans Programı", value: "159", icon: School, color: "var(--blue)" },
   { label: "Ülke", value: "19", icon: CheckCircle, color: "var(--success)" },
   { label: "Yaklaşan Deadline", value: "3", icon: Calendar, color: "var(--danger)" },
   { label: "Ücretsiz Program", value: "40+", icon: GraduationCap, color: "var(--gold)" },

@@ -253,4 +253,15 @@ export const universityMapData: UniversityMapData[] = [
   // ── Baltık / Orta Avrupa ──
   { id: "taltech-bsc-iba", lat: 59.3953, lng: 24.6718, website: "https://taltech.ee", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
   { id: "masaryk-bsc-economics", lat: 49.1987, lng: 16.6046, website: "https://www.muni.cz", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+
+  // ── Ek Programlar ──
+  { id: "autonoma-madrid-bsc-polsci", lat: 40.5468, lng: -3.6918, website: "https://www.uam.es", imageUrl: "", durationYears: 4, countryColor: "#ef4444" },
+  { id: "eindhoven-bsc-cs", lat: 51.4478, lng: 5.4897, website: "https://www.tue.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "kit-bsc-me", lat: 49.0124, lng: 8.4157, website: "https://www.kit.edu", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "newcastle-bsc-engineering", lat: 54.9794, lng: -1.6147, website: "https://www.ncl.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "qub-bsc-cs", lat: 54.5847, lng: -5.9346, website: "https://www.qub.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "tartu-bsc-cs", lat: 58.3813, lng: 26.7148, website: "https://www.ut.ee", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
+  { id: "warsaw-bsc-economics", lat: 52.2396, lng: 21.0172, website: "https://www.uw.edu.pl", imageUrl: "", durationYears: 3, countryColor: "#ef4444" },
+  { id: "masaryk-bsc-ir", lat: 49.1990, lng: 16.6050, website: "https://www.muni.cz", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "york-bsc-economics", lat: 53.9476, lng: -1.0530, website: "https://www.york.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
 ];
