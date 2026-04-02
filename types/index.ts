@@ -24,6 +24,11 @@ export interface University {
   tuitionEUR: number;
   description?: string;
   website?: string;
+  lat?: number;
+  lng?: number;
+  imageUrl?: string;
+  durationYears?: number;
+  countryColor?: string;
   deadline?: string;
   flag: string;
   rankings?: UniversityRanking[];
