@@ -266,4 +266,5 @@ export const universityMapData: UniversityMapData[] = [
   { id: "sgh-bsc-ib", lat: 52.2089, lng: 21.0074, website: "https://www.sgh.waw.pl", imageUrl: "", durationYears: 3, countryColor: "#ef4444" },
   { id: "sgh-bsc-economics", lat: 52.2093, lng: 21.0078, website: "https://www.sgh.waw.pl", imageUrl: "", durationYears: 3, countryColor: "#ef4444" },
   { id: "copenhagen-bsc-economics", lat: 55.6802, lng: 12.5724, website: "https://www.ku.dk", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
+  { id: "essec-bba", lat: 49.0340, lng: 2.0765, website: "https://www.essec.edu", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
 ];
