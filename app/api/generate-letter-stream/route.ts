@@ -185,7 +185,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases. Target approximately ${wordCount} words.
+    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases.
+
+WORD LIMIT: The letter MUST NOT exceed ${wordCount} words. This is a hard upper limit set by the university's application system. Aim for ${Math.round(wordCount * 0.85)}-${wordCount} words. Going over ${wordCount} words is NOT acceptable — the application system will reject it.
 
 ${langLevelInstruction}
 
@@ -200,7 +202,7 @@ Key Strengths: ${strengths}
 Personal Motivation: ${motivation}
 ${optionalSections}
 
-Write a professional, compelling motivation letter in English (~${wordCount} words). Structure it with these clearly separated sections:
+Write a professional, compelling motivation letter in English (maximum ${wordCount} words, aim for ${Math.round(wordCount * 0.85)}-${wordCount} words). Structure it with these clearly separated sections:
 
 [OPENING]
 A strong, attention-grabbing opening paragraph that introduces the student and their purpose.
@@ -225,6 +227,7 @@ IMPORTANT RULES:
 - Do not include any other formatting or headers.
 - NEVER leave any sentence incomplete or cut off mid-way. Every sentence MUST be fully finished with proper punctuation.
 - NEVER stop writing in the middle of a paragraph. Complete every thought fully.
+- The letter MUST be under ${wordCount} words. Count your words carefully. Do NOT exceed this limit.
 - If approaching the word limit, wrap up gracefully with a complete closing — do not abruptly stop.`;
 
     const result = await model.generateContent(prompt);

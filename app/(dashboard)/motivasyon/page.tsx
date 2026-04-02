@@ -518,7 +518,7 @@ export default function MotivasyonPage() {
                 </div>
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
-                    Hedef Kelime
+                    Kelime Üst Sınırı
                   </label>
                   <select
                     value={targetWordCount}
@@ -530,10 +530,10 @@ export default function MotivasyonPage() {
                       color: "var(--text)",
                     }}
                   >
-                    <option value={300}>~300 kelime</option>
-                    <option value={500}>~500 kelime</option>
-                    <option value={750}>~750 kelime</option>
-                    <option value={1000}>~1000 kelime</option>
+                    <option value={300}>300 kelime</option>
+                    <option value={500}>500 kelime</option>
+                    <option value={750}>750 kelime</option>
+                    <option value={1000}>1000 kelime</option>
                   </select>
                 </div>
               </div>
@@ -585,16 +585,20 @@ export default function MotivasyonPage() {
                   className="text-xs px-2 py-0.5 rounded-full font-medium"
                   style={{
                     backgroundColor:
-                      currentWordCount >= targetWordCount * 0.85 && currentWordCount <= targetWordCount * 1.15
-                        ? "var(--success-bg)"
-                        : "var(--gold-bg)",
+                      currentWordCount > targetWordCount
+                        ? "var(--danger-bg)"
+                        : currentWordCount >= targetWordCount * 0.8
+                          ? "var(--success-bg)"
+                          : "var(--gold-bg)",
                     color:
-                      currentWordCount >= targetWordCount * 0.85 && currentWordCount <= targetWordCount * 1.15
-                        ? "var(--success)"
-                        : "var(--gold)",
+                      currentWordCount > targetWordCount
+                        ? "var(--danger)"
+                        : currentWordCount >= targetWordCount * 0.8
+                          ? "var(--success)"
+                          : "var(--gold)",
                   }}
                 >
-                  {currentWordCount} / ~{targetWordCount} kelime
+                  {currentWordCount} / {targetWordCount} kelime
                 </span>
               )}
               {loading && (
