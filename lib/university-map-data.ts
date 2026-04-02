@@ -13,70 +13,20 @@ const WP = (filename: string) =>
 
 export const universityMapData: UniversityMapData[] = [
   // ── Hollanda ──
-  { id: "tu-delft-cs", lat: 51.9988, lng: 4.3733, website: "https://www.tudelft.nl", imageUrl: "", durationYears: 2, countryColor: "#f59e0b" },
-  { id: "tu-delft-arch", lat: 51.9958, lng: 4.3712, website: "https://www.tudelft.nl", imageUrl: "", durationYears: 2, countryColor: "#f59e0b" },
-  { id: "rsm-erasmus-mim", lat: 51.9170, lng: 4.5260, website: "https://www.rsm.nl", imageUrl: "", durationYears: 2, countryColor: "#f59e0b" },
 
   // ── İtalya ──
-  { id: "polimi-cs", lat: 45.4781, lng: 9.2277, website: "https://www.polimi.it", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "bocconi-economics", lat: 45.4486, lng: 9.1899, website: "https://www.unibocconi.eu", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "sda-bocconi-mba", lat: 45.4492, lng: 9.1905, website: "https://www.sdabocconi.it", imageUrl: "", durationYears: 1, countryColor: "#22c55e" },
-  { id: "bologna-eng", lat: 44.4968, lng: 11.3524, website: "https://www.unibo.it", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
 
   // ── Almanya ──
-  { id: "tum-cs", lat: 48.2628, lng: 11.6686, website: "https://www.tum.de", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "tum-ee", lat: 48.2632, lng: 11.6690, website: "https://www.tum.de", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "lmu-business", lat: 48.1508, lng: 11.5804, website: "https://www.lmu.de", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "mannheim-mim", lat: 49.4830, lng: 8.4625, website: "https://www.uni-mannheim.de", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
 
   // ── Fransa ──
-  { id: "sciences-po", lat: 48.8541, lng: 2.3284, website: "https://www.sciencespo.fr", imageUrl: "", durationYears: 2, countryColor: "#60a5fa" },
-  { id: "insead-mim", lat: 48.4044, lng: 2.7015, website: "https://www.insead.edu", imageUrl: "", durationYears: 2, countryColor: "#60a5fa" },
-  { id: "hec-paris-mim", lat: 48.7575, lng: 2.1699, website: "https://www.hec.edu", imageUrl: "", durationYears: 2, countryColor: "#60a5fa" },
-  { id: "escp-mim", lat: 48.8490, lng: 2.3942, website: "https://escp.eu", imageUrl: "", durationYears: 2, countryColor: "#60a5fa" },
 
   // ── İspanya ──
-  { id: "ie-business-mim", lat: 40.4479, lng: -3.6920, website: "https://www.ie.edu", imageUrl: "", durationYears: 2, countryColor: "#ef4444" },
-  { id: "iese-mba", lat: 41.4179, lng: 2.1377, website: "https://www.iese.edu", imageUrl: "", durationYears: 1, countryColor: "#ef4444" },
-  { id: "esade-mim", lat: 41.3836, lng: 2.1166, website: "https://www.esade.edu", imageUrl: "", durationYears: 2, countryColor: "#ef4444" },
 
   // ── İngiltere ──
-  { id: "lbs-mim", lat: 51.5265, lng: -0.1629, website: "https://www.london.edu", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "oxford-said-mba", lat: 51.7570, lng: -1.2631, website: "https://www.ox.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "oxford-cs", lat: 51.7598, lng: -1.2580, website: "https://www.ox.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "oxford-economics", lat: 51.7548, lng: -1.2545, website: "https://www.ox.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "oxford-politics", lat: 51.7551, lng: -1.2549, website: "https://www.ox.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "oxford-law", lat: 51.7540, lng: -1.2540, website: "https://www.ox.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "cambridge-judge-mba", lat: 52.2025, lng: 0.1187, website: "https://www.cam.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "cambridge-cs", lat: 52.2109, lng: 0.0917, website: "https://www.cam.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "cambridge-economics", lat: 52.2040, lng: 0.1175, website: "https://www.cam.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "cambridge-law", lat: 52.2048, lng: 0.1155, website: "https://www.cam.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "imperial-cs", lat: 51.4988, lng: -0.1749, website: "https://www.imperial.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "imperial-eng", lat: 51.4991, lng: -0.1745, website: "https://www.imperial.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "imperial-ee", lat: 51.4986, lng: -0.1752, website: "https://www.imperial.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "imperial-mim", lat: 51.4993, lng: -0.1742, website: "https://www.imperial.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "lse-mim", lat: 51.5144, lng: -0.1165, website: "https://www.lse.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "lse-economics", lat: 51.5142, lng: -0.1168, website: "https://www.lse.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "lse-ir", lat: 51.5146, lng: -0.1162, website: "https://www.lse.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "ucl-cs", lat: 51.5246, lng: -0.1340, website: "https://www.ucl.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "ucl-arch", lat: 51.5218, lng: -0.1321, website: "https://www.ucl.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
-  { id: "warwick-mim", lat: 52.3838, lng: -1.5616, website: "https://www.wbs.ac.uk", imageUrl: "", durationYears: 1, countryColor: "#3b82f6" },
-  { id: "edinburgh-cs", lat: 55.9446, lng: -3.1875, website: "https://www.ed.ac.uk", imageUrl: "", durationYears: 2, countryColor: "#3b82f6" },
 
   // ── İsviçre ──
-  { id: "eth-zurich-cs", lat: 47.3763, lng: 8.5481, website: "https://ethz.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "eth-zurich-eng", lat: 47.3765, lng: 8.5485, website: "https://ethz.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "eth-zurich-ee", lat: 47.3761, lng: 8.5478, website: "https://ethz.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "eth-zurich-arch", lat: 47.3767, lng: 8.5488, website: "https://ethz.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "epfl-cs", lat: 46.5191, lng: 6.5668, website: "https://www.epfl.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "epfl-eng", lat: 46.5193, lng: 6.5672, website: "https://www.epfl.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "epfl-ee", lat: 46.5189, lng: 6.5665, website: "https://www.epfl.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "st-gallen-mim", lat: 47.4318, lng: 9.3740, website: "https://www.unisg.ch", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
-  { id: "imd-mba", lat: 46.5098, lng: 6.6150, website: "https://www.imd.org", imageUrl: "", durationYears: 1, countryColor: "#22c55e" },
-  { id: "hec-lausanne-mim", lat: 46.5227, lng: 6.5791, website: "https://www.unil.ch/hec", imageUrl: "", durationYears: 2, countryColor: "#22c55e" },
 
   // ── İsveç ──
-  { id: "karolinska-med", lat: 59.3488, lng: 18.0237, website: "https://ki.se", imageUrl: "", durationYears: 2, countryColor: "#fbbf24" },
 
   // ── Belçika ──
 

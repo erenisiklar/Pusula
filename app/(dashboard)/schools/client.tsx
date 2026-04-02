@@ -32,8 +32,8 @@ const departments = [
   "Makine Mühendisliği",
   "Psikoloji",
   "Havacılık Mühendisliği",
-  "Tıp",
-  "Hukuk",
+  "Tıp Bilimleri",
+  "Tasarım",
 ];
 const langCerts = ["IELTS", "TOEFL", "TestDaF", "Cambridge", "DELF/DALF", "DELE", "CELI/CILS"];
 
@@ -76,7 +76,6 @@ export default function SchoolsClient({ universities }: { universities: Universi
   const [selectedDept, setSelectedDept] = useState<string>("Tümü");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedLevel, setSelectedLevel] = useState<string>("Lisans");
 
   const studentInput: StudentInput = {
     gpa,
@@ -90,10 +89,6 @@ export default function SchoolsClient({ universities }: { universities: Universi
   const results = useMemo(() => {
     let filtered = universities;
 
-    if (selectedLevel !== "Tümü") {
-      const levelMap: Record<string, string> = { "Lisans": "bachelor", "Yüksek Lisans": "master", "Ön Lisans": "associate" };
-      filtered = filtered.filter((u) => (u.level || "master") === levelMap[selectedLevel]);
-    }
     if (selectedCountry !== "Tümü") {
       filtered = filtered.filter((u) => u.country === selectedCountry);
     }
@@ -113,7 +108,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
     return filtered
       .map((uni) => calculateEligibility(studentInput, uni))
       .sort((a, b) => b.score - a.score);
-  }, [gpa, langCert, langScore, budget, selectedCountry, selectedDept, searchQuery, selectedLevel]);
+  }, [gpa, langCert, langScore, budget, selectedCountry, selectedDept, searchQuery]);
 
   const counts = useMemo(() => {
     const c = { eligible: 0, possible: 0, reach: 0, unlikely: 0 };
@@ -127,7 +122,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
         Üniversite Bulucu
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
-        Lise notunuzu ve dil puanınızı girerek Avrupa&apos;daki lisans ve yüksek lisans programlarını keşfedin
+        Lise notunuzu ve dil puanınızı girerek Avrupa&apos;daki lisans programlarını keşfedin
       </p>
 
       {/* Summary bar */}
@@ -241,28 +236,6 @@ export default function SchoolsClient({ universities }: { universities: Universi
                 color: "var(--text)",
               }}
             />
-          </div>
-
-          {/* Level */}
-          <div>
-            <label className="text-xs font-medium mb-2 block" style={{ color: "var(--muted)" }}>
-              Seviye
-            </label>
-            <select
-              value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-              style={{
-                backgroundColor: "var(--surface2)",
-                border: "1px solid var(--border)",
-                color: "var(--text)",
-              }}
-            >
-              <option value="Tümü">Tümü</option>
-              <option value="Lisans">Lisans (Bachelor)</option>
-              <option value="Yüksek Lisans">Yüksek Lisans (Master)</option>
-              <option value="Ön Lisans">Ön Lisans (Associate)</option>
-            </select>
           </div>
 
           {/* Country */}
@@ -386,7 +359,7 @@ function UniversityCard({
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
-        borderLeft: university.level === "associate" ? "3px solid var(--success)" : (university.level || "master") === "master" ? "3px solid var(--gold)" : "3px solid var(--blue)",
+        borderLeft: "3px solid var(--blue)",
       }}
     >
       <div
@@ -399,17 +372,7 @@ function UniversityCard({
             <div className="font-semibold text-sm" style={{ color: "var(--text)" }}>
               {university.name}
             </div>
-            <div className="text-xs flex items-center gap-1.5" style={{ color: "var(--muted)" }}>
-              <span
-                className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                style={{
-                  backgroundColor: university.level === "associate" ? "var(--success-bg)" : (university.level || "master") === "bachelor" ? "var(--blue-bg)" : "var(--gold-bg)",
-                  color: university.level === "associate" ? "var(--success)" : (university.level || "master") === "bachelor" ? "var(--blue)" : "var(--gold)",
-                  border: `1px solid ${university.level === "associate" ? "rgba(22,163,74,0.25)" : (university.level || "master") === "bachelor" ? "var(--blue-border)" : "var(--gold-border)"}`,
-                }}
-              >
-                {university.level === "associate" ? "Ön Lisans" : (university.level || "master") === "bachelor" ? "Lisans" : "Y.Lisans"}
-              </span>
+            <div className="text-xs" style={{ color: "var(--muted)" }}>
               {university.program} · {university.city}, {university.country}
             </div>
           </div>

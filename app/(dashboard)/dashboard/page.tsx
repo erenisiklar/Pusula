@@ -4,10 +4,10 @@ import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap } fr
 import Link from "next/link";
 
 const stats = [
-  { label: "Lisans Programı", value: "127", icon: School, color: "var(--blue)" },
-  { label: "Y.Lisans Programı", value: "50", icon: GraduationCap, color: "var(--gold)" },
-  { label: "Yaklaşan Deadline", value: "3", icon: Calendar, color: "var(--danger)" },
+  { label: "Lisans Programı", value: "128", icon: School, color: "var(--blue)" },
   { label: "Ülke", value: "18", icon: CheckCircle, color: "var(--success)" },
+  { label: "Yaklaşan Deadline", value: "3", icon: Calendar, color: "var(--danger)" },
+  { label: "Ücretsiz Program", value: "40+", icon: GraduationCap, color: "var(--gold)" },
 ];
 
 const todos = [
@@ -34,7 +34,7 @@ export default function DashboardPage() {
           Hoş geldin! 👋
         </h1>
         <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Liseden sonra Avrupa&apos;da lisans veya yüksek lisans okumak için doğru yerdesin.
+          Liseden sonra Avrupa&apos;da lisans okumak için doğru yerdesin.
         </p>
 
         {/* Progress bar */}
