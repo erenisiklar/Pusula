@@ -194,44 +194,100 @@ const ALL_SKILLS = Object.values(SKILL_CATEGORIES).flat();
 
 /* ====== Language & Exam Data ====== */
 const LANGUAGES_LIST = ["Türkçe", "İngilizce", "Almanca", "Fransızca", "İspanyolca", "İtalyanca", "Hollandaca", "Arapça", "Rusça", "Çince", "Japonca", "Korece", "Portekizce"];
-const PROFICIENCY_LEVELS = ["Ana Dil (Native)", "İleri (C1-C2)", "Orta Üstü (B2)", "Orta (B1)", "Başlangıç (A1-A2)"];
 
 interface ExamInfo {
   label: string;
+  maxScore: number;
   scoreHint: string;
   sections?: string[];
+  levelFromScore?: (score: number) => string;
+  levelSelect?: string[]; // for exams where you pick the level (DELF A1/B2 etc.)
+}
+
+// CEFR auto-detection helpers
+function ieltsLevel(s: number): string {
+  if (s >= 8.5) return "C2";
+  if (s >= 7.0) return "C1";
+  if (s >= 5.5) return "B2";
+  if (s >= 4.0) return "B1";
+  if (s >= 3.0) return "A2";
+  return "A1";
+}
+function toeflLevel(s: number): string {
+  if (s >= 110) return "C2";
+  if (s >= 95) return "C1"; // was previously listed as 1-6, but current iBT is 0-120
+  if (s >= 72) return "B2";
+  if (s >= 42) return "B1";
+  return "A2";
+}
+function cambridgeLevel(s: number): string {
+  if (s >= 200) return "C2";
+  if (s >= 180) return "C1";
+  if (s >= 160) return "B2";
+  if (s >= 140) return "B1";
+  return "A2";
+}
+function pteLevel(s: number): string {
+  if (s >= 85) return "C2";
+  if (s >= 76) return "C1";
+  if (s >= 59) return "B2";
+  if (s >= 43) return "B1";
+  return "A2";
+}
+function duolingoLevel(s: number): string {
+  if (s >= 140) return "C2";
+  if (s >= 120) return "C1";
+  if (s >= 100) return "B2";
+  if (s >= 85) return "B1";
+  return "A2";
+}
+function tcfLevel(s: number): string {
+  if (s >= 600) return "C2";
+  if (s >= 500) return "C1";
+  if (s >= 400) return "B2";
+  if (s >= 300) return "B1";
+  if (s >= 200) return "A2";
+  return "A1";
+}
+function tefLevel(s: number): string {
+  if (s >= 600) return "C2";
+  if (s >= 500) return "C1";
+  if (s >= 400) return "B2";
+  if (s >= 300) return "B1";
+  if (s >= 200) return "A2";
+  return "A1";
 }
 
 const LANGUAGE_EXAMS: Record<string, ExamInfo[]> = {
   "İngilizce": [
-    { label: "IELTS", scoreHint: "0 – 9 (örn: 7.5)", sections: ["Listening", "Reading", "Writing", "Speaking"] },
-    { label: "TOEFL iBT", scoreHint: "0 – 120", sections: ["Reading", "Listening", "Speaking", "Writing"] },
-    { label: "Cambridge (FCE/CAE/CPE)", scoreHint: "90 – 230 (Cambridge Scale)" },
-    { label: "Duolingo English Test", scoreHint: "10 – 160" },
-    { label: "PTE Academic", scoreHint: "10 – 90" },
-    { label: "SAT", scoreHint: "400 – 1600", sections: ["Math", "Reading & Writing"] },
+    { label: "IELTS", maxScore: 9, scoreHint: "0 – 9 (örn: 7.5)", sections: ["Listening", "Reading", "Writing", "Speaking"], levelFromScore: ieltsLevel },
+    { label: "TOEFL iBT", maxScore: 120, scoreHint: "0 – 120", sections: ["Reading", "Listening", "Speaking", "Writing"], levelFromScore: toeflLevel },
+    { label: "Cambridge (FCE/CAE/CPE)", maxScore: 230, scoreHint: "90 – 230", levelFromScore: cambridgeLevel },
+    { label: "Duolingo English Test", maxScore: 160, scoreHint: "10 – 160", levelFromScore: duolingoLevel },
+    { label: "PTE Academic", maxScore: 90, scoreHint: "10 – 90", levelFromScore: pteLevel },
   ],
   "Almanca": [
-    { label: "Goethe-Zertifikat", scoreHint: "0 – 100 (Geçme: 60+)" },
-    { label: "TestDaF", scoreHint: "TDN 3 – 5", sections: ["Lesen", "Hören", "Schreiben", "Sprechen"] },
-    { label: "DSH", scoreHint: "DSH-1 / DSH-2 / DSH-3" },
-    { label: "telc Deutsch", scoreHint: "0 – 300" },
+    { label: "Goethe-Zertifikat", maxScore: 100, scoreHint: "0 – 100 (Geçme: 60+)", levelSelect: ["A1", "A2", "B1", "B2", "C1", "C2"] },
+    { label: "TestDaF", maxScore: 5, scoreHint: "TDN 3 – 5", sections: ["Lesen", "Hören", "Schreiben", "Sprechen"], levelFromScore: (s) => s >= 5 ? "C1" : s >= 4 ? "B2" : "B2" },
+    { label: "DSH", maxScore: 3, scoreHint: "1 / 2 / 3", levelFromScore: (s) => s >= 3 ? "C1" : s >= 2 ? "B2" : "B2" },
+    { label: "telc Deutsch", maxScore: 300, scoreHint: "0 – 300", levelSelect: ["A1", "A2", "B1", "B2", "C1", "C2"] },
   ],
   "Fransızca": [
-    { label: "DELF/DALF", scoreHint: "0 – 100 (Geçme: 50+)", sections: ["Compréhension Orale", "Compréhension Écrite", "Production Orale", "Production Écrite"] },
-    { label: "TCF", scoreHint: "100 – 699" },
-    { label: "TEF", scoreHint: "0 – 699" },
+    { label: "DELF", maxScore: 100, scoreHint: "0 – 100 (Geçme: 50+)", sections: ["Compréhension Orale", "Compréhension Écrite", "Production Orale", "Production Écrite"], levelSelect: ["A1", "A2", "B1", "B2"] },
+    { label: "DALF", maxScore: 100, scoreHint: "0 – 100 (Geçme: 50+)", sections: ["Compréhension Orale", "Compréhension Écrite", "Production Orale", "Production Écrite"], levelSelect: ["C1", "C2"] },
+    { label: "TCF", maxScore: 699, scoreHint: "100 – 699", levelFromScore: tcfLevel },
+    { label: "TEF", maxScore: 699, scoreHint: "0 – 699", levelFromScore: tefLevel },
   ],
   "İspanyolca": [
-    { label: "DELE", scoreHint: "0 – 100 (Geçme: 60%)" },
+    { label: "DELE", maxScore: 100, scoreHint: "0 – 100 (Geçme: 60%)", levelSelect: ["A1", "A2", "B1", "B2", "C1", "C2"] },
   ],
   "İtalyanca": [
-    { label: "CILS", scoreHint: "0 – 100" },
-    { label: "CELI", scoreHint: "0 – 120 (Geçme: 70%)" },
+    { label: "CILS", maxScore: 100, scoreHint: "0 – 100", levelSelect: ["A1", "A2", "B1", "B2", "C1", "C2"] },
+    { label: "CELI", maxScore: 120, scoreHint: "0 – 120 (Geçme: 70%)", levelSelect: ["A1", "A2", "B1", "B2", "C1", "C2"] },
   ],
   "Hollandaca": [
-    { label: "NT2", scoreHint: "500 – 900 (Geçme: 500+)" },
-    { label: "CNaVT", scoreHint: "Geçti / Kaldı" },
+    { label: "NT2", maxScore: 900, scoreHint: "500 – 900 (Geçme: 500+)", levelFromScore: (s) => s >= 700 ? "B2" : "B1" },
+    { label: "CNaVT", maxScore: 0, scoreHint: "Geçti / Kaldı", levelSelect: ["A2", "B1", "B2", "C1"] },
   ],
 };
 
@@ -239,27 +295,143 @@ interface LanguageEntry {
   language: string;
   level: string;
   examName: string;
+  examLevel: string; // for DELF B2, Goethe B1 etc.
   examScore: string;
   examDate: string;
   sectionScores: string;
+  showScore: boolean;
 }
 
 function emptyLanguageEntry(): LanguageEntry {
-  return { language: "", level: "", examName: "", examScore: "", examDate: "", sectionScores: "" };
+  return { language: "", level: "", examName: "", examLevel: "", examScore: "", examDate: "", sectionScores: "", showScore: false };
 }
 
-function formatLanguageString(entry: LanguageEntry): string {
-  let s = entry.language;
-  if (entry.level) s += `: ${entry.level}`;
-  if (entry.examName && entry.examScore) {
-    s += ` (${entry.examName} ${entry.examScore}`;
-    if (entry.sectionScores) s += ` – ${entry.sectionScores}`;
-    s += `)`;
-  } else if (entry.examName) {
-    s += ` (${entry.examName})`;
+function detectLevel(examInfo: ExamInfo | undefined, score: string, examLevel: string): string {
+  if (!examInfo) return "";
+  if (examInfo.levelSelect && examLevel) return examLevel;
+  if (examInfo.levelFromScore && score) {
+    const num = parseFloat(score);
+    if (!isNaN(num)) return examInfo.levelFromScore(num);
   }
-  if (entry.examDate) s += ` – ${entry.examDate}`;
+  return "";
+}
+
+function formatLanguageString(entry: LanguageEntry, examInfo: ExamInfo | undefined): string {
+  const detectedLvl = detectLevel(examInfo, entry.examScore, entry.examLevel);
+  let s = entry.language;
+  if (detectedLvl) {
+    s += `: ${detectedLvl}`;
+  } else if (entry.level) {
+    s += `: ${entry.level}`;
+  }
+  if (entry.examName) {
+    const parts: string[] = [entry.examName];
+    if (entry.examLevel) parts.push(entry.examLevel);
+    if (entry.showScore && entry.examScore) {
+      parts.push(`${entry.examScore}/${examInfo?.maxScore || "?"}`);
+    }
+    s += ` (${parts.join(" ")})`;
+  }
   return s;
+}
+
+function formatCertString(entry: LanguageEntry, examInfo: ExamInfo | undefined): string {
+  const parts: string[] = [entry.examName];
+  if (entry.examLevel) parts.push(entry.examLevel);
+  if (entry.examScore) {
+    parts.push(`– ${entry.examScore}/${examInfo?.maxScore || "?"}`);
+  }
+  if (entry.sectionScores) parts.push(`(${entry.sectionScores})`);
+  if (entry.examDate) parts.push(`– ${entry.examDate}`);
+  return parts.join(" ");
+}
+
+/* ====== Standardized Exam Data ====== */
+interface StandardExam {
+  name: string;
+  maxScore: number | string;
+  scoreHint: string;
+  subjects?: string[];
+  sections?: { name: string; maxScore: number }[];
+}
+
+const STANDARDIZED_EXAMS: StandardExam[] = [
+  {
+    name: "AP (Advanced Placement)",
+    maxScore: 5,
+    scoreHint: "1 – 5",
+    subjects: [
+      "Calculus AB", "Calculus BC", "Statistics", "Precalculus",
+      "Physics 1", "Physics 2", "Physics C: Mechanics", "Physics C: E&M",
+      "Chemistry", "Biology", "Environmental Science",
+      "Computer Science A", "Computer Science Principles",
+      "Macroeconomics", "Microeconomics",
+      "US History", "European History", "World History",
+      "English Language", "English Literature",
+      "Psychology", "Human Geography",
+      "US Government", "Comparative Government",
+      "Spanish Language", "French Language", "German Language",
+      "Chinese Language", "Japanese Language", "Italian Language", "Latin",
+      "Art History", "Music Theory",
+      "Studio Art: 2D", "Studio Art: 3D", "Studio Art: Drawing",
+      "Seminar", "Research",
+    ],
+  },
+  {
+    name: "SAT",
+    maxScore: 1600,
+    scoreHint: "400 – 1600",
+    sections: [
+      { name: "Math", maxScore: 800 },
+      { name: "Reading & Writing", maxScore: 800 },
+    ],
+  },
+  {
+    name: "ACT",
+    maxScore: 36,
+    scoreHint: "1 – 36",
+    sections: [
+      { name: "English", maxScore: 36 },
+      { name: "Math", maxScore: 36 },
+      { name: "Reading", maxScore: 36 },
+      { name: "Science", maxScore: 36 },
+    ],
+  },
+  {
+    name: "IB (International Baccalaureate)",
+    maxScore: 45,
+    scoreHint: "1 – 45 toplam (ders başı 1-7)",
+    subjects: [
+      "Mathematics AA HL", "Mathematics AA SL", "Mathematics AI HL", "Mathematics AI SL",
+      "Physics HL", "Physics SL", "Chemistry HL", "Chemistry SL", "Biology HL", "Biology SL",
+      "Computer Science HL", "Computer Science SL",
+      "Economics HL", "Economics SL", "Business Management HL", "Business Management SL",
+      "History HL", "History SL", "Geography HL", "Geography SL", "Psychology HL", "Psychology SL",
+      "English A HL", "English A SL", "English B HL", "English B SL",
+      "French B HL", "French B SL", "German B HL", "German B SL",
+      "Spanish B HL", "Spanish B SL", "Turkish A HL", "Turkish A SL",
+      "Visual Arts HL", "Visual Arts SL", "Music HL", "Music SL", "Theatre HL", "Theatre SL",
+    ],
+  },
+  {
+    name: "A-Level",
+    maxScore: "A*",
+    scoreHint: "A* – E",
+    subjects: [
+      "Mathematics", "Further Mathematics", "Physics", "Chemistry", "Biology",
+      "Computer Science", "Economics", "Business", "Accounting",
+      "English Literature", "English Language", "History", "Geography", "Psychology", "Sociology",
+      "French", "German", "Spanish", "Art & Design", "Music",
+    ],
+  },
+];
+
+interface ExamScoreEntry {
+  examName: string;
+  totalScore: string;
+  subjects: { name: string; score: string }[];
+  sections: { name: string; score: string }[];
+  date: string;
 }
 
 /* ====== Shared input styles ====== */
@@ -780,6 +952,18 @@ export default function CVPage() {
               onChange={(langs, certs) => update("skills", { ...data.skills, languages: langs, certifications: certs })}
             />
 
+            {/* === Sınav Notları === */}
+            <ExamScoresSection
+              highlights={data.education?.[0]?.highlights || []}
+              onChange={(highlights) => {
+                if (data.education.length > 0) {
+                  const copy = [...data.education];
+                  copy[0] = { ...copy[0], highlights };
+                  update("education", copy);
+                }
+              }}
+            />
+
             {/* === Diğer Beceriler === */}
             <SkillsTextarea
               label="Diğer Beceriler & Hobiler"
@@ -1162,28 +1346,12 @@ function LanguagesSection({
 }) {
   const [entries, setEntries] = useState<LanguageEntry[]>(() => {
     if (languages.length === 0 && certifications.length === 0) return [];
-    // Parse existing strings back into entries (best effort)
     return languages.map((lang) => {
       const entry = emptyLanguageEntry();
-      // Try to parse "Turkish: Native (IELTS 7.5) – Nov 2024"
       const colonIdx = lang.indexOf(":");
       if (colonIdx !== -1) {
         entry.language = lang.slice(0, colonIdx).trim();
-        const rest = lang.slice(colonIdx + 1).trim();
-        const parenMatch = rest.match(/^([^(]*)\(([^)]+)\)/);
-        if (parenMatch) {
-          entry.level = parenMatch[1].trim();
-          const examPart = parenMatch[2].trim();
-          // Try to split "IELTS C1 – 7.5/9"
-          const parts = examPart.split(/\s+/);
-          if (parts.length >= 1) entry.examName = parts[0];
-          if (parts.length >= 2) entry.examScore = parts.slice(1).join(" ");
-        } else {
-          entry.level = rest;
-        }
-        // Date after dash
-        const dashMatch = lang.match(/–\s*([^(]+)$/);
-        if (dashMatch) entry.examDate = dashMatch[1].trim();
+        entry.level = lang.slice(colonIdx + 1).trim();
       } else {
         entry.language = lang;
       }
@@ -1191,21 +1359,19 @@ function LanguagesSection({
     });
   });
 
-  // Sync entries back to parent
+  function getExamInfo(entry: LanguageEntry): ExamInfo | undefined {
+    const exams = LANGUAGE_EXAMS[entry.language] || [];
+    return exams.find((e) => e.label === entry.examName);
+  }
+
   function syncEntries(newEntries: LanguageEntry[]) {
     setEntries(newEntries);
     const langs = newEntries
       .filter((e) => e.language)
-      .map(formatLanguageString);
-    // Build certifications from exam entries
+      .map((e) => formatLanguageString(e, getExamInfo(e)));
     const certs = newEntries
-      .filter((e) => e.examName && e.examScore)
-      .map((e) => {
-        let c = `${e.examName} ${e.examScore}`;
-        if (e.sectionScores) c += ` (${e.sectionScores})`;
-        if (e.examDate) c += ` – ${e.examDate}`;
-        return c;
-      });
+      .filter((e) => e.examName)
+      .map((e) => formatCertString(e, getExamInfo(e)));
     onChange(langs, certs);
   }
 
@@ -1213,9 +1379,10 @@ function LanguagesSection({
     syncEntries([...entries, emptyLanguageEntry()]);
   }
 
-  function updateEntry(i: number, field: keyof LanguageEntry, value: string) {
+  function updateField(i: number, field: keyof LanguageEntry, value: string | boolean) {
     const copy = [...entries];
-    copy[i] = { ...copy[i], [field]: value };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    copy[i] = { ...copy[i], [field]: value } as any;
     syncEntries(copy);
   }
 
@@ -1236,6 +1403,7 @@ function LanguagesSection({
       {entries.map((entry, i) => {
         const exams = LANGUAGE_EXAMS[entry.language] || [];
         const selectedExam = exams.find((e) => e.label === entry.examName);
+        const detectedLvl = detectLevel(selectedExam, entry.examScore, entry.examLevel);
 
         return (
           <div
@@ -1252,14 +1420,14 @@ function LanguagesSection({
             </button>
 
             <div className="grid grid-cols-2 gap-3">
-              {/* Language select */}
+              {/* Language */}
               <div>
                 <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Dil</label>
                 <select
                   value={entry.language}
                   onChange={(e) => {
                     const copy = [...entries];
-                    copy[i] = { ...copy[i], language: e.target.value, examName: "", examScore: "", sectionScores: "" };
+                    copy[i] = { ...emptyLanguageEntry(), language: e.target.value };
                     syncEntries(copy);
                   }}
                   className={inputClass}
@@ -1272,20 +1440,40 @@ function LanguagesSection({
                 </select>
               </div>
 
-              {/* Proficiency level */}
+              {/* Seviye — auto-detected or manual */}
               <div>
-                <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Seviye</label>
-                <select
-                  value={entry.level}
-                  onChange={(e) => updateEntry(i, "level", e.target.value)}
-                  className={inputClass}
-                  style={inputStyle}
-                >
-                  <option value="">Seviye seçin</option>
-                  {PROFICIENCY_LEVELS.map((l) => (
-                    <option key={l} value={l}>{l}</option>
-                  ))}
-                </select>
+                <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
+                  Seviye
+                  {detectedLvl && (
+                    <span className="ml-1 font-normal" style={{ color: "var(--success)" }}>
+                      (otomatik: {detectedLvl})
+                    </span>
+                  )}
+                </label>
+                {detectedLvl ? (
+                  <div
+                    className="px-3 py-2 rounded-lg text-sm font-medium"
+                    style={{ backgroundColor: "var(--success-bg)", border: "1px solid rgba(22,163,74,0.25)", color: "var(--success)" }}
+                  >
+                    {detectedLvl}
+                  </div>
+                ) : (
+                  <select
+                    value={entry.level}
+                    onChange={(e) => updateField(i, "level", e.target.value)}
+                    className={inputClass}
+                    style={inputStyle}
+                  >
+                    <option value="">Seviye seçin</option>
+                    <option value="Native">Ana Dil (Native)</option>
+                    <option value="C2">C2 – İleri</option>
+                    <option value="C1">C1 – İleri</option>
+                    <option value="B2">B2 – Orta Üstü</option>
+                    <option value="B1">B1 – Orta</option>
+                    <option value="A2">A2 – Başlangıç</option>
+                    <option value="A1">A1 – Başlangıç</option>
+                  </select>
+                )}
               </div>
 
               {/* Exam select */}
@@ -1294,7 +1482,11 @@ function LanguagesSection({
                   <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Sınav</label>
                   <select
                     value={entry.examName}
-                    onChange={(e) => updateEntry(i, "examName", e.target.value)}
+                    onChange={(e) => {
+                      const copy = [...entries];
+                      copy[i] = { ...copy[i], examName: e.target.value, examScore: "", examLevel: "", sectionScores: "", showScore: false };
+                      syncEntries(copy);
+                    }}
                     className={inputClass}
                     style={inputStyle}
                   >
@@ -1306,19 +1498,40 @@ function LanguagesSection({
                 </div>
               )}
 
-              {/* Exam score */}
-              {entry.examName && (
+              {/* Exam level (for DELF B2, Goethe B1 etc.) */}
+              {entry.examName && selectedExam?.levelSelect && (
                 <div>
-                  <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
-                    Puan {selectedExam && <span className="font-normal">({selectedExam.scoreHint})</span>}
-                  </label>
-                  <input
-                    value={entry.examScore}
-                    onChange={(e) => updateEntry(i, "examScore", e.target.value)}
-                    placeholder={selectedExam?.scoreHint || "Puanınız"}
+                  <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Sınav Seviyesi</label>
+                  <select
+                    value={entry.examLevel}
+                    onChange={(e) => updateField(i, "examLevel", e.target.value)}
                     className={inputClass}
                     style={inputStyle}
-                  />
+                  >
+                    <option value="">Seviye seçin</option>
+                    {selectedExam.levelSelect.map((l) => (
+                      <option key={l} value={l}>{l}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Score + max display */}
+              {entry.examName && selectedExam && selectedExam.maxScore > 0 && (
+                <div>
+                  <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
+                    Puan <span className="font-normal">/ {selectedExam.maxScore}</span>
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      value={entry.examScore}
+                      onChange={(e) => updateField(i, "examScore", e.target.value)}
+                      placeholder={selectedExam.scoreHint}
+                      className={`${inputClass} flex-1`}
+                      style={inputStyle}
+                    />
+                    <span className="text-xs whitespace-nowrap" style={{ color: "var(--muted)" }}>/ {selectedExam.maxScore}</span>
+                  </div>
                 </div>
               )}
 
@@ -1330,7 +1543,7 @@ function LanguagesSection({
                   </label>
                   <input
                     value={entry.sectionScores}
-                    onChange={(e) => updateEntry(i, "sectionScores", e.target.value)}
+                    onChange={(e) => updateField(i, "sectionScores", e.target.value)}
                     placeholder={`örn: ${selectedExam.sections.map((s) => `${s}: ...`).join(", ")}`}
                     className={inputClass}
                     style={inputStyle}
@@ -1344,11 +1557,37 @@ function LanguagesSection({
                   <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Sınav Tarihi</label>
                   <input
                     value={entry.examDate}
-                    onChange={(e) => updateEntry(i, "examDate", e.target.value)}
+                    onChange={(e) => updateField(i, "examDate", e.target.value)}
                     placeholder="Kasım 2024"
                     className={inputClass}
                     style={inputStyle}
                   />
+                </div>
+              )}
+
+              {/* Show score on CV toggle */}
+              {entry.examName && entry.examScore && (
+                <div className="col-span-2">
+                  <button
+                    onClick={() => updateField(i, "showScore", !entry.showScore)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      backgroundColor: entry.showScore ? "var(--success-bg)" : "var(--surface)",
+                      border: entry.showScore ? "1px solid rgba(22,163,74,0.25)" : "1px solid var(--border)",
+                      color: entry.showScore ? "var(--success)" : "var(--muted)",
+                    }}
+                  >
+                    <div
+                      className="w-3.5 h-3.5 rounded border flex items-center justify-center"
+                      style={{
+                        borderColor: entry.showScore ? "var(--success)" : "var(--border)",
+                        backgroundColor: entry.showScore ? "var(--success)" : "transparent",
+                      }}
+                    >
+                      {entry.showScore && <Check className="w-2.5 h-2.5" style={{ color: "var(--white)" }} />}
+                    </div>
+                    CV&apos;de puanı göster ({entry.examScore}/{selectedExam?.maxScore})
+                  </button>
                 </div>
               )}
             </div>
@@ -1357,6 +1596,230 @@ function LanguagesSection({
       })}
 
       <AddButton label="Dil Ekle" onClick={addEntry} />
+    </div>
+  );
+}
+
+/* ====== Exam Scores Section (AP, SAT, IB, ACT, A-Level) ====== */
+function ExamScoresSection({
+  highlights,
+  onChange,
+}: {
+  highlights: string[];
+  onChange: (h: string[]) => void;
+}) {
+  const [examEntries, setExamEntries] = useState<ExamScoreEntry[]>([]);
+
+  function syncToHighlights(newEntries: ExamScoreEntry[]) {
+    setExamEntries(newEntries);
+    // Convert exam entries into highlight strings
+    // Keep existing non-exam highlights
+    const nonExamHighlights = highlights.filter((h) => !h.startsWith("AP Results:") && !h.startsWith("SAT:") && !h.startsWith("ACT:") && !h.startsWith("IB:") && !h.startsWith("A-Level:"));
+    const examStrings: string[] = [];
+    for (const entry of newEntries) {
+      if (!entry.examName) continue;
+      const exam = STANDARDIZED_EXAMS.find((e) => e.name === entry.examName);
+      if (!exam) continue;
+
+      if (entry.subjects.length > 0 && entry.subjects.some((s) => s.score)) {
+        // AP or IB-style: list subjects with scores
+        const prefix = entry.examName.startsWith("AP") ? "AP Results" : entry.examName.startsWith("IB") ? "IB Results" : entry.examName.startsWith("A-") ? "A-Level Results" : entry.examName;
+        const parts = entry.subjects
+          .filter((s) => s.score)
+          .map((s) => `${s.name} ${s.score}/${exam.maxScore}`);
+        if (parts.length > 0) examStrings.push(`${prefix}: ${parts.join(", ")}`);
+      } else if (entry.totalScore) {
+        // SAT/ACT-style: total + sections
+        let s = `${entry.examName} ${entry.totalScore}/${exam.maxScore}`;
+        const sectionParts = entry.sections.filter((sec) => sec.score).map((sec) => `${sec.name}: ${sec.score}`);
+        if (sectionParts.length > 0) s += ` (${sectionParts.join(", ")})`;
+        examStrings.push(s);
+      }
+    }
+    onChange([...nonExamHighlights, ...examStrings]);
+  }
+
+  function addExam() {
+    syncToHighlights([...examEntries, { examName: "", totalScore: "", subjects: [], sections: [], date: "" }]);
+  }
+
+  function updateExam(i: number, updates: Partial<ExamScoreEntry>) {
+    const copy = [...examEntries];
+    copy[i] = { ...copy[i], ...updates };
+    syncToHighlights(copy);
+  }
+
+  function removeExam(i: number) {
+    syncToHighlights(examEntries.filter((_, j) => j !== i));
+  }
+
+  return (
+    <div>
+      <label className={labelClass} style={labelStyle}>Sınav Notları (AP, SAT, IB, ACT, A-Level)</label>
+
+      {examEntries.length === 0 && (
+        <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>
+          Standart sınav sonuçlarınızı ekleyin. Bunlar eğitim bölümünde görünecektir.
+        </p>
+      )}
+
+      {examEntries.map((entry, i) => {
+        const exam = STANDARDIZED_EXAMS.find((e) => e.name === entry.examName);
+
+        return (
+          <div
+            key={i}
+            className="rounded-lg p-4 mb-3 relative"
+            style={{ backgroundColor: "var(--surface2)", border: "1px solid var(--border)" }}
+          >
+            <button
+              onClick={() => removeExam(i)}
+              className="absolute top-3 right-3 p-1 rounded hover:opacity-70"
+              style={{ color: "var(--danger)" }}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* Exam type */}
+              <div className="col-span-2">
+                <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Sınav</label>
+                <select
+                  value={entry.examName}
+                  onChange={(e) => {
+                    const selected = STANDARDIZED_EXAMS.find((ex) => ex.name === e.target.value);
+                    updateExam(i, {
+                      examName: e.target.value,
+                      totalScore: "",
+                      subjects: [],
+                      sections: selected?.sections?.map((s) => ({ name: s.name, score: "" })) || [],
+                    });
+                  }}
+                  className={inputClass}
+                  style={inputStyle}
+                >
+                  <option value="">Sınav seçin</option>
+                  {STANDARDIZED_EXAMS.map((ex) => (
+                    <option key={ex.name} value={ex.name}>{ex.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* For SAT/ACT: total score + sections */}
+              {exam && exam.sections && (
+                <>
+                  <div>
+                    <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
+                      Toplam Puan <span className="font-normal">/ {String(exam.maxScore)}</span>
+                    </label>
+                    <div className="flex items-center gap-1">
+                      <input
+                        value={entry.totalScore}
+                        onChange={(e) => updateExam(i, { totalScore: e.target.value })}
+                        placeholder={exam.scoreHint}
+                        className={`${inputClass} flex-1`}
+                        style={inputStyle}
+                      />
+                      <span className="text-xs whitespace-nowrap" style={{ color: "var(--muted)" }}>/ {String(exam.maxScore)}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Tarih</label>
+                    <input
+                      value={entry.date}
+                      onChange={(e) => updateExam(i, { date: e.target.value })}
+                      placeholder="Kasım 2024"
+                      className={inputClass}
+                      style={inputStyle}
+                    />
+                  </div>
+                  {entry.sections.map((sec, j) => (
+                    <div key={j}>
+                      <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
+                        {sec.name} <span className="font-normal">/ {exam.sections![j].maxScore}</span>
+                      </label>
+                      <div className="flex items-center gap-1">
+                        <input
+                          value={sec.score}
+                          onChange={(e) => {
+                            const copy = [...entry.sections];
+                            copy[j] = { ...copy[j], score: e.target.value };
+                            updateExam(i, { sections: copy });
+                          }}
+                          placeholder={`max ${exam.sections![j].maxScore}`}
+                          className={`${inputClass} flex-1`}
+                          style={inputStyle}
+                        />
+                        <span className="text-xs whitespace-nowrap" style={{ color: "var(--muted)" }}>/ {exam.sections![j].maxScore}</span>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {/* For AP/IB/A-Level: subject picker + individual scores */}
+              {exam && exam.subjects && (
+                <>
+                  <div className="col-span-2">
+                    <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Ders Ekle</label>
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value && !entry.subjects.some((s) => s.name === e.target.value)) {
+                          updateExam(i, { subjects: [...entry.subjects, { name: e.target.value, score: "" }] });
+                        }
+                      }}
+                      className={inputClass}
+                      style={inputStyle}
+                    >
+                      <option value="">Ders seçin...</option>
+                      {exam.subjects
+                        .filter((s) => !entry.subjects.some((sub) => sub.name === s))
+                        .map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                    </select>
+                  </div>
+                  {entry.subjects.map((sub, j) => (
+                    <div key={j} className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
+                          {sub.name}
+                        </label>
+                        <div className="flex items-center gap-1">
+                          <input
+                            value={sub.score}
+                            onChange={(e) => {
+                              const copy = [...entry.subjects];
+                              copy[j] = { ...copy[j], score: e.target.value };
+                              updateExam(i, { subjects: copy });
+                            }}
+                            placeholder={typeof exam.maxScore === "number" ? `max ${exam.maxScore}` : exam.maxScore}
+                            className={`${inputClass} flex-1`}
+                            style={inputStyle}
+                          />
+                          <span className="text-xs whitespace-nowrap" style={{ color: "var(--muted)" }}>/ {String(exam.maxScore)}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          updateExam(i, { subjects: entry.subjects.filter((_, k) => k !== j) });
+                        }}
+                        className="p-2 rounded hover:opacity-70 mb-0.5"
+                        style={{ color: "var(--danger)" }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      <AddButton label="Sınav Ekle" onClick={addExam} />
     </div>
   );
 }
