@@ -10,20 +10,24 @@ import {
 import type { CVData } from "./gemini";
 
 // --- Register Professional Fonts ---
-// Lato (sans-serif - modern, clean) from GitHub Google Fonts repo
+// Lato (sans-serif - modern, clean) — bundled locally in /public/fonts/
+import path from "path";
+
+const fontsDir = path.join(process.cwd(), "public", "fonts");
+
 Font.register({
   family: "Lato",
   fonts: [
     {
-      src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf",
+      src: path.join(fontsDir, "Lato-Regular.ttf"),
       fontWeight: 400,
     },
     {
-      src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Bold.ttf",
+      src: path.join(fontsDir, "Lato-Bold.ttf"),
       fontWeight: 700,
     },
     {
-      src: "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Italic.ttf",
+      src: path.join(fontsDir, "Lato-Italic.ttf"),
       fontStyle: "italic",
       fontWeight: 400,
     },
@@ -199,16 +203,16 @@ function SidebarSection({
   children: React.ReactNode;
 }) {
   return (
-    <View style={{ marginBottom: 14 }}>
+    <View style={{ marginBottom: 10 }}>
       <Text
         style={{
           fontFamily: "Lato",
-          fontSize: 9,
+          fontSize: 8,
           fontWeight: 700,
           color: SIDEBAR_ACCENT,
           textTransform: "uppercase" as const,
-          letterSpacing: 2,
-          marginBottom: 6,
+          letterSpacing: 1.5,
+          marginBottom: 4,
         }}
       >
         {title}
@@ -217,7 +221,7 @@ function SidebarSection({
         style={{
           borderTopWidth: 1,
           borderTopColor: "rgba(59,130,246,0.4)",
-          paddingTop: 6,
+          paddingTop: 4,
         }}
       >
         {children}
@@ -233,16 +237,16 @@ function SkillTag({ label }: { label: string }) {
       style={{
         backgroundColor: "rgba(59,130,246,0.15)",
         borderRadius: 3,
-        paddingHorizontal: 6,
-        paddingVertical: 2.5,
-        marginRight: 4,
-        marginBottom: 4,
+        paddingHorizontal: 5,
+        paddingVertical: 2,
+        marginRight: 3,
+        marginBottom: 3,
       }}
     >
       <Text
         style={{
           fontFamily: "Lato",
-          fontSize: 7.5,
+          fontSize: 7,
           color: "#93c5fd",
         }}
       >
@@ -261,27 +265,27 @@ function MainSection({
   children: React.ReactNode;
 }) {
   return (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 7 }}>
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          marginBottom: 6,
+          marginBottom: 4,
         }}
       >
         <View
           style={{
             width: 3,
-            height: 12,
+            height: 10,
             backgroundColor: SIDEBAR_ACCENT,
-            marginRight: 6,
+            marginRight: 5,
             borderRadius: 1,
           }}
         />
         <Text
           style={{
             fontFamily: "Lato",
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: 700,
             color: COLORS.black,
             textTransform: "uppercase" as const,
@@ -295,7 +299,7 @@ function MainSection({
         style={{
           borderTopWidth: 0.5,
           borderTopColor: "#e2e8f0",
-          paddingTop: 4,
+          paddingTop: 3,
         }}
       >
         {children}
@@ -313,10 +317,10 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
         size="A4"
         style={{
           fontFamily: "Lato",
-          fontSize: 9,
+          fontSize: 8,
           flexDirection: "row",
           color: COLORS.black,
-          lineHeight: 1.4,
+          lineHeight: 1.3,
         }}
       >
         {/* ====== LEFT SIDEBAR ====== */}
@@ -330,23 +334,23 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
           }}
         >
           {/* Name + Title area */}
-          <View style={{ marginBottom: 16, alignItems: "center" }}>
+          <View style={{ marginBottom: 12, alignItems: "center" }}>
             {/* Initials circle */}
             <View
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: 28,
+                width: 46,
+                height: 46,
+                borderRadius: 23,
                 backgroundColor: SIDEBAR_ACCENT,
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: 10,
+                marginBottom: 8,
               }}
             >
               <Text
                 style={{
                   fontFamily: "Lato",
-                  fontSize: 20,
+                  fontSize: 17,
                   fontWeight: 700,
                   color: COLORS.white,
                 }}
@@ -362,7 +366,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
             <Text
               style={{
                 fontFamily: "Lato",
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: 700,
                 color: COLORS.white,
                 textAlign: "center",
@@ -391,9 +395,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
               <Text
                 style={{
                   fontFamily: "Lato",
-                  fontSize: 7.5,
+                  fontSize: 7,
                   color: SIDEBAR_TEXT,
-                  marginBottom: 4,
+                  marginBottom: 3,
                 }}
               >
                 {info.email}
@@ -403,9 +407,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
               <Text
                 style={{
                   fontFamily: "Lato",
-                  fontSize: 7.5,
+                  fontSize: 7,
                   color: SIDEBAR_TEXT,
-                  marginBottom: 4,
+                  marginBottom: 3,
                 }}
               >
                 {info.phone}
@@ -415,9 +419,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
               <Text
                 style={{
                   fontFamily: "Lato",
-                  fontSize: 7.5,
+                  fontSize: 7,
                   color: SIDEBAR_TEXT,
-                  marginBottom: 4,
+                  marginBottom: 3,
                 }}
               >
                 {info.location}
@@ -427,9 +431,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
               <Text
                 style={{
                   fontFamily: "Lato",
-                  fontSize: 7.5,
+                  fontSize: 7,
                   color: SIDEBAR_MUTED,
-                  marginBottom: 4,
+                  marginBottom: 3,
                 }}
               >
                 {info.linkedin}
@@ -439,9 +443,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
               <Text
                 style={{
                   fontFamily: "Lato",
-                  fontSize: 7.5,
+                  fontSize: 7,
                   color: SIDEBAR_MUTED,
-                  marginBottom: 4,
+                  marginBottom: 3,
                 }}
               >
                 {info.website}
@@ -474,22 +478,22 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginBottom: 5,
+                    marginBottom: 3,
                   }}
                 >
                   <View
                     style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: 2.5,
+                      width: 4,
+                      height: 4,
+                      borderRadius: 2,
                       backgroundColor: SIDEBAR_ACCENT,
-                      marginRight: 6,
+                      marginRight: 5,
                     }}
                   />
                   <Text
                     style={{
                       fontFamily: "Lato",
-                      fontSize: 8,
+                      fontSize: 7,
                       color: SIDEBAR_TEXT,
                     }}
                   >
@@ -509,9 +513,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                     key={i}
                     style={{
                       fontFamily: "Lato",
-                      fontSize: 7.5,
+                      fontSize: 7,
                       color: SIDEBAR_TEXT,
-                      marginBottom: 3,
+                      marginBottom: 2,
                     }}
                   >
                     {cert}
@@ -547,7 +551,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
           {data.education?.length > 0 && (
             <MainSection title="Education">
               {data.education.map((edu, i) => (
-                <View key={i} style={{ marginBottom: 6 }}>
+                <View key={i} style={{ marginBottom: 4 }}>
                   <View
                     style={{
                       flexDirection: "row",
@@ -558,7 +562,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 9.5,
+                          fontSize: 8.5,
                           fontWeight: 700,
                           color: COLORS.black,
                         }}
@@ -568,7 +572,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 8.5,
+                          fontSize: 7.5,
                           fontStyle: "italic",
                           color: COLORS.darkGray,
                         }}
@@ -580,7 +584,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8,
+                        fontSize: 7,
                         color: COLORS.medGray,
                       }}
                     >
@@ -594,10 +598,10 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       key={j}
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8.5,
+                        fontSize: 7.5,
                         color: COLORS.darkGray,
                         marginLeft: 8,
-                        marginTop: 1.5,
+                        marginTop: 1,
                       }}
                     >
                       {"•  "}
@@ -613,7 +617,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
           {data.experience?.length > 0 && (
             <MainSection title="Experience">
               {data.experience.map((exp, i) => (
-                <View key={i} style={{ marginBottom: 6 }}>
+                <View key={i} style={{ marginBottom: 4 }}>
                   <View
                     style={{
                       flexDirection: "row",
@@ -624,7 +628,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 9.5,
+                          fontSize: 8.5,
                           fontWeight: 700,
                           color: COLORS.black,
                         }}
@@ -634,7 +638,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 8.5,
+                          fontSize: 7.5,
                           fontStyle: "italic",
                           color: SIDEBAR_ACCENT,
                         }}
@@ -645,7 +649,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8,
+                        fontSize: 7,
                         color: COLORS.medGray,
                       }}
                     >
@@ -659,10 +663,10 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       key={j}
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8.5,
+                        fontSize: 7.5,
                         color: COLORS.darkGray,
                         marginLeft: 8,
-                        marginTop: 1.5,
+                        marginTop: 1,
                       }}
                     >
                       {"•  "}
@@ -678,18 +682,18 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
           {data.projects?.length > 0 && (
             <MainSection title="Projects">
               {data.projects.map((proj, i) => (
-                <View key={i} style={{ marginBottom: 6 }}>
+                <View key={i} style={{ marginBottom: 4 }}>
                   <View
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
-                      marginBottom: 2,
+                      marginBottom: 1,
                     }}
                   >
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 9.5,
+                        fontSize: 8.5,
                         fontWeight: 700,
                         color: COLORS.black,
                       }}
@@ -700,9 +704,9 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 7.5,
+                          fontSize: 7,
                           color: SIDEBAR_ACCENT,
-                          marginLeft: 6,
+                          marginLeft: 5,
                         }}
                       >
                         {proj.technologies}
@@ -713,7 +717,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8.5,
+                        fontSize: 7.5,
                         color: COLORS.darkGray,
                         marginLeft: 8,
                         marginTop: 1,
@@ -728,10 +732,10 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       key={j}
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8.5,
+                        fontSize: 7.5,
                         color: COLORS.darkGray,
                         marginLeft: 8,
-                        marginTop: 1.5,
+                        marginTop: 1,
                       }}
                     >
                       {"•  "}
@@ -747,7 +751,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
           {data.leadership?.length > 0 && (
             <MainSection title="Leadership & Activities">
               {data.leadership.map((lead, i) => (
-                <View key={i} style={{ marginBottom: 5 }}>
+                <View key={i} style={{ marginBottom: 3 }}>
                   <View
                     style={{
                       flexDirection: "row",
@@ -758,7 +762,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 9.5,
+                          fontSize: 8.5,
                           fontWeight: 700,
                           color: COLORS.black,
                         }}
@@ -768,7 +772,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 8.5,
+                          fontSize: 7.5,
                           fontStyle: "italic",
                           color: SIDEBAR_ACCENT,
                         }}
@@ -780,7 +784,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 8,
+                          fontSize: 7,
                           color: COLORS.medGray,
                         }}
                       >
@@ -792,10 +796,10 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8.5,
+                        fontSize: 7.5,
                         color: COLORS.darkGray,
                         marginLeft: 8,
-                        marginTop: 1.5,
+                        marginTop: 1,
                       }}
                     >
                       {"•  "}
@@ -816,14 +820,14 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    marginBottom: 4,
+                    marginBottom: 3,
                   }}
                 >
                   <View style={{ flex: 1 }}>
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 9,
+                        fontSize: 8,
                         fontWeight: 700,
                         color: COLORS.black,
                       }}
@@ -834,7 +838,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                       <Text
                         style={{
                           fontFamily: "Lato",
-                          fontSize: 8,
+                          fontSize: 7,
                           color: COLORS.darkGray,
                           fontStyle: "italic",
                         }}
@@ -847,7 +851,7 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
                     <Text
                       style={{
                         fontFamily: "Lato",
-                        fontSize: 8,
+                        fontSize: 7,
                         color: COLORS.medGray,
                       }}
                     >
@@ -865,186 +869,253 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
 }
 
 // ======================================
-// HARVARD CV Document
+// HARVARD CV Document — User Template Match
 // ======================================
 
+const H = {
+  // Colors matching user's template
+  headerRed: "#8b0000", // Dark red for section titles
+  black: "#000000",
+  darkGray: "#333333",
+  medGray: "#555555",
+};
+
+/* Harvard section header: centered, uppercase, underlined, dark red */
+function HarvardSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View style={{ marginTop: 10, marginBottom: 4 }}>
+      <Text
+        style={{
+          fontFamily: "Times-Roman",
+          fontSize: 10,
+          fontWeight: 700,
+          textAlign: "center" as const,
+          color: H.headerRed,
+          textDecoration: "underline" as const,
+          textTransform: "uppercase" as const,
+          letterSpacing: 0.8,
+          marginBottom: 5,
+        }}
+      >
+        {title}
+      </Text>
+      {children}
+    </View>
+  );
+}
+
+/* Harvard entry row: title+location left, date right */
+function HarvardEntry({
+  title,
+  subtitle,
+  date,
+  description,
+  bullets,
+}: {
+  title: string;
+  subtitle?: string;
+  date?: string;
+  description?: string;
+  bullets?: string[];
+}) {
+  return (
+    <View style={{ marginBottom: 5 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <Text style={{ fontFamily: "Times-Roman", fontSize: 9.5, fontWeight: 700, color: H.black, flex: 1, marginRight: 8 }}>
+          {title}
+        </Text>
+        {date && (
+          <Text style={{ fontFamily: "Times-Roman", fontSize: 9, color: H.darkGray, textAlign: "right" as const, flexShrink: 0 }}>
+            {date}
+          </Text>
+        )}
+      </View>
+      {subtitle && (
+        <Text style={{ fontFamily: "Times-Roman", fontSize: 9, fontStyle: "italic", color: H.medGray, marginTop: 1 }}>
+          {subtitle}
+        </Text>
+      )}
+      {description && (
+        <Text style={{ fontFamily: "Times-Roman", fontSize: 9, fontStyle: "italic", color: H.medGray, marginTop: 1 }}>
+          {description}
+        </Text>
+      )}
+      {bullets && bullets.length > 0 && bullets.map((b, i) => (
+        <View key={i} style={{ flexDirection: "row", marginTop: 1.5, paddingLeft: 14 }}>
+          <Text style={{ fontFamily: "Times-Roman", fontSize: 9, color: H.black, width: 10 }}>•</Text>
+          <Text style={{ fontFamily: "Times-Roman", fontSize: 9, color: H.black, flex: 1, lineHeight: 1.3 }}>{b}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export function HarvardCVDocument({ data }: { data: CVData }) {
-  const s = harvardStyles;
+  const info = data.personalInfo;
+
   return (
     <Document>
-      <Page size="A4" style={s.page}>
-        <ContactLine data={data.personalInfo} styles={s} />
+      <Page
+        size="A4"
+        style={{
+          fontFamily: "Times-Roman",
+          fontSize: 9,
+          color: H.black,
+          paddingTop: 28,
+          paddingBottom: 24,
+          paddingHorizontal: 45,
+          lineHeight: 1.3,
+        }}
+      >
+        {/* ===== HEADER ===== */}
+        <View style={{ alignItems: "center", marginBottom: 3 }}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              textDecoration: "underline" as const,
+              textTransform: "uppercase" as const,
+              letterSpacing: 1.5,
+              marginBottom: 3,
+            }}
+          >
+            {info.fullName || "NAME"}
+          </Text>
+          {info.location && (
+            <Text style={{ fontSize: 8.5, color: H.darkGray, marginBottom: 1 }}>
+              {info.location}
+            </Text>
+          )}
+          {info.email && (
+            <Text style={{ fontSize: 8.5, color: H.darkGray, marginBottom: 1 }}>
+              Email: {info.email}
+            </Text>
+          )}
+          {info.phone && (
+            <Text style={{ fontSize: 8.5, color: H.darkGray, marginBottom: 1 }}>
+              Mobile Phone: {info.phone}
+            </Text>
+          )}
+          {(info.linkedin || info.website) && (
+            <Text style={{ fontSize: 8.5, color: H.darkGray, marginBottom: 1 }}>
+              {[info.linkedin, info.website].filter(Boolean).join(" / ")}
+            </Text>
+          )}
+        </View>
 
-        {/* Education */}
+        {/* ===== EDUCATION & QUALIFICATIONS ===== */}
         {data.education?.length > 0 && (
-          <Section title="Education" styles={s}>
+          <HarvardSection title="Education & Qualifications">
             {data.education.map((edu, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{edu.institution}</Text>
-                    <Text style={s.entrySubtitle}>
-                      {[edu.degree, edu.field].filter(Boolean).join(", ")}
-                      {edu.gpa ? ` | GPA: ${edu.gpa}` : ""}
-                    </Text>
-                  </View>
-                  <Text style={s.entryDate}>
-                    {[edu.startDate, edu.endDate].filter(Boolean).join(" - ")}
-                  </Text>
-                </View>
-                {edu.highlights?.map((h, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {h}
-                  </Text>
-                ))}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={edu.institution}
+                date={[edu.startDate, edu.endDate].filter(Boolean).join(" – ")}
+                bullets={[
+                  ...(edu.degree && edu.field ? [`${edu.degree}, ${edu.field}`] : edu.degree ? [edu.degree] : edu.field ? [edu.field] : []),
+                  ...(edu.gpa ? [`GPA: ${edu.gpa}`] : []),
+                  ...(edu.highlights || []),
+                ].filter(Boolean)}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Projects & Research */}
+        {/* ===== CERTIFICATES ===== */}
+        {data.skills?.certifications && data.skills.certifications.length > 0 && (
+          <HarvardSection title="Certificates">
+            {data.skills.certifications.map((cert, i) => (
+              <View key={i} style={{ flexDirection: "row", marginBottom: 2, paddingLeft: 14 }}>
+                <Text style={{ fontSize: 9, width: 10 }}>•</Text>
+                <Text style={{ fontSize: 9, flex: 1, fontWeight: 700 }}>{cert}</Text>
+              </View>
+            ))}
+          </HarvardSection>
+        )}
+
+        {/* ===== SUMMER SCHOOLS & TRAININGS ===== */}
         {data.projects?.length > 0 && (
-          <Section title="Academic Projects & Research" styles={s}>
+          <HarvardSection title="Summer Schools & Trainings & Conferences">
             {data.projects.map((proj, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <Text style={s.entryTitle}>{proj.name}</Text>
-                </View>
-                {proj.technologies && (
-                  <Text style={s.entrySubtitle}>
-                    Technologies: {proj.technologies}
-                  </Text>
-                )}
-                {proj.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {proj.description}
-                  </Text>
-                )}
-                {proj.highlights?.map((h, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {h}
-                  </Text>
-                ))}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={proj.name}
+                subtitle={proj.technologies ? `Technologies: ${proj.technologies}` : undefined}
+                bullets={[
+                  ...(proj.description ? [proj.description] : []),
+                  ...(proj.highlights || []),
+                ]}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Professional Experience */}
+        {/* ===== WORK EXPERIENCES ===== */}
         {data.experience?.length > 0 && (
-          <Section title="Professional Experience" styles={s}>
+          <HarvardSection title="Work Experiences">
             {data.experience.map((exp, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{exp.company}</Text>
-                    <Text style={s.entrySubtitle}>{exp.role}</Text>
-                  </View>
-                  <Text style={s.entryDate}>
-                    {[exp.startDate, exp.endDate].filter(Boolean).join(" - ")}
-                  </Text>
-                </View>
-                {exp.bullets?.map((b, j) => (
-                  <Text key={j} style={s.bullet}>
-                    {"  -  "}
-                    {b}
-                  </Text>
-                ))}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={exp.company}
+                subtitle={exp.role}
+                date={[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}
+                bullets={exp.bullets}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Leadership & Activities */}
+        {/* ===== COMMUNITY SERVICE & SCHOOL CLUBS ===== */}
         {data.leadership?.length > 0 && (
-          <Section title="Extracurricular Activities & Leadership" styles={s}>
+          <HarvardSection title="Community Service & School Clubs">
             {data.leadership.map((lead, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{lead.organization}</Text>
-                    <Text style={s.entrySubtitle}>{lead.role}</Text>
-                  </View>
-                  {lead.period && (
-                    <Text style={s.entryDate}>{lead.period}</Text>
-                  )}
-                </View>
-                {lead.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {lead.description}
-                  </Text>
-                )}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={`${lead.organization}${lead.role ? ` – ${lead.role}` : ""}`}
+                date={lead.period}
+                bullets={lead.description ? [lead.description] : undefined}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Awards */}
+        {/* ===== AWARDS & HONORS ===== */}
         {data.awards?.length > 0 && (
-          <Section title="Awards, Honors & Competitions" styles={s}>
+          <HarvardSection title="Awards & Honors">
             {data.awards.map((award, i) => (
-              <View key={i}>
-                <View style={s.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.entryTitle}>{award.title}</Text>
-                    {award.issuer && (
-                      <Text style={s.entrySubtitle}>{award.issuer}</Text>
-                    )}
-                  </View>
-                  {award.date && <Text style={s.entryDate}>{award.date}</Text>}
-                </View>
-                {award.description && (
-                  <Text style={s.bullet}>
-                    {"  -  "}
-                    {award.description}
-                  </Text>
-                )}
-              </View>
+              <HarvardEntry
+                key={i}
+                title={award.title}
+                subtitle={award.issuer}
+                date={award.date}
+                bullets={award.description ? [award.description] : undefined}
+              />
             ))}
-          </Section>
+          </HarvardSection>
         )}
 
-        {/* Skills & Certifications */}
+        {/* ===== SKILLS & INTERESTS ===== */}
         {data.skills && (
-          <Section title="Skills & Certifications" styles={s}>
+          <HarvardSection title="Skills & Interests">
             {data.skills.technical && data.skills.technical.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Technical Skills</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.technical.join(", ")}
-                </Text>
+              <View style={{ flexDirection: "row", marginBottom: 4, flexWrap: "wrap" }}>
+                <Text style={{ fontSize: 10, fontWeight: 700 }}>SKILLS: </Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>{data.skills.technical.join(", ")}</Text>
               </View>
             )}
             {data.skills.languages && data.skills.languages.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Languages</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.languages.join(", ")}
-                </Text>
+              <View style={{ flexDirection: "row", marginBottom: 4, flexWrap: "wrap" }}>
+                <Text style={{ fontSize: 10, fontWeight: 700 }}>LANGUAGES: </Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>{data.skills.languages.join(", ")}</Text>
               </View>
             )}
-            {data.skills.certifications &&
-              data.skills.certifications.length > 0 && (
-                <View style={s.skillRow}>
-                  <Text style={s.skillLabel}>Certifications</Text>
-                  <Text style={s.skillValue}>
-                    {data.skills.certifications.join(", ")}
-                  </Text>
-                </View>
-              )}
             {data.skills.other && data.skills.other.length > 0 && (
-              <View style={s.skillRow}>
-                <Text style={s.skillLabel}>Other Skills</Text>
-                <Text style={s.skillValue}>
-                  {data.skills.other.join(", ")}
-                </Text>
+              <View style={{ flexDirection: "row", marginBottom: 4, flexWrap: "wrap" }}>
+                <Text style={{ fontSize: 10, fontWeight: 700 }}>INTERESTS: </Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>{data.skills.other.join(", ")}</Text>
               </View>
             )}
-          </Section>
+          </HarvardSection>
         )}
       </Page>
     </Document>
