@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
       model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 2000,
+        maxOutputTokens: 4096,
       },
     });
 
@@ -220,7 +220,12 @@ Career goals and how this program fits into the student's long-term vision.
 [CLOSING]
 A memorable closing that reinforces enthusiasm and commitment.
 
-IMPORTANT: Use the section markers [OPENING], [ACADEMIC_BACKGROUND], [WHY_THIS_PROGRAM], [EXPERIENCE], [CAREER_GOALS], [CLOSING] as headers for each section. Do not include any other formatting or headers.`;
+IMPORTANT RULES:
+- Use the section markers [OPENING], [ACADEMIC_BACKGROUND], [WHY_THIS_PROGRAM], [EXPERIENCE], [CAREER_GOALS], [CLOSING] as headers for each section.
+- Do not include any other formatting or headers.
+- NEVER leave any sentence incomplete or cut off mid-way. Every sentence MUST be fully finished with proper punctuation.
+- NEVER stop writing in the middle of a paragraph. Complete every thought fully.
+- If approaching the word limit, wrap up gracefully with a complete closing — do not abruptly stop.`;
 
     const result = await model.generateContent(prompt);
     const letter = result.response.text();
