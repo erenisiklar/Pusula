@@ -381,7 +381,11 @@ function UniversityCard({
   return (
     <div
       className="rounded-xl overflow-hidden transition-all"
-      style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+      style={{
+        backgroundColor: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderLeft: (university.level || "master") === "master" ? "3px solid var(--gold)" : "3px solid var(--blue)",
+      }}
     >
       <div
         className="flex items-center justify-between px-5 py-4 cursor-pointer hover:opacity-90 transition-opacity"
