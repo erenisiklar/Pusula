@@ -1,8 +1,10 @@
-import { universities } from "@/lib/universities";
-import { getAcceptanceStats } from "@/lib/supabase/queries";
+import { getUniversities, getAcceptanceStats } from "@/lib/supabase/queries";
 import MapClient from "./client";
 
 export default async function MapPage() {
-  const acceptanceStats = await getAcceptanceStats();
+  const [universities, acceptanceStats] = await Promise.all([
+    getUniversities(),
+    getAcceptanceStats(),
+  ]);
   return <MapClient universities={universities} acceptanceStats={acceptanceStats} />;
 }

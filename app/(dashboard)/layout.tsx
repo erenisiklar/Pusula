@@ -86,7 +86,7 @@ export default function DashboardLayout({
         {/* Footer */}
         <div
           className="px-4 py-3 text-xs border-t"
-          style={{ color: "rgba(255,255,255,0.4)", borderColor: "rgba(255,255,255,0.08)" }}
+          style={{ color: "rgba(255,255,255,0.35)", borderColor: "rgba(255,255,255,0.1)" }}
         >
           <p>Pusula v1.0 MVP</p>
           <p className="mt-1 opacity-70">Almanya · İtalya · Hollanda</p>

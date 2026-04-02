@@ -8,6 +8,9 @@ export interface UniversityMapData {
   countryColor: string;
 }
 
+const WP = (filename: string) =>
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}?width=800`;
+
 export const universityMapData: UniversityMapData[] = [
   // ── Hollanda ──
   { id: "tu-delft-cs", lat: 51.9988, lng: 4.3733, website: "https://www.tudelft.nl", imageUrl: "", durationYears: 2, countryColor: "#f59e0b" },
