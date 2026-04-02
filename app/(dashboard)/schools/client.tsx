@@ -76,7 +76,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
   const [selectedDept, setSelectedDept] = useState<string>("Tümü");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedLevel, setSelectedLevel] = useState<string>("Tümü");
+  const [selectedLevel, setSelectedLevel] = useState<string>("Lisans");
 
   const studentInput: StudentInput = {
     gpa,
@@ -112,7 +112,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
     return filtered
       .map((uni) => calculateEligibility(studentInput, uni))
       .sort((a, b) => b.score - a.score);
-  }, [gpa, langCert, langScore, budget, selectedCountry, selectedDept, searchQuery]);
+  }, [gpa, langCert, langScore, budget, selectedCountry, selectedDept, searchQuery, selectedLevel]);
 
   const counts = useMemo(() => {
     const c = { eligible: 0, possible: 0, reach: 0, unlikely: 0 };
@@ -123,10 +123,10 @@ export default function SchoolsClient({ universities }: { universities: Universi
   return (
     <div>
       <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>
-        Okul Bulucu
+        Üniversite Bulucu
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
-        GPA ve dil puanınızı girerek uygun üniversiteleri keşfedin
+        Lise notunuzu ve dil puanınızı girerek Avrupa&apos;daki lisans ve yüksek lisans programlarını keşfedin
       </p>
 
       {/* Summary bar */}
@@ -393,7 +393,17 @@ function UniversityCard({
             <div className="font-semibold text-sm" style={{ color: "var(--text)" }}>
               {university.name}
             </div>
-            <div className="text-xs" style={{ color: "var(--muted)" }}>
+            <div className="text-xs flex items-center gap-1.5" style={{ color: "var(--muted)" }}>
+              <span
+                className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                style={{
+                  backgroundColor: (university.level || "master") === "bachelor" ? "var(--blue-bg)" : "var(--gold-bg)",
+                  color: (university.level || "master") === "bachelor" ? "var(--blue)" : "var(--gold)",
+                  border: `1px solid ${(university.level || "master") === "bachelor" ? "var(--blue-border)" : "var(--gold-border)"}`,
+                }}
+              >
+                {(university.level || "master") === "bachelor" ? "Lisans" : "Y.Lisans"}
+              </span>
               {university.program} · {university.city}, {university.country}
             </div>
           </div>
