@@ -15,15 +15,14 @@ export async function POST(request: NextRequest) {
     }
 
     const pptx = generateOnePagePptx(extractedData);
-    // pptxgenjs write returns a base64 string or arraybuffer
-    const output = await pptx.write({ outputType: "nodebuffer" });
-    const buffer = output as Buffer;
+    const output = await pptx.write({ outputType: "arraybuffer" });
+    const buffer = new Uint8Array(output as ArrayBuffer);
 
     const safeName = (extractedData.personalInfo.fullName || "CV")
       .replace(/[^a-zA-Z0-9 ]/g, "")
       .replace(/\s+/g, "_");
 
-    return new NextResponse(new Uint8Array(buffer), {
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
         "Content-Type":
