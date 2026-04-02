@@ -2,7 +2,7 @@
 
 ## Proje
 
-Türkiye'den Avrupa üniversitelerine başvurmak isteyen öğrenciler için AI destekli rehber platform. Öğrenci GPA ve dil sertifikası girince hangi üniversitelere girebileceğini görür.
+Türkiye'den Avrupa üniversitelerine başvurmak isteyen öğrenciler için AI destekli rehber platform. **Ana odak: Liseden sonra direkt başvurulabilecek lisans (bachelor) programları.** Yüksek lisans da desteklenir. Öğrenci GPA ve dil sertifikası girince hangi üniversitelere girebileceğini görür.
 
 ## Renk Paleti — ASLA DEĞİŞTİRME
 
