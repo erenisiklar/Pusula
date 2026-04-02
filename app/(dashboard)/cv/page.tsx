@@ -1957,6 +1957,8 @@ function PdfCard({
   extractedData: CVData;
   variant: "onepage" | "harvard";
 }) {
+  const [editLoading, setEditLoading] = useState(false);
+
   function handleDownload() {
     if (!pdfUrl) return;
     const safeName = (extractedData.personalInfo.fullName || "CV")
@@ -1973,6 +1975,39 @@ function PdfCard({
   function handleOpen() {
     if (pdfUrl) window.open(pdfUrl, "_blank");
   }
+
+  async function handleEditableDownload() {
+    setEditLoading(true);
+    try {
+      const endpoint = variant === "harvard" ? "/api/generate-cv-docx" : "/api/generate-cv-pptx";
+      const ext = variant === "harvard" ? "docx" : "pptx";
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ extractedData }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const safeName = (extractedData.personalInfo.fullName || "CV")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
+        .replace(/\s+/g, "_");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = variant === "harvard" ? `${safeName}_Harvard.${ext}` : `${safeName}_OnePage.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // silently fail
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  const editLabel = variant === "harvard" ? "DOCX" : "PPTX";
+  const editHint = variant === "harvard" ? "Word'de düzenle" : "Canva'da düzenle";
 
   return (
     <div
@@ -1996,7 +2031,7 @@ function PdfCard({
               style={{ backgroundColor: accentBg, border: `1px solid ${accentBorder}`, color: accentColor }}
             >
               <ExternalLink className="w-3 h-3" />
-              Ac
+              Aç
             </button>
             <button
               onClick={handleDownload}
@@ -2004,7 +2039,7 @@ function PdfCard({
               style={{ backgroundColor: accentColor, color: "var(--white)" }}
             >
               <Download className="w-3 h-3" />
-              Indir
+              PDF
             </button>
           </div>
         )}
@@ -2034,6 +2069,29 @@ function PdfCard({
           </div>
         )}
       </div>
+
+      {/* Editable format download */}
+      {pdfUrl && (
+        <div className="px-4 py-2.5" style={{ borderTop: "1px solid var(--border)" }}>
+          <button
+            onClick={handleEditableDownload}
+            disabled={editLoading}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
+            style={{
+              backgroundColor: "var(--gold-bg)",
+              border: "1px solid var(--gold-border)",
+              color: "var(--gold)",
+            }}
+          >
+            {editLoading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Download className="w-3.5 h-3.5" />
+            )}
+            {editLabel} İndir — {editHint}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
