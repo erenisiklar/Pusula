@@ -217,4 +217,40 @@ export const universityMapData: UniversityMapData[] = [
   { id: "sgh-bsc-economics", lat: 52.2093, lng: 21.0078, website: "https://www.sgh.waw.pl", imageUrl: "", durationYears: 3, countryColor: "#ef4444" },
   { id: "copenhagen-bsc-economics", lat: 55.6802, lng: 12.5724, website: "https://www.ku.dk", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
   { id: "essec-bba", lat: 49.0340, lng: 2.0765, website: "https://www.essec.edu", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
+
+  // ── Fransız Grande Écoles BBA ──
+  { id: "edhec-bba", lat: 43.6155, lng: 7.0718, website: "https://www.edhec.edu", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
+  { id: "skema-bba", lat: 43.6165, lng: 7.0552, website: "https://www.skema.edu", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
+  { id: "emlyon-bba", lat: 45.7585, lng: 4.8561, website: "https://em-lyon.com", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
+  { id: "ieseg-bba", lat: 50.6337, lng: 3.0578, website: "https://www.ieseg.fr", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
+  { id: "neoma-bba", lat: 49.2486, lng: 4.0285, website: "https://neoma-bs.com", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
+  { id: "kedge-bba", lat: 43.3068, lng: 5.4368, website: "https://kedge.edu", imageUrl: "", durationYears: 4, countryColor: "#60a5fa" },
+  { id: "audencia-bba", lat: 47.2076, lng: -1.5642, website: "https://www.audencia.com", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
+
+  // ── Nordic ──
+  { id: "tampere-bsc-tech", lat: 61.4498, lng: 23.8569, website: "https://www.tuni.fi", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  { id: "turku-bsc-tech", lat: 60.4531, lng: 22.2963, website: "https://www.utu.fi", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  { id: "linkoping-bsc-se", lat: 58.3968, lng: 15.5770, website: "https://liu.se", imageUrl: "", durationYears: 3, countryColor: "#fbbf24" },
+  { id: "bi-norwegian-bba", lat: 59.9487, lng: 10.7680, website: "https://www.bi.no", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "nhh-bba", lat: 60.3773, lng: 5.3438, website: "https://www.nhh.no", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+
+  // ── UK ──
+  { id: "queen-mary-bsc-economics", lat: 51.5241, lng: -0.0402, website: "https://www.qmul.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "york-bsc-cs", lat: 53.9473, lng: -1.0534, website: "https://www.york.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "liverpool-bsc-business", lat: 53.4050, lng: -2.9662, website: "https://www.liverpool.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "sussex-bsc-economics", lat: 50.8665, lng: -0.0872, website: "https://www.sussex.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+
+  // ── İtalya ──
+  { id: "sapienza-bsc-economics", lat: 41.9019, lng: 12.5149, website: "https://www.uniroma1.it", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  { id: "pavia-bsc-eng", lat: 45.1863, lng: 9.1561, website: "https://www.unipv.it", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+
+  // ── Almanya ──
+  { id: "tu-berlin-bsc-cs", lat: 52.5125, lng: 13.3269, website: "https://www.tu.berlin", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+
+  // ── İspanya ──
+  { id: "navarra-bba", lat: 42.8034, lng: -1.6608, website: "https://www.unav.edu", imageUrl: "", durationYears: 4, countryColor: "#ef4444" },
+
+  // ── Baltık / Orta Avrupa ──
+  { id: "taltech-bsc-iba", lat: 59.3953, lng: 24.6718, website: "https://taltech.ee", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
+  { id: "masaryk-bsc-economics", lat: 49.1987, lng: 16.6046, website: "https://www.muni.cz", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
 ];

@@ -39,6 +39,7 @@ const COUNTRIES = [
   { name: "Polonya",    color: "#ef4444" },
   { name: "Çekya",      color: "#3b82f6" },
   { name: "Macaristan", color: "#f59e0b" },
+  { name: "Estonya",    color: "#60a5fa" },
 ];
 
 const STATUS_CONFIG = {
