@@ -201,4 +201,48 @@ export const universityMapData: UniversityMapData[] = [
 
   // ── Macaristan ──
   { id: "corvinus-mim", lat: 47.4771, lng: 19.0613, website: "https://www.uni-corvinus.hu", imageUrl: "", durationYears: 2, countryColor: "#f59e0b" },
+
+  // ══ BACHELOR PROGRAMLARI ══
+
+  // Hollanda
+  { id: "tu-delft-bsc-ae", lat: 51.9975, lng: 4.3748, website: "https://www.tudelft.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "tu-delft-bsc-cs", lat: 51.9980, lng: 4.3750, website: "https://www.tudelft.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "amsterdam-bsc-economics", lat: 52.3567, lng: 4.9557, website: "https://www.uva.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "amsterdam-bsc-cs", lat: 52.3562, lng: 4.9560, website: "https://www.uva.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "groningen-bsc-psychology", lat: 53.2197, lng: 6.5670, website: "https://www.rug.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "groningen-bsc-ir", lat: 53.2200, lng: 6.5673, website: "https://www.rug.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "maastricht-bsc-business", lat: 50.8470, lng: 5.6876, website: "https://www.maastrichtuniversity.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  { id: "eindhoven-bsc-me", lat: 51.4480, lng: 5.4907, website: "https://www.tue.nl", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  // İtalya
+  { id: "bocconi-bsc-economics", lat: 45.4489, lng: 9.1902, website: "https://www.unibocconi.eu", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  { id: "bocconi-bsc-business", lat: 45.4495, lng: 9.1908, website: "https://www.unibocconi.eu", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  { id: "polimi-bsc-eng", lat: 45.4789, lng: 9.2283, website: "https://www.polimi.it", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  { id: "bologna-bsc-business", lat: 44.4971, lng: 11.3527, website: "https://www.unibo.it", imageUrl: "", durationYears: 3, countryColor: "#22c55e" },
+  // Almanya
+  { id: "tum-bsc-management", lat: 48.2635, lng: 11.6693, website: "https://www.tum.de", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "rwth-bsc-business", lat: 50.7804, lng: 6.0660, website: "https://www.rwth-aachen.de", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "jacobs-bsc-cs", lat: 53.1068, lng: 8.8524, website: "https://www.jacobs-university.de", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  // İngiltere
+  { id: "ucl-bsc-economics", lat: 51.5249, lng: -0.1343, website: "https://www.ucl.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "imperial-bsc-cs", lat: 51.4995, lng: -0.1755, website: "https://www.imperial.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "edinburgh-bsc-cs", lat: 55.9449, lng: -3.1878, website: "https://www.ed.ac.uk", imageUrl: "", durationYears: 4, countryColor: "#3b82f6" },
+  { id: "warwick-bsc-economics", lat: 52.3841, lng: -1.5619, website: "https://www.warwick.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "manchester-bsc-business", lat: 53.4671, lng: -2.2342, website: "https://www.manchester.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  { id: "kcl-bsc-business", lat: 51.5115, lng: -0.1160, website: "https://www.kcl.ac.uk", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  // İsveç
+  { id: "lund-bsc-economics", lat: 55.7120, lng: 13.2097, website: "https://www.lunduniversity.lu.se", imageUrl: "", durationYears: 3, countryColor: "#fbbf24" },
+  // Danimarka
+  { id: "cbs-bsc-business", lat: 55.6819, lng: 12.5278, website: "https://www.cbs.dk", imageUrl: "", durationYears: 3, countryColor: "#60a5fa" },
+  // İspanya
+  { id: "ie-bsc-business", lat: 40.4481, lng: -3.6926, website: "https://www.ie.edu", imageUrl: "", durationYears: 4, countryColor: "#ef4444" },
+  { id: "ie-bsc-cs", lat: 40.4483, lng: -3.6929, website: "https://www.ie.edu", imageUrl: "", durationYears: 4, countryColor: "#ef4444" },
+  // İrlanda
+  { id: "trinity-bsc-business", lat: 53.3442, lng: -6.2549, website: "https://www.tcd.ie", imageUrl: "", durationYears: 4, countryColor: "#22c55e" },
+  { id: "trinity-bsc-cs", lat: 53.3445, lng: -6.2552, website: "https://www.tcd.ie", imageUrl: "", durationYears: 4, countryColor: "#22c55e" },
+  // Çekya
+  { id: "charles-bsc-economics", lat: 50.0850, lng: 14.4414, website: "https://www.cuni.cz", imageUrl: "", durationYears: 3, countryColor: "#3b82f6" },
+  // Macaristan
+  { id: "corvinus-bsc-business", lat: 47.4774, lng: 19.0616, website: "https://www.uni-corvinus.hu", imageUrl: "", durationYears: 3, countryColor: "#f59e0b" },
+  // Polonya
+  { id: "kozminski-bsc-management", lat: 52.2537, lng: 20.9232, website: "https://www.kozminski.edu.pl", imageUrl: "", durationYears: 3, countryColor: "#ef4444" },
 ];

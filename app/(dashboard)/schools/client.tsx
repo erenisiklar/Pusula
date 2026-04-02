@@ -30,6 +30,8 @@ const departments = [
   "Uluslararası İlişkiler",
   "Elektrik-Elektronik Mühendisliği",
   "Makine Mühendisliği",
+  "Psikoloji",
+  "Havacılık Mühendisliği",
   "Tıp",
   "Hukuk",
 ];
@@ -74,6 +76,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
   const [selectedDept, setSelectedDept] = useState<string>("Tümü");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedLevel, setSelectedLevel] = useState<string>("Tümü");
 
   const studentInput: StudentInput = {
     gpa,
@@ -87,6 +90,9 @@ export default function SchoolsClient({ universities }: { universities: Universi
   const results = useMemo(() => {
     let filtered = universities;
 
+    if (selectedLevel !== "Tümü") {
+      filtered = filtered.filter((u) => (u.level || "master") === (selectedLevel === "Lisans" ? "bachelor" : "master"));
+    }
     if (selectedCountry !== "Tümü") {
       filtered = filtered.filter((u) => u.country === selectedCountry);
     }
@@ -234,6 +240,27 @@ export default function SchoolsClient({ universities }: { universities: Universi
                 color: "var(--text)",
               }}
             />
+          </div>
+
+          {/* Level */}
+          <div>
+            <label className="text-xs font-medium mb-2 block" style={{ color: "var(--muted)" }}>
+              Seviye
+            </label>
+            <select
+              value={selectedLevel}
+              onChange={(e) => setSelectedLevel(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+              style={{
+                backgroundColor: "var(--surface2)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+              }}
+            >
+              <option value="Tümü">Tümü</option>
+              <option value="Lisans">Lisans (Bachelor)</option>
+              <option value="Yüksek Lisans">Yüksek Lisans (Master)</option>
+            </select>
           </div>
 
           {/* Country */}
