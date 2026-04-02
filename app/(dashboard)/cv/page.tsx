@@ -20,6 +20,7 @@ import {
   FileText,
   AlertTriangle,
   Check,
+  Zap,
 } from "lucide-react";
 import type { CVData } from "@/lib/gemini";
 
@@ -62,6 +63,117 @@ function initialCVData(): CVData {
     leadership: [],
     awards: [],
     detectedField: "other",
+  };
+}
+
+function demoCVData(): CVData {
+  return {
+    personalInfo: {
+      fullName: "Ayşe Kaya",
+      email: "ayse.kaya@email.com",
+      phone: "+90 535 222 3344",
+      location: "Ankara, Turkey",
+      linkedin: "linkedin.com/in/aysekaya",
+      website: "",
+    },
+    education: [
+      {
+        institution: "TED Ankara College",
+        degree: "High School Diploma",
+        field: "Science & Math",
+        gpa: "92/100",
+        startDate: "Sep 2021",
+        endDate: "Jun 2025",
+        highlights: [
+          "Honor roll for 4 consecutive years",
+          "AP Results: Physics C 5/5, Chemistry 4/5, Statistics 5/5",
+        ],
+      },
+    ],
+    experience: [
+      {
+        company: "Siemens Turkey, Ankara",
+        role: "Summer Intern – Engineering Department",
+        startDate: "Jul 2024",
+        endDate: "Aug 2024",
+        bullets: [
+          "Assisted in quality control processes for industrial automation products",
+          "Prepared weekly reports analyzing production efficiency metrics",
+          "Collaborated with the R&D team on prototype testing procedures",
+        ],
+      },
+      {
+        company: "Decathlon, Ankara",
+        role: "Part-time Sales Associate",
+        startDate: "Jun 2023",
+        endDate: "Sep 2023",
+        bullets: [
+          "Provided customer service and product recommendations in the cycling department",
+          "Managed inventory tracking using the internal POS system",
+        ],
+      },
+    ],
+    projects: [
+      {
+        name: "Bogazici University Summer Research Program",
+        description: "Participated in a 3-week research program focusing on renewable energy systems and sustainability.",
+        technologies: "",
+        highlights: [],
+      },
+      {
+        name: "ODTU Science Olympiad Training Camp",
+        description: "Intensive physics and mathematics training camp for national science olympiad preparation.",
+        technologies: "",
+        highlights: [],
+      },
+    ],
+    skills: {
+      technical: ["Leadership", "Public Speaking", "Data Analysis", "Problem Solving", "Team Collaboration", "Excel", "PowerPoint", "Python"],
+      languages: ["Turkish: Native", "English: Advanced (IELTS C1 – 7.0/9)", "German: Intermediate (Goethe B1)"],
+      certifications: ["IELTS Academic – 7.0/9 – October 2024", "Goethe-Zertifikat B1 – June 2024", "SAT 1350/1600 (Math: 780, Reading: 570)"],
+      other: ["Volleyball – 5 years competitive, school team captain", "Piano – 8 years, Grade 7 ABRSM", "Debate", "Coding"],
+    },
+    leadership: [
+      {
+        organization: "MUN Club – TED Ankara College",
+        role: "Secretary General",
+        period: "2024 – Present",
+        description: "Led organization of TEDMUN conference with 200+ participants from 15 schools.",
+      },
+      {
+        organization: "Science & Technology Club",
+        role: "Vice President",
+        period: "2023 – 2024",
+        description: "Organized weekly workshops on robotics, coding, and scientific research methods.",
+      },
+      {
+        organization: "Community Service – Koruncuk Foundation",
+        role: "Volunteer Tutor",
+        period: "2022 – Present",
+        description: "Provided weekly math and science tutoring to underprivileged middle school students.",
+      },
+    ],
+    awards: [
+      {
+        title: "TÜBİTAK Science Project Competition – Regional 2nd Place",
+        issuer: "TÜBİTAK",
+        date: "2024",
+        description: "Developed a solar-powered water purification prototype for rural areas.",
+      },
+      {
+        title: "Best Delegate – ODTÜMUN Conference",
+        issuer: "ODTÜ MUN Society",
+        date: "2023",
+        description: "Awarded Best Delegate in the UN Environment Programme committee.",
+      },
+      {
+        title: "National Science Olympiad – Bronze Medal (Physics)",
+        issuer: "TÜBİTAK",
+        date: "2024",
+        description: "",
+      },
+    ],
+    detectedField: "engineering",
   };
 }
 
@@ -302,9 +414,23 @@ export default function CVPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>
-        CV Oluşturucu
-      </h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
+          CV Oluşturucu
+        </h1>
+        <button
+          onClick={() => { setData(demoCVData()); setStep(0); }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+          style={{
+            backgroundColor: "var(--gold-bg)",
+            border: "1px solid var(--gold-border)",
+            color: "var(--gold)",
+          }}
+        >
+          <Zap className="w-3.5 h-3.5" />
+          Demo ile Doldur
+        </button>
+      </div>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
         Bilgilerinizi adım adım girin — profesyonel PDF CV&apos;ler otomatik oluşturulur
       </p>
