@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY ortam değişkeni tanımlı değil." },
+      { error: "GEMINI_API_KEY ortam değişkeni tanımlı değil. Vercel Dashboard > Settings > Environment Variables'dan ekleyin." },
       { status: 500 }
     );
   }
 
-  const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY!,
-  });
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
   try {
     const body = await request.json();
@@ -55,14 +53,17 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join("\n");
 
-    const message = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 2000,
-      system: `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases. Target approximately ${wordCount} words.`,
-      messages: [
-        {
-          role: "user",
-          content: `Write a motivation letter for the following student:
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2000,
+      },
+    });
+
+    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases. Target approximately ${wordCount} words.
+
+Write a motivation letter for the following student:
 
 Name: ${studentName}
 University: ${university}
@@ -93,13 +94,10 @@ Career goals and how this program fits into the student's long-term vision.
 [CLOSING]
 A memorable closing that reinforces enthusiasm and commitment.
 
-IMPORTANT: Use the section markers [OPENING], [ACADEMIC_BACKGROUND], [WHY_THIS_PROGRAM], [EXPERIENCE], [CAREER_GOALS], [CLOSING] as headers for each section. Do not include any other formatting or headers.`,
-        },
-      ],
-    });
+IMPORTANT: Use the section markers [OPENING], [ACADEMIC_BACKGROUND], [WHY_THIS_PROGRAM], [EXPERIENCE], [CAREER_GOALS], [CLOSING] as headers for each section. Do not include any other formatting or headers.`;
 
-    const block = message.content[0];
-    const letter = block.type === "text" ? block.text : "";
+    const result = await model.generateContent(prompt);
+    const letter = result.response.text();
 
     return NextResponse.json({ letter });
   } catch (error) {
