@@ -300,10 +300,12 @@ interface LanguageEntry {
   examDate: string;
   sectionScores: string;
   showScore: boolean;
+  showSections: boolean;
+  sectionEntries: { name: string; score: string }[];
 }
 
 function emptyLanguageEntry(): LanguageEntry {
-  return { language: "", level: "", examName: "", examLevel: "", examScore: "", examDate: "", sectionScores: "", showScore: false };
+  return { language: "", level: "", examName: "", examLevel: "", examScore: "", examDate: "", sectionScores: "", showScore: false, showSections: false, sectionEntries: [] };
 }
 
 function detectLevel(examInfo: ExamInfo | undefined, score: string, examLevel: string): string {
@@ -1379,7 +1381,7 @@ function LanguagesSection({
     syncEntries([...entries, emptyLanguageEntry()]);
   }
 
-  function updateField(i: number, field: keyof LanguageEntry, value: string | boolean) {
+  function updateField(i: number, field: keyof LanguageEntry, value: string | boolean | { name: string; score: string }[]) {
     const copy = [...entries];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     copy[i] = { ...copy[i], [field]: value } as any;
@@ -1440,16 +1442,9 @@ function LanguagesSection({
                 </select>
               </div>
 
-              {/* Seviye — auto-detected or manual */}
+              {/* Seviye — auto from score or manual for native/no-exam */}
               <div>
-                <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
-                  Seviye
-                  {detectedLvl && (
-                    <span className="ml-1 font-normal" style={{ color: "var(--success)" }}>
-                      (otomatik: {detectedLvl})
-                    </span>
-                  )}
-                </label>
+                <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Seviye</label>
                 {detectedLvl ? (
                   <div
                     className="px-3 py-2 rounded-lg text-sm font-medium"
@@ -1457,22 +1452,29 @@ function LanguagesSection({
                   >
                     {detectedLvl}
                   </div>
-                ) : (
+                ) : !entry.examName ? (
                   <select
                     value={entry.level}
                     onChange={(e) => updateField(i, "level", e.target.value)}
                     className={inputClass}
                     style={inputStyle}
                   >
-                    <option value="">Seviye seçin</option>
+                    <option value="">Puan girin veya seviye seçin</option>
                     <option value="Native">Ana Dil (Native)</option>
-                    <option value="C2">C2 – İleri</option>
-                    <option value="C1">C1 – İleri</option>
-                    <option value="B2">B2 – Orta Üstü</option>
-                    <option value="B1">B1 – Orta</option>
-                    <option value="A2">A2 – Başlangıç</option>
-                    <option value="A1">A1 – Başlangıç</option>
+                    <option value="C2">C2</option>
+                    <option value="C1">C1</option>
+                    <option value="B2">B2</option>
+                    <option value="B1">B1</option>
+                    <option value="A2">A2</option>
+                    <option value="A1">A1</option>
                   </select>
+                ) : (
+                  <div
+                    className="px-3 py-2 rounded-lg text-sm"
+                    style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}
+                  >
+                    Puan girin →
+                  </div>
                 )}
               </div>
 
@@ -1483,8 +1485,18 @@ function LanguagesSection({
                   <select
                     value={entry.examName}
                     onChange={(e) => {
+                      const newExam = exams.find((ex) => ex.label === e.target.value);
                       const copy = [...entries];
-                      copy[i] = { ...copy[i], examName: e.target.value, examScore: "", examLevel: "", sectionScores: "", showScore: false };
+                      copy[i] = {
+                        ...copy[i],
+                        examName: e.target.value,
+                        examScore: "",
+                        examLevel: "",
+                        sectionScores: "",
+                        showScore: false,
+                        showSections: false,
+                        sectionEntries: newExam?.sections?.map((s) => ({ name: s, score: "" })) || [],
+                      };
                       syncEntries(copy);
                     }}
                     className={inputClass}
@@ -1535,22 +1547,6 @@ function LanguagesSection({
                 </div>
               )}
 
-              {/* Section scores */}
-              {entry.examName && selectedExam?.sections && (
-                <div className="col-span-2">
-                  <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
-                    Bölüm Puanları <span className="font-normal">({selectedExam.sections.join(", ")})</span>
-                  </label>
-                  <input
-                    value={entry.sectionScores}
-                    onChange={(e) => updateField(i, "sectionScores", e.target.value)}
-                    placeholder={`örn: ${selectedExam.sections.map((s) => `${s}: ...`).join(", ")}`}
-                    className={inputClass}
-                    style={inputStyle}
-                  />
-                </div>
-              )}
-
               {/* Exam date */}
               {entry.examName && (
                 <div>
@@ -1562,6 +1558,62 @@ function LanguagesSection({
                     className={inputClass}
                     style={inputStyle}
                   />
+                </div>
+              )}
+
+              {/* Alt Skorlar toggle + fields */}
+              {entry.examName && selectedExam?.sections && selectedExam.sections.length > 0 && (
+                <div className="col-span-2">
+                  <button
+                    onClick={() => {
+                      const newShow = !entry.showSections;
+                      const copy = [...entries];
+                      copy[i] = {
+                        ...copy[i],
+                        showSections: newShow,
+                        sectionEntries: newShow && copy[i].sectionEntries.length === 0
+                          ? selectedExam!.sections!.map((s) => ({ name: s, score: "" }))
+                          : copy[i].sectionEntries,
+                      };
+                      syncEntries(copy);
+                    }}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      backgroundColor: entry.showSections ? "var(--blue-bg)" : "var(--surface)",
+                      border: entry.showSections ? "1px solid var(--blue-border)" : "1px solid var(--border)",
+                      color: entry.showSections ? "var(--blue)" : "var(--muted)",
+                    }}
+                  >
+                    {entry.showSections ? "▾ Alt Skorlar" : "▸ Alt Skorlar"}
+                  </button>
+
+                  {entry.showSections && (
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {entry.sectionEntries.map((sec, j) => (
+                        <div key={j}>
+                          <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
+                            {sec.name}
+                          </label>
+                          <input
+                            value={sec.score}
+                            onChange={(e) => {
+                              const newSections = [...entry.sectionEntries];
+                              newSections[j] = { ...newSections[j], score: e.target.value };
+                              updateField(i, "sectionEntries", newSections);
+                              // Also sync sectionScores string
+                              const scStr = newSections.filter((s) => s.score).map((s) => `${s.name}: ${s.score}`).join(", ");
+                              const copy2 = [...entries];
+                              copy2[i] = { ...copy2[i], sectionEntries: newSections, sectionScores: scStr };
+                              syncEntries(copy2);
+                            }}
+                            placeholder="Puan"
+                            className={inputClass}
+                            style={inputStyle}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
