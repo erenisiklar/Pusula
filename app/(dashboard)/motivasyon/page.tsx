@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { universities } from "@/lib/universities";
 import {
   FileText,
@@ -114,8 +114,6 @@ export default function MotivasyonPage() {
   const [showTips, setShowTips] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const abortRef = useRef<AbortController | null>(null);
-
   const uni = universities.find((u) => u.id === selectedUni)!;
 
   const getPlainText = useCallback(() => {
@@ -132,8 +130,6 @@ export default function MotivasyonPage() {
     setLoading(true);
     setRawLetter("");
     setSections([]);
-
-    abortRef.current = new AbortController();
 
     try {
       const res = await fetch("/api/generate-letter-stream", {
@@ -153,92 +149,18 @@ export default function MotivasyonPage() {
           tone,
           wordCount: targetWordCount,
         }),
-        signal: abortRef.current.signal,
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Bir hata oluştu");
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Bir hata oluştu");
 
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error("Stream okunamadı");
-
-      const decoder = new TextDecoder();
-      let accumulated = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            if (data === "[DONE]") break;
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.error) {
-                setError(parsed.error);
-                setLoading(false);
-                return;
-              }
-              if (parsed.text) {
-                accumulated += parsed.text;
-                setRawLetter(accumulated);
-              }
-            } catch (parseErr) {
-              // skip malformed JSON chunks only
-            }
-          }
-        }
-      }
-
-      // Parse sections after stream completes
-      const parsed = parseSections(accumulated);
+      setRawLetter(data.letter);
+      const parsed = parseSections(data.letter);
       setSections(parsed);
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") {
-        // User cancelled
-      } else {
-        // Fallback: streaming failed, try non-streaming endpoint
-        console.warn("Streaming failed, trying fallback:", err);
-        try {
-          const fallbackRes = await fetch("/api/generate-letter", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              studentName,
-              university: uni.name,
-              program: uni.program,
-              country: uni.country,
-              gpa,
-              strengths,
-              motivation,
-            }),
-          });
-          const fallbackData = await fallbackRes.json();
-          if (!fallbackRes.ok) throw new Error(fallbackData.error || "Hata oluştu");
-          setRawLetter(fallbackData.letter);
-          const parsed = parseSections(fallbackData.letter);
-          setSections(parsed);
-        } catch (fallbackErr) {
-          setError(fallbackErr instanceof Error ? fallbackErr.message : "Mektup oluşturulamadı. Lütfen tekrar deneyin.");
-        }
-      }
+      setError(err instanceof Error ? err.message : "Mektup oluşturulamadı. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
-    }
-  }
-
-  function handleStop() {
-    abortRef.current?.abort();
-    setLoading(false);
-    if (rawLetter) {
-      const parsed = parseSections(rawLetter);
-      setSections(parsed);
     }
   }
 
@@ -624,25 +546,23 @@ export default function MotivasyonPage() {
             </p>
           )}
 
-          {/* Generate / Stop button */}
-          {loading ? (
-            <button
-              onClick={handleStop}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "var(--danger)", color: "var(--white)" }}
-            >
-              <X className="w-4 h-4" /> Durdur
-            </button>
-          ) : (
-            <button
-              onClick={handleGenerate}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "var(--blue)", color: "var(--white)" }}
-            >
-              <Sparkles className="w-4 h-4" />
-              {hasLetter ? "Yeniden Oluştur" : "Mektup Oluştur"}
-            </button>
-          )}
+          <button
+            onClick={handleGenerate}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+            style={{ backgroundColor: "var(--blue)", color: "var(--white)" }}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Oluşturuluyor...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                {hasLetter ? "Yeniden Oluştur" : "Mektup Oluştur"}
+              </>
+            )}
+          </button>
 
           <p className="text-[10px] text-center" style={{ color: "var(--muted)", opacity: 0.6 }}>
             Bu bir AI tahminidir. Oluşturulan mektubu mutlaka gözden geçirin ve kişiselleştirin.
@@ -822,9 +742,6 @@ export default function MotivasyonPage() {
                       style={{ color: "var(--text)" }}
                     >
                       {rawLetter}
-                      {loading && (
-                        <span className="inline-block w-1.5 h-4 ml-0.5 animate-pulse rounded-sm" style={{ backgroundColor: "var(--blue)" }} />
-                      )}
                     </div>
                   </div>
               }

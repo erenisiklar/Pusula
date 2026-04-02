@@ -1,19 +1,19 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
 export const maxDuration = 60;
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
-
 export async function POST(request: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
-    return new Response(
-      JSON.stringify({ error: "ANTHROPIC_API_KEY ortam değişkeni tanımlı değil. Vercel Dashboard > Settings > Environment Variables'dan ekleyin." }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      { error: "ANTHROPIC_API_KEY ortam değişkeni tanımlı değil." },
+      { status: 500 }
     );
   }
+
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY!,
+  });
 
   try {
     const body = await request.json();
@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
     } = body;
 
     if (!studentName || !university || !program || !strengths || !motivation) {
-      return new Response(
-        JSON.stringify({ error: "Tüm alanlar zorunludur." }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: "Tüm alanlar zorunludur." },
+        { status: 400 }
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join("\n");
 
-    const stream = anthropic.messages.stream({
+    const message = await anthropic.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 2000,
       system: `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases. Target approximately ${wordCount} words.`,
@@ -98,45 +98,16 @@ IMPORTANT: Use the section markers [OPENING], [ACADEMIC_BACKGROUND], [WHY_THIS_P
       ],
     });
 
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const event of stream) {
-            if (
-              event.type === "content_block_delta" &&
-              event.delta.type === "text_delta"
-            ) {
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`)
-              );
-            }
-          }
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        } catch (err) {
-          controller.enqueue(
-            encoder.encode(
-              `data: ${JSON.stringify({ error: "Stream hatası oluştu." })}\n\n`
-            )
-          );
-          controller.close();
-        }
-      },
-    });
+    const block = message.content[0];
+    const letter = block.type === "text" ? block.text : "";
 
-    return new Response(readable, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
-    });
+    return NextResponse.json({ letter });
   } catch (error) {
-    console.error("Letter stream error:", error);
-    return new Response(
-      JSON.stringify({ error: "Mektup oluşturulurken bir hata oluştu." }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    console.error("Letter generation error:", error);
+    const msg = error instanceof Error ? error.message : "Bilinmeyen hata";
+    return NextResponse.json(
+      { error: `Mektup oluşturulurken hata: ${msg}` },
+      { status: 500 }
     );
   }
 }
