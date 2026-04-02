@@ -31,8 +31,8 @@ const STEPS = [
   { label: "Kişisel Bilgiler", icon: User },
   { label: "Eğitim", icon: GraduationCap },
   { label: "İş Deneyimi", icon: Briefcase },
-  { label: "Projeler", icon: FolderOpen },
-  { label: "Aktiviteler", icon: Users },
+  { label: "Programlar & Konferanslar", icon: FolderOpen },
+  { label: "Kulüpler & Sosyal Sorumluluk", icon: Users },
   { label: "Beceriler & Diller", icon: Wrench },
   { label: "Ödüller", icon: Award },
   { label: "Önizleme", icon: Eye },
@@ -863,7 +863,7 @@ export default function CVPage() {
           <div>
             {data.projects.length === 0 && (
               <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henüz proje eklenmedi. Yoksa bu adımı atlayabilirsiniz.
+                Henüz program veya konferans eklenmedi. Yoksa bu adımı atlayabilirsiniz.
               </p>
             )}
             {data.projects.map((proj, i) => (
@@ -894,7 +894,7 @@ export default function CVPage() {
                 </div>
               </EntryCard>
             ))}
-            <AddButton label="Proje Ekle" onClick={() => update("projects", [...data.projects, emptyProject()])} />
+            <AddButton label="Program / Konferans Ekle" onClick={() => update("projects", [...data.projects, emptyProject()])} />
           </div>
         )}
 
@@ -903,7 +903,7 @@ export default function CVPage() {
           <div>
             {data.leadership.length === 0 && (
               <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-                Henüz aktivite eklenmedi. Yoksa bu adımı atlayabilirsiniz.
+                Henüz kulüp veya sosyal sorumluluk eklenmedi. Yoksa bu adımı atlayabilirsiniz.
               </p>
             )}
             {data.leadership.map((lead, i) => (
@@ -934,7 +934,7 @@ export default function CVPage() {
                 </div>
               </EntryCard>
             ))}
-            <AddButton label="Aktivite Ekle" onClick={() => update("leadership", [...data.leadership, emptyLeadership()])} />
+            <AddButton label="Kulüp / Aktivite Ekle" onClick={() => update("leadership", [...data.leadership, emptyLeadership()])} />
           </div>
         )}
 
