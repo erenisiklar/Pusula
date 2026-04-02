@@ -11,9 +11,9 @@ const BLACK = "1A1A2E";
 const DARK_GRAY = "374151";
 const MED_GRAY = "6B7280";
 
-// A4 dimensions in inches
-const W = 7.5; // ~190mm
-const H = 11.0; // ~280mm (A4 approx)
+// A4 dimensions in inches (exact: 210mm x 297mm)
+const W = 8.27;
+const H = 11.69;
 const SIDEBAR_W = 2.4;
 const MAIN_X = SIDEBAR_W + 0.2;
 const MAIN_W = W - MAIN_X - 0.3;
@@ -34,7 +34,7 @@ function addSidebarSection(
     color: SIDEBAR_ACCENT,
   });
   // Accent line
-  slide.addShape("rect" as PptxGenJS.ShapeType, {
+  slide.addShape("rect", {
     x: 0.25,
     y: yPos + 0.22,
     w: SIDEBAR_W - 0.5,
@@ -69,7 +69,7 @@ function addMainSectionHeader(
   y: number
 ): number {
   // Blue accent bar
-  slide.addShape("rect" as PptxGenJS.ShapeType, {
+  slide.addShape("rect", {
     x: MAIN_X,
     y: y + 0.02,
     w: 0.04,
@@ -87,7 +87,7 @@ function addMainSectionHeader(
     color: BLACK,
   });
   // Thin separator
-  slide.addShape("rect" as PptxGenJS.ShapeType, {
+  slide.addShape("rect", {
     x: MAIN_X,
     y: y + 0.24,
     w: MAIN_W,
@@ -107,7 +107,7 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
   const info = data.personalInfo;
 
   // ===== SIDEBAR BACKGROUND =====
-  slide.addShape("rect" as PptxGenJS.ShapeType, {
+  slide.addShape("rect", {
     x: 0,
     y: 0,
     w: SIDEBAR_W,
@@ -126,7 +126,7 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
     .join("")
     .toUpperCase();
 
-  slide.addShape("ellipse" as PptxGenJS.ShapeType, {
+  slide.addShape("ellipse", {
     x: (SIDEBAR_W - 0.7) / 2,
     y: sy,
     w: 0.7,
