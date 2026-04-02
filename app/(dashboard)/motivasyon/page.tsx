@@ -180,13 +180,17 @@ export default function MotivasyonPage() {
             if (data === "[DONE]") break;
             try {
               const parsed = JSON.parse(data);
-              if (parsed.error) throw new Error(parsed.error);
+              if (parsed.error) {
+                setError(parsed.error);
+                setLoading(false);
+                return;
+              }
               if (parsed.text) {
                 accumulated += parsed.text;
                 setRawLetter(accumulated);
               }
-            } catch {
-              // skip malformed chunks
+            } catch (parseErr) {
+              // skip malformed JSON chunks only
             }
           }
         }
@@ -199,7 +203,30 @@ export default function MotivasyonPage() {
       if (err instanceof Error && err.name === "AbortError") {
         // User cancelled
       } else {
-        setError(err instanceof Error ? err.message : "Bir hata oluştu");
+        // Fallback: streaming failed, try non-streaming endpoint
+        console.warn("Streaming failed, trying fallback:", err);
+        try {
+          const fallbackRes = await fetch("/api/generate-letter", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              studentName,
+              university: uni.name,
+              program: uni.program,
+              country: uni.country,
+              gpa,
+              strengths,
+              motivation,
+            }),
+          });
+          const fallbackData = await fallbackRes.json();
+          if (!fallbackRes.ok) throw new Error(fallbackData.error || "Hata oluştu");
+          setRawLetter(fallbackData.letter);
+          const parsed = parseSections(fallbackData.letter);
+          setSections(parsed);
+        } catch (fallbackErr) {
+          setError(fallbackErr instanceof Error ? fallbackErr.message : "Mektup oluşturulamadı. Lütfen tekrar deneyin.");
+        }
       }
     } finally {
       setLoading(false);
