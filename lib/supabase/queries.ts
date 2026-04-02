@@ -17,6 +17,12 @@ function mapUniversity(row: Record<string, unknown>): University {
     tuitionEUR: row.tuition_eur as number,
     flag: row.flag as string,
     deadline: row.deadline as string | undefined,
+    lat: row.lat as number | undefined,
+    lng: row.lng as number | undefined,
+    imageUrl: row.image_url as string | undefined,
+    durationYears: row.duration_years as number | undefined,
+    countryColor: row.country_color as string | undefined,
+    website: row.website as string | undefined,
   };
 }
 
