@@ -11,11 +11,11 @@ const BLACK = "1A1A2E";
 const DARK_GRAY = "374151";
 const MED_GRAY = "6B7280";
 
-// Standard 4:3 dimensions (Canva compatible)
-const W = 10;
-const H = 7.5;
-const SIDEBAR_W = 2.8;
-const MAIN_X = SIDEBAR_W + 0.25;
+// A4 portrait dimensions in inches (210mm x 297mm)
+const W = 8.27;
+const H = 11.69;
+const SIDEBAR_W = 2.4;
+const MAIN_X = SIDEBAR_W + 0.2;
 const MAIN_W = W - MAIN_X - 0.3;
 
 function addSidebarSection(
@@ -27,21 +27,20 @@ function addSidebarSection(
     x: 0.25,
     y: yPos,
     w: SIDEBAR_W - 0.5,
-    h: 0.25,
-    fontSize: 8,
+    h: 0.22,
+    fontSize: 7,
     fontFace: "Arial",
     bold: true,
     color: SIDEBAR_ACCENT,
   });
-  // Accent line
   slide.addShape("rect", {
     x: 0.25,
-    y: yPos + 0.25,
+    y: yPos + 0.22,
     w: SIDEBAR_W - 0.5,
     h: 0.01,
     fill: { color: "2563EB", transparency: 60 },
   });
-  return yPos + 0.32;
+  return yPos + 0.3;
 }
 
 function addSidebarText(
@@ -49,18 +48,18 @@ function addSidebarText(
   text: string,
   y: number,
   color: string = SIDEBAR_TEXT,
-  fontSize: number = 7.5
+  fontSize: number = 7
 ): number {
   slide.addText(text, {
     x: 0.25,
     y,
     w: SIDEBAR_W - 0.5,
-    h: 0.2,
+    h: 0.18,
     fontSize,
     fontFace: "Arial",
     color,
   });
-  return y + 0.2;
+  return y + 0.18;
 }
 
 function addMainSectionHeader(
@@ -68,39 +67,45 @@ function addMainSectionHeader(
   title: string,
   y: number
 ): number {
-  // Blue accent bar
   slide.addShape("rect", {
     x: MAIN_X,
     y: y + 0.02,
     w: 0.04,
-    h: 0.18,
+    h: 0.16,
     fill: { color: SIDEBAR_ACCENT },
   });
   slide.addText(title.toUpperCase(), {
-    x: MAIN_X + 0.12,
+    x: MAIN_X + 0.1,
     y,
-    w: MAIN_W - 0.12,
-    h: 0.24,
-    fontSize: 10,
+    w: MAIN_W - 0.1,
+    h: 0.22,
+    fontSize: 9,
     fontFace: "Arial",
     bold: true,
     color: BLACK,
   });
-  // Thin separator
   slide.addShape("rect", {
     x: MAIN_X,
-    y: y + 0.26,
+    y: y + 0.24,
     w: MAIN_W,
     h: 0.005,
     fill: { color: "E2E8F0" },
   });
-  return y + 0.32;
+  return y + 0.3;
 }
 
 export function generateOnePagePptx(data: CVData): PptxGenJS {
   const pptx = new PptxGenJS();
-  // Use standard LAYOUT_4x3 for Canva compatibility
-  pptx.layout = "LAYOUT_4x3";
+
+  // Set metadata for better compatibility with Canva and other tools
+  pptx.author = "Pusula CV Maker";
+  pptx.company = "Pusula";
+  pptx.subject = "Curriculum Vitae";
+  pptx.title = (data.personalInfo.fullName || "CV") + " - CV";
+
+  // A4 portrait layout
+  pptx.defineLayout({ name: "A4_PORTRAIT", width: W, height: H });
+  pptx.layout = "A4_PORTRAIT";
 
   const slide = pptx.addSlide();
 
@@ -116,7 +121,7 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
   });
 
   // ===== SIDEBAR CONTENT =====
-  let sy = 0.35;
+  let sy = 0.4;
 
   // Initials circle
   const initials = (info.fullName || "N")
@@ -127,39 +132,39 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
     .toUpperCase();
 
   slide.addShape("ellipse", {
-    x: (SIDEBAR_W - 0.8) / 2,
+    x: (SIDEBAR_W - 0.7) / 2,
     y: sy,
-    w: 0.8,
-    h: 0.8,
+    w: 0.7,
+    h: 0.7,
     fill: { color: SIDEBAR_ACCENT },
   });
   slide.addText(initials, {
-    x: (SIDEBAR_W - 0.8) / 2,
+    x: (SIDEBAR_W - 0.7) / 2,
     y: sy,
-    w: 0.8,
-    h: 0.8,
-    fontSize: 22,
+    w: 0.7,
+    h: 0.7,
+    fontSize: 18,
     fontFace: "Arial",
     bold: true,
     color: WHITE,
     align: "center",
     valign: "middle",
   });
-  sy += 0.9;
+  sy += 0.8;
 
   // Name
   slide.addText(info.fullName || "Name", {
     x: 0.15,
     y: sy,
     w: SIDEBAR_W - 0.3,
-    h: 0.28,
-    fontSize: 13,
+    h: 0.25,
+    fontSize: 11,
     fontFace: "Arial",
     bold: true,
     color: WHITE,
     align: "center",
   });
-  sy += 0.32;
+  sy += 0.28;
 
   // Field
   if (data.education?.[0]?.field) {
@@ -167,13 +172,13 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
       x: 0.15,
       y: sy,
       w: SIDEBAR_W - 0.3,
-      h: 0.2,
-      fontSize: 8,
+      h: 0.18,
+      fontSize: 7,
       fontFace: "Arial",
       color: SIDEBAR_ACCENT,
       align: "center",
     });
-    sy += 0.24;
+    sy += 0.22;
   }
 
   sy += 0.15;
@@ -187,7 +192,7 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
     sy = addSidebarText(slide, info.linkedin, sy, SIDEBAR_MUTED);
   if (info.website)
     sy = addSidebarText(slide, info.website, sy, SIDEBAR_MUTED);
-  sy += 0.12;
+  sy += 0.1;
 
   // Skills
   if (data.skills?.technical && data.skills.technical.length > 0) {
@@ -197,34 +202,34 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
       x: 0.25,
       y: sy,
       w: SIDEBAR_W - 0.5,
-      h: 0.7,
-      fontSize: 7,
+      h: 0.6,
+      fontSize: 6.5,
       fontFace: "Arial",
       color: "93C5FD",
       valign: "top",
     });
-    const lines = Math.ceil(skillText.length / 35);
-    sy += Math.max(0.22, lines * 0.14);
-    sy += 0.12;
+    const lines = Math.ceil(skillText.length / 30);
+    sy += Math.max(0.2, lines * 0.13);
+    sy += 0.1;
   }
 
   // Languages
   if (data.skills?.languages && data.skills.languages.length > 0) {
     sy = addSidebarSection(slide, "Languages", sy);
     for (const lang of data.skills.languages) {
-      sy = addSidebarText(slide, "● " + lang, sy, SIDEBAR_TEXT, 7);
+      sy = addSidebarText(slide, "● " + lang, sy, SIDEBAR_TEXT, 6.5);
     }
-    sy += 0.12;
+    sy += 0.1;
   }
 
   // Certifications
   if (data.skills?.certifications && data.skills.certifications.length > 0) {
     sy = addSidebarSection(slide, "Certifications", sy);
     for (const cert of data.skills.certifications) {
-      sy = addSidebarText(slide, cert, sy, SIDEBAR_TEXT, 6.5);
+      sy = addSidebarText(slide, cert, sy, SIDEBAR_TEXT, 6);
       sy += 0.02;
     }
-    sy += 0.12;
+    sy += 0.1;
   }
 
   // Other
@@ -236,7 +241,7 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
       y: sy,
       w: SIDEBAR_W - 0.5,
       h: 0.5,
-      fontSize: 7,
+      fontSize: 6.5,
       fontFace: "Arial",
       color: "93C5FD",
       valign: "top",
@@ -244,7 +249,7 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
   }
 
   // ===== MAIN CONTENT =====
-  let my = 0.3;
+  let my = 0.35;
 
   // Education
   if (data.education?.length > 0) {
@@ -254,10 +259,10 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
         [
           {
             text: edu.institution,
-            options: { fontSize: 9, bold: true, color: BLACK, fontFace: "Arial" },
+            options: { fontSize: 8, bold: true, color: BLACK, fontFace: "Arial" },
           },
         ],
-        { x: MAIN_X, y: my, w: MAIN_W * 0.7, h: 0.18 }
+        { x: MAIN_X, y: my, w: MAIN_W * 0.7, h: 0.16 }
       );
       const dateStr = [edu.startDate, edu.endDate].filter(Boolean).join(" - ");
       if (dateStr) {
@@ -265,39 +270,39 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
           x: MAIN_X + MAIN_W * 0.7,
           y: my,
           w: MAIN_W * 0.3,
-          h: 0.18,
-          fontSize: 7,
+          h: 0.16,
+          fontSize: 6.5,
           fontFace: "Arial",
           color: MED_GRAY,
           align: "right",
         });
       }
-      my += 0.18;
+      my += 0.16;
       const degreeField = [edu.degree, edu.field].filter(Boolean).join(", ");
       if (degreeField || edu.gpa) {
         slide.addText(degreeField + (edu.gpa ? ` | GPA: ${edu.gpa}` : ""), {
           x: MAIN_X,
           y: my,
           w: MAIN_W,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           italic: true,
           color: DARK_GRAY,
         });
-        my += 0.16;
+        my += 0.14;
       }
       for (const h of edu.highlights || []) {
         slide.addText("•  " + h, {
           x: MAIN_X + 0.1,
           y: my,
           w: MAIN_W - 0.1,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           color: DARK_GRAY,
         });
-        my += 0.16;
+        my += 0.14;
       }
       my += 0.06;
     }
@@ -311,8 +316,8 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
         x: MAIN_X,
         y: my,
         w: MAIN_W * 0.7,
-        h: 0.18,
-        fontSize: 9,
+        h: 0.16,
+        fontSize: 8,
         fontFace: "Arial",
         bold: true,
         color: BLACK,
@@ -323,38 +328,38 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
           x: MAIN_X + MAIN_W * 0.7,
           y: my,
           w: MAIN_W * 0.3,
-          h: 0.18,
-          fontSize: 7,
+          h: 0.16,
+          fontSize: 6.5,
           fontFace: "Arial",
           color: MED_GRAY,
           align: "right",
         });
       }
-      my += 0.18;
+      my += 0.16;
       if (exp.role) {
         slide.addText(exp.role, {
           x: MAIN_X,
           y: my,
           w: MAIN_W,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           italic: true,
           color: SIDEBAR_ACCENT,
         });
-        my += 0.16;
+        my += 0.14;
       }
       for (const b of exp.bullets || []) {
         slide.addText("•  " + b, {
           x: MAIN_X + 0.1,
           y: my,
           w: MAIN_W - 0.1,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           color: DARK_GRAY,
         });
-        my += 0.16;
+        my += 0.14;
       }
       my += 0.06;
     }
@@ -368,36 +373,36 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
         x: MAIN_X,
         y: my,
         w: MAIN_W,
-        h: 0.18,
-        fontSize: 9,
+        h: 0.16,
+        fontSize: 8,
         fontFace: "Arial",
         bold: true,
         color: BLACK,
       });
-      my += 0.18;
+      my += 0.16;
       if (proj.description) {
         slide.addText("•  " + proj.description, {
           x: MAIN_X + 0.1,
           y: my,
           w: MAIN_W - 0.1,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           color: DARK_GRAY,
         });
-        my += 0.16;
+        my += 0.14;
       }
       for (const h of proj.highlights || []) {
         slide.addText("•  " + h, {
           x: MAIN_X + 0.1,
           y: my,
           w: MAIN_W - 0.1,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           color: DARK_GRAY,
         });
-        my += 0.16;
+        my += 0.14;
       }
       my += 0.04;
     }
@@ -411,8 +416,8 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
         x: MAIN_X,
         y: my,
         w: MAIN_W * 0.7,
-        h: 0.18,
-        fontSize: 9,
+        h: 0.16,
+        fontSize: 8,
         fontFace: "Arial",
         bold: true,
         color: BLACK,
@@ -422,38 +427,38 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
           x: MAIN_X + MAIN_W * 0.7,
           y: my,
           w: MAIN_W * 0.3,
-          h: 0.18,
-          fontSize: 7,
+          h: 0.16,
+          fontSize: 6.5,
           fontFace: "Arial",
           color: MED_GRAY,
           align: "right",
         });
       }
-      my += 0.18;
+      my += 0.16;
       if (lead.role) {
         slide.addText(lead.role, {
           x: MAIN_X,
           y: my,
           w: MAIN_W,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           italic: true,
           color: SIDEBAR_ACCENT,
         });
-        my += 0.16;
+        my += 0.14;
       }
       if (lead.description) {
         slide.addText("•  " + lead.description, {
           x: MAIN_X + 0.1,
           y: my,
           w: MAIN_W - 0.1,
-          h: 0.16,
-          fontSize: 7.5,
+          h: 0.14,
+          fontSize: 7,
           fontFace: "Arial",
           color: DARK_GRAY,
         });
-        my += 0.16;
+        my += 0.14;
       }
       my += 0.04;
     }
@@ -467,8 +472,8 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
         x: MAIN_X,
         y: my,
         w: MAIN_W * 0.7,
-        h: 0.18,
-        fontSize: 8,
+        h: 0.16,
+        fontSize: 7.5,
         fontFace: "Arial",
         bold: true,
         color: BLACK,
@@ -478,26 +483,26 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
           x: MAIN_X + MAIN_W * 0.7,
           y: my,
           w: MAIN_W * 0.3,
-          h: 0.18,
-          fontSize: 7,
+          h: 0.16,
+          fontSize: 6.5,
           fontFace: "Arial",
           color: MED_GRAY,
           align: "right",
         });
       }
-      my += 0.18;
+      my += 0.16;
       if (award.issuer) {
         slide.addText(award.issuer, {
           x: MAIN_X,
           y: my,
           w: MAIN_W,
-          h: 0.14,
-          fontSize: 7,
+          h: 0.13,
+          fontSize: 6.5,
           fontFace: "Arial",
           italic: true,
           color: DARK_GRAY,
         });
-        my += 0.14;
+        my += 0.13;
       }
       my += 0.04;
     }
