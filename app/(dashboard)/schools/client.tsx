@@ -91,7 +91,8 @@ export default function SchoolsClient({ universities }: { universities: Universi
     let filtered = universities;
 
     if (selectedLevel !== "Tümü") {
-      filtered = filtered.filter((u) => (u.level || "master") === (selectedLevel === "Lisans" ? "bachelor" : "master"));
+      const levelMap: Record<string, string> = { "Lisans": "bachelor", "Yüksek Lisans": "master", "Ön Lisans": "associate" };
+      filtered = filtered.filter((u) => (u.level || "master") === levelMap[selectedLevel]);
     }
     if (selectedCountry !== "Tümü") {
       filtered = filtered.filter((u) => u.country === selectedCountry);
@@ -260,6 +261,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
               <option value="Tümü">Tümü</option>
               <option value="Lisans">Lisans (Bachelor)</option>
               <option value="Yüksek Lisans">Yüksek Lisans (Master)</option>
+              <option value="Ön Lisans">Ön Lisans (Associate)</option>
             </select>
           </div>
 
@@ -384,7 +386,7 @@ function UniversityCard({
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
-        borderLeft: (university.level || "master") === "master" ? "3px solid var(--gold)" : "3px solid var(--blue)",
+        borderLeft: university.level === "associate" ? "3px solid var(--success)" : (university.level || "master") === "master" ? "3px solid var(--gold)" : "3px solid var(--blue)",
       }}
     >
       <div
@@ -401,12 +403,12 @@ function UniversityCard({
               <span
                 className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
                 style={{
-                  backgroundColor: (university.level || "master") === "bachelor" ? "var(--blue-bg)" : "var(--gold-bg)",
-                  color: (university.level || "master") === "bachelor" ? "var(--blue)" : "var(--gold)",
-                  border: `1px solid ${(university.level || "master") === "bachelor" ? "var(--blue-border)" : "var(--gold-border)"}`,
+                  backgroundColor: university.level === "associate" ? "var(--success-bg)" : (university.level || "master") === "bachelor" ? "var(--blue-bg)" : "var(--gold-bg)",
+                  color: university.level === "associate" ? "var(--success)" : (university.level || "master") === "bachelor" ? "var(--blue)" : "var(--gold)",
+                  border: `1px solid ${university.level === "associate" ? "rgba(22,163,74,0.25)" : (university.level || "master") === "bachelor" ? "var(--blue-border)" : "var(--gold-border)"}`,
                 }}
               >
-                {(university.level || "master") === "bachelor" ? "Lisans" : "Y.Lisans"}
+                {university.level === "associate" ? "Ön Lisans" : (university.level || "master") === "bachelor" ? "Lisans" : "Y.Lisans"}
               </span>
               {university.program} · {university.city}, {university.country}
             </div>
