@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const sectionDescriptions: Record<string, string> = {
   OPENING: "A strong, attention-grabbing opening paragraph that introduces the student and their purpose for applying.",
@@ -15,6 +11,12 @@ const sectionDescriptions: Record<string, string> = {
 };
 
 export async function POST(request: NextRequest) {
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: "GEMINI_API_KEY tanımlı değil." }, { status: 500 });
+  }
+
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
   try {
     const body = await request.json();
     const { section, fullLetter, studentInfo, instruction } = body;
@@ -25,15 +27,17 @@ export async function POST(request: NextRequest) {
 
     const desc = sectionDescriptions[section] || "this section";
 
-    const message = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 800,
-      system:
-        "You are an expert European university admissions consultant. Rewrite only the requested section of a motivation letter. Keep the same style and flow as the rest of the letter. Return ONLY the rewritten section text, no headers or labels.",
-      messages: [
-        {
-          role: "user",
-          content: `Here is the full motivation letter:
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 800,
+      },
+    });
+
+    const prompt = `You are an expert European university admissions consultant. Rewrite only the requested section of a motivation letter. Keep the same style and flow as the rest of the letter. Return ONLY the rewritten section text, no headers or labels.
+
+Here is the full motivation letter:
 ---
 ${fullLetter}
 ---
@@ -47,13 +51,10 @@ GPA: ${studentInfo.gpa}/100
 Please rewrite ONLY the [${section}] section. Description: ${desc}
 ${instruction ? `Additional instruction: ${instruction}` : ""}
 
-Return ONLY the rewritten paragraph text. Do not include any section markers or headers.`,
-        },
-      ],
-    });
+Return ONLY the rewritten paragraph text. Do not include any section markers or headers.`;
 
-    const block = message.content[0];
-    const text = block.type === "text" ? block.text : "";
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
 
     return NextResponse.json({ text });
   } catch (error) {
