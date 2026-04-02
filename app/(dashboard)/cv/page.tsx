@@ -805,10 +805,10 @@ export default function CVPage() {
                   }} placeholder="Lise / Lisans" />
                   <Field label="Bölüm / Alan" value={edu.field || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], field: v }; update("education", copy);
-                  }} placeholder="Fen Bilimleri" />
+                  }} placeholder="Türkçe-Matematik / Fen / Eşit Ağırlık" />
                   <Field label="GPA" value={edu.gpa || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], gpa: v }; update("education", copy);
-                  }} placeholder="3.8/4.0" />
+                  }} placeholder="87/100" />
                   <Field label="Başlangıç" value={edu.startDate || ""} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], startDate: v }; update("education", copy);
                   }} placeholder="2022" />
