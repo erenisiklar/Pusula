@@ -43,7 +43,11 @@ function TrendBadge({ trend }: { trend: number }) {
   );
 }
 
-const countries = ["Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç"];
+const countries = [
+  "Tümü", "Almanya", "Avusturya", "Belçika", "Çekya", "Danimarka",
+  "Finlandiya", "Fransa", "Hollanda", "İngiltere", "İrlanda", "İspanya",
+  "İsveç", "İsviçre", "İtalya", "Macaristan", "Norveç", "Polonya", "Portekiz",
+];
 type SortKey = "rate-asc" | "rate-desc" | "applicants-desc" | "gpa-desc";
 
 export default function AcceptanceClient({ stats }: { stats: AcceptanceRow[] }) {
