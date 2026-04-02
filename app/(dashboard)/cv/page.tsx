@@ -2007,7 +2007,7 @@ function PdfCard({
   }
 
   const editLabel = variant === "harvard" ? "DOCX" : "PPTX";
-  const editHint = variant === "harvard" ? "Google Docs / Word'de düzenle" : "Google Slides / PowerPoint'te düzenle";
+  const editHint = variant === "harvard" ? "Word'de düzenle" : "PowerPoint'te düzenle";
 
   return (
     <div
