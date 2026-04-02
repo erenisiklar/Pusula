@@ -58,9 +58,13 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
     (async () => {
       const L = (await import("leaflet")).default;
       await import("leaflet/dist/leaflet.css");
-      await import("leaflet.markercluster");
-      await import("leaflet.markercluster/dist/MarkerCluster.css");
-      await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
+      try {
+        await import("leaflet.markercluster");
+        await import("leaflet.markercluster/dist/MarkerCluster.css");
+        await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
+      } catch (e) {
+        console.warn("MarkerCluster plugin failed to load:", e);
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -83,27 +87,34 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       tileRef.current = tile;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cluster = (L as any).markerClusterGroup({
-        showCoverageOnHover: false,
-        maxClusterRadius: 45,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        iconCreateFunction: (c: any) => {
-          const count = c.getChildCount();
-          return L.divIcon({
-            html: `<div style="
-              width:36px;height:36px;border-radius:50%;
-              background:rgba(30,64,175,0.95);
-              border:2px solid rgba(30,64,175,0.3);
-              display:flex;align-items:center;justify-content:center;
-              font-size:13px;font-weight:700;color:#ffffff;
-              box-shadow:0 2px 8px rgba(30,64,175,0.3);
-            ">${count}</div>`,
-            iconSize: [36, 36] as [number, number],
-            iconAnchor: [18, 18] as [number, number],
-            className: "",
-          });
-        },
-      });
+      let cluster: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof (L as any).markerClusterGroup === "function") {
+        cluster = (L as any).markerClusterGroup({
+          showCoverageOnHover: false,
+          maxClusterRadius: 45,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          iconCreateFunction: (c: any) => {
+            const count = c.getChildCount();
+            return L.divIcon({
+              html: `<div style="
+                width:36px;height:36px;border-radius:50%;
+                background:rgba(30,64,175,0.95);
+                border:2px solid rgba(30,64,175,0.3);
+                display:flex;align-items:center;justify-content:center;
+                font-size:13px;font-weight:700;color:#ffffff;
+                box-shadow:0 2px 8px rgba(30,64,175,0.3);
+              ">${count}</div>`,
+              iconSize: [36, 36] as [number, number],
+              iconAnchor: [18, 18] as [number, number],
+              className: "",
+            });
+          },
+        });
+      } else {
+        console.warn("MarkerCluster not available, using LayerGroup");
+        cluster = L.layerGroup();
+      }
       clusterRef.current = cluster;
       map.addLayer(cluster);
 
