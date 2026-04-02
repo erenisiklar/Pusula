@@ -124,6 +124,38 @@ The writing should sound like an honest B1 speaker — simple but sincere. The a
   }
 }
 
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+}
+
+function trimToWordLimit(text: string, maxWords: number): string {
+  if (countWords(text) <= maxWords) return text;
+
+  // Split into sections (preserve section markers)
+  const sectionMarkers = ["[OPENING]", "[ACADEMIC_BACKGROUND]", "[WHY_THIS_PROGRAM]", "[EXPERIENCE]", "[CAREER_GOALS]", "[CLOSING]"];
+
+  // Split text into sentences
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  let result = "";
+  let words = 0;
+
+  for (const sentence of sentences) {
+    const sentenceWords = countWords(sentence);
+    // Always include section markers
+    const isMarker = sectionMarkers.some((m) => sentence.trim().startsWith(m));
+    if (isMarker) {
+      result += (result ? "\n\n" : "") + sentence;
+      words += sentenceWords;
+      continue;
+    }
+    if (words + sentenceWords > maxWords) break;
+    result += (result && !result.endsWith("\n") ? " " : "") + sentence;
+    words += sentenceWords;
+  }
+
+  return result.trim();
+}
+
 export async function POST(request: NextRequest) {
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
@@ -185,9 +217,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Tell the AI a lower limit so it stays under the real one
+    const aiLimit = Math.round(wordCount * 0.88);
+
     const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases.
 
-WORD LIMIT: The letter MUST NOT exceed ${wordCount} words. This is a hard upper limit set by the university's application system. Aim for ${Math.round(wordCount * 0.85)}-${wordCount} words. Going over ${wordCount} words is NOT acceptable — the application system will reject it.
+STRICT WORD LIMIT: Write EXACTLY ${aiLimit} words or fewer. Do NOT exceed ${aiLimit} words under any circumstances. This is a hard system limit — the application portal will reject anything longer.
 
 ${langLevelInstruction}
 
@@ -202,7 +237,7 @@ Key Strengths: ${strengths}
 Personal Motivation: ${motivation}
 ${optionalSections}
 
-Write a professional, compelling motivation letter in English (maximum ${wordCount} words, aim for ${Math.round(wordCount * 0.85)}-${wordCount} words). Structure it with these clearly separated sections:
+Write a professional, compelling motivation letter in English (MAXIMUM ${aiLimit} words). Structure it with these clearly separated sections:
 
 [OPENING]
 A strong, attention-grabbing opening paragraph that introduces the student and their purpose.
@@ -227,11 +262,14 @@ IMPORTANT RULES:
 - Do not include any other formatting or headers.
 - NEVER leave any sentence incomplete or cut off mid-way. Every sentence MUST be fully finished with proper punctuation.
 - NEVER stop writing in the middle of a paragraph. Complete every thought fully.
-- The letter MUST be under ${wordCount} words. Count your words carefully. Do NOT exceed this limit.
+- The letter MUST be under ${aiLimit} words. Count carefully. Do NOT exceed this limit.
 - If approaching the word limit, wrap up gracefully with a complete closing — do not abruptly stop.`;
 
     const result = await model.generateContent(prompt);
-    const letter = result.response.text();
+    let letter = result.response.text();
+
+    // Hard trim: if still over limit, remove sentences from the end until under
+    letter = trimToWordLimit(letter, wordCount);
 
     return NextResponse.json({ letter });
   } catch (error) {
