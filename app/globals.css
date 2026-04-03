@@ -60,3 +60,25 @@ select option {
   background: var(--bg);
   color: var(--text);
 }
+
+/* Leaflet compatibility — Tailwind preflight breaks tile rendering */
+.leaflet-container img {
+  max-width: none !important;
+  max-height: none !important;
+}
+.leaflet-container .leaflet-tile-pane img {
+  max-width: none !important;
+}
+.leaflet-container .leaflet-marker-icon,
+.leaflet-container .leaflet-marker-shadow {
+  max-width: none !important;
+}
+.leaflet-container .leaflet-control-zoom a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}

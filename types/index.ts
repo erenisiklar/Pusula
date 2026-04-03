@@ -24,6 +24,11 @@ export interface University {
   tuitionEUR: number;
   description?: string;
   website?: string;
+  lat?: number;
+  lng?: number;
+  imageUrl?: string;
+  durationYears?: number;
+  countryColor?: string;
   deadline?: string;
   flag: string;
   rankings?: UniversityRanking[];
@@ -31,6 +36,7 @@ export interface University {
   competitiveness?: "very_high" | "high" | "medium" | "low"; // selectivity level
   dataVerified?: boolean; // true if data comes from official source
   programRestricted?: boolean; // true for numerus fixus, NC-limited, concours programs
+  level?: "bachelor" | "master" | "associate"; // bachelor=lisans, master=yüksek lisans, associate=ön lisans
 }
 
 export interface UserProfile {

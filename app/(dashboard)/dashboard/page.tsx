@@ -4,15 +4,15 @@ import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap } fr
 import Link from "next/link";
 
 const stats = [
-  { label: "Üniversite", value: "15", icon: School, color: "var(--blue)" },
-  { label: "Mektup", value: "0", icon: FileText, color: "var(--gold)" },
+  { label: "Lisans Programı", value: "159", icon: School, color: "var(--blue)" },
+  { label: "Ülke", value: "19", icon: CheckCircle, color: "var(--success)" },
   { label: "Yaklaşan Deadline", value: "3", icon: Calendar, color: "var(--danger)" },
-  { label: "Başvuru", value: "0", icon: CheckCircle, color: "var(--success)" },
+  { label: "Ücretsiz Program", value: "40+", icon: GraduationCap, color: "var(--gold)" },
 ];
 
 const todos = [
-  { text: "GPA ve dil puanını gir", done: false, href: "/schools" },
-  { text: "Uygun üniversiteleri keşfet", done: false, href: "/schools" },
+  { text: "Lise notunu ve dil puanını gir", done: false, href: "/schools" },
+  { text: "Lisans programlarını keşfet", done: false, href: "/schools" },
   { text: "Motivasyon mektubu oluştur", done: false, href: "/motivasyon" },
   { text: "Başvuru takvimini kontrol et", done: false, href: "/takvim" },
   { text: "CV'ni hazırla", done: false, href: "/cv" },
@@ -34,7 +34,7 @@ export default function DashboardPage() {
           Hoş geldin! 👋
         </h1>
         <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Avrupa&apos;daki hayalindeki üniversiteye giden yolculuğuna başla.
+          Liseden sonra Avrupa&apos;da lisans okumak için doğru yerdesin.
         </p>
 
         {/* Progress bar */}

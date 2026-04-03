@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateMotivationLetter } from "@/lib/gemini";
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -23,8 +25,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ letter });
   } catch (error) {
     console.error("Letter generation error:", error);
+    const msg = error instanceof Error ? error.message : "Bilinmeyen hata";
     return NextResponse.json(
-      { error: "Mektup oluşturulurken bir hata oluştu. Lütfen tekrar deneyin." },
+      { error: `Mektup oluşturulurken hata: ${msg}` },
       { status: 500 }
     );
   }
