@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { section, fullLetter, studentInfo, instruction } = body;
+    const { section, fullLetter, studentInfo, instruction, letterLanguage = "en" } = body;
 
     if (!section || !fullLetter || !studentInfo) {
       return NextResponse.json({ error: "Eksik bilgi." }, { status: 400 });
@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const prompt = `You are an expert European university admissions consultant. Rewrite only the requested section of a motivation letter. Keep the same style and flow as the rest of the letter. Return ONLY the rewritten section text, no headers or labels.
+    const isFrench = letterLanguage === "fr";
+    const langName = isFrench ? "French" : "English";
+
+    const prompt = `You are an expert European university admissions consultant. Rewrite only the requested section of a motivation letter in ${langName}. Keep the same style, language, and flow as the rest of the letter. Return ONLY the rewritten section text, no headers or labels.${isFrench ? " The rewritten section MUST be in French." : ""}
 
 Here is the full motivation letter:
 ---

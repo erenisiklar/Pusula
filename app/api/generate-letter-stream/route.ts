@@ -180,6 +180,7 @@ export async function POST(request: NextRequest) {
       extracurriculars,
       careerGoals,
       tone = "balanced",
+      letterLanguage = "en",
       wordCount = 500,
       universityInsights,
     } = body;
@@ -191,10 +192,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const isFrench = letterLanguage === "fr";
+    const langName = isFrench ? "French" : "English";
+
     const toneMap: Record<string, string> = {
-      formal: "Use a formal, professional academic tone. Avoid colloquialisms.",
-      balanced: "Use a balanced tone that is professional yet personable and warm.",
-      creative: "Use a creative, engaging tone with vivid language and storytelling elements.",
+      formal: `Use a formal, professional academic tone. Avoid colloquialisms.`,
+      balanced: `Use a balanced tone that is professional yet personable and warm.`,
+      creative: `Use a creative, engaging tone with vivid language and storytelling elements.`,
     };
 
     const toneInstruction = toneMap[tone] || toneMap.balanced;
@@ -231,13 +235,13 @@ IMPORTANT: Reference these specific details naturally in the letter — especial
     // Tell the AI a lower limit so it stays under the real one
     const aiLimit = Math.round(wordCount * 0.88);
 
-    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in English. Be specific and personal, avoid generic phrases.
+    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in ${langName}. Be specific and personal, avoid generic phrases.${isFrench ? " The entire letter MUST be written in French (Français). Do NOT use English anywhere in the letter content." : ""}
 
 STRICT WORD LIMIT: Write EXACTLY ${aiLimit} words or fewer. Do NOT exceed ${aiLimit} words under any circumstances. This is a hard system limit — the application portal will reject anything longer.
 
-${langLevelInstruction}
+${isFrench ? "" : langLevelInstruction}
 ${insightsSection}
-Write a motivation letter for the following student:
+Write a motivation letter in ${langName} for the following student:
 
 Name: ${studentName}
 University: ${university}
@@ -248,7 +252,7 @@ Key Strengths: ${strengths}
 Personal Motivation: ${motivation}
 ${optionalSections}
 
-Write a professional, compelling motivation letter in English (MAXIMUM ${aiLimit} words). Structure it with these clearly separated sections:
+Write a professional, compelling motivation letter in ${langName} (MAXIMUM ${aiLimit} words). Structure it with these clearly separated sections:
 
 [OPENING]
 A strong, attention-grabbing opening paragraph that introduces the student and their purpose.
