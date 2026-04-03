@@ -123,6 +123,7 @@ export default function MotivasyonPage() {
   const [universityUrl, setUniversityUrl] = useState("");
   const [scraping, setScraping] = useState(false);
   const [scrapeError, setScrapeError] = useState("");
+  const [robotsBlocked, setRobotsBlocked] = useState(false);
   const [universityInsights, setUniversityInsights] = useState<UniversityInsights | null>(null);
 
   // UI state
@@ -140,6 +141,7 @@ export default function MotivasyonPage() {
     if (!universityUrl) return;
     setScraping(true);
     setScrapeError("");
+    setRobotsBlocked(false);
     setUniversityInsights(null);
     try {
       const res = await fetch("/api/scrape-university", {
@@ -148,7 +150,10 @@ export default function MotivasyonPage() {
         body: JSON.stringify({ url: universityUrl }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Site taranamadı.");
+      if (!res.ok) {
+        if (data.robotsBlocked) setRobotsBlocked(true);
+        throw new Error(data.error || "Site taranamadı.");
+      }
       setUniversityInsights(data.insights);
     } catch (err) {
       setScrapeError(err instanceof Error ? err.message : "Site taranamadı.");
@@ -422,6 +427,7 @@ export default function MotivasyonPage() {
                   setUniversityUrl(e.target.value);
                   setUniversityInsights(null);
                   setScrapeError("");
+                  setRobotsBlocked(false);
                 }}
                 placeholder="https://www.university.edu/program"
                 className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
@@ -449,9 +455,16 @@ export default function MotivasyonPage() {
             </div>
 
             {scrapeError && (
-              <p className="mt-1.5 text-[11px]" style={{ color: "var(--danger)" }}>
+              <div
+                className="mt-1.5 rounded-lg px-3 py-2 text-[11px] leading-relaxed"
+                style={{
+                  backgroundColor: robotsBlocked ? "var(--gold-bg)" : "var(--danger-bg)",
+                  border: `1px solid ${robotsBlocked ? "var(--gold-border)" : "var(--danger)"}`,
+                  color: robotsBlocked ? "var(--gold-light)" : "var(--danger)",
+                }}
+              >
                 {scrapeError}
-              </p>
+              </div>
             )}
 
             {universityInsights && (
