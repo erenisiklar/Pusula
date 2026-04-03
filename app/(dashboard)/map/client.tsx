@@ -4,12 +4,13 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import type { University } from "@/types";
 import type { AcceptanceRow } from "@/lib/supabase/queries";
-import { universityMapData } from "@/lib/university-map-data";
+import { universityMapData, getWikiTitle } from "@/lib/university-map-data";
 import { ExternalLink, X, Clock, Euro, GraduationCap, Users, MessageSquare, TrendingUp } from "lucide-react";
 
 interface SelectedUni {
   university: University;
   imageUrl: string;
+  wikiTitle: string | null;
   website: string;
   durationYears: number;
   countryColor: string;
@@ -300,8 +301,24 @@ export default function MapClient({
                   alt={selected.university.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+                    const img = e.target as HTMLImageElement;
+                    img.onerror = null; // prevent loop
+                    const FALLBACK = "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+                    if (selected.wikiTitle) {
+                      fetch(
+                        `https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`,
+                        { headers: { "Api-User-Agent": "Pusula/1.0" } }
+                      )
+                        .then((r) => r.json())
+                        .then((data) => {
+                          img.src = data?.thumbnail?.source
+                            ? data.thumbnail.source.replace(/\/\d+px-/, "/640px-")
+                            : FALLBACK;
+                        })
+                        .catch(() => { img.src = FALLBACK; });
+                    } else {
+                      img.src = FALLBACK;
+                    }
                   }}
                 />
                 <div
