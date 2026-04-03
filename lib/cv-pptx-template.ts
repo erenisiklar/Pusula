@@ -123,34 +123,47 @@ export function generateOnePagePptx(data: CVData): PptxGenJS {
   // ===== SIDEBAR CONTENT =====
   let sy = 0.4;
 
-  // Initials circle
-  const initials = (info.fullName || "N")
-    .split(" ")
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  // Photo or Initials circle
+  const photoSize = 0.9;
+  if (info.photo) {
+    slide.addImage({
+      data: info.photo,
+      x: (SIDEBAR_W - photoSize) / 2,
+      y: sy,
+      w: photoSize,
+      h: photoSize,
+      rounding: true,
+    });
+    sy += photoSize + 0.1;
+  } else {
+    const initials = (info.fullName || "N")
+      .split(" ")
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
 
-  slide.addShape("ellipse", {
-    x: (SIDEBAR_W - 0.7) / 2,
-    y: sy,
-    w: 0.7,
-    h: 0.7,
-    fill: { color: SIDEBAR_ACCENT },
-  });
-  slide.addText(initials, {
-    x: (SIDEBAR_W - 0.7) / 2,
-    y: sy,
-    w: 0.7,
-    h: 0.7,
-    fontSize: 18,
-    fontFace: "Arial",
-    bold: true,
-    color: WHITE,
-    align: "center",
-    valign: "middle",
-  });
-  sy += 0.8;
+    slide.addShape("ellipse", {
+      x: (SIDEBAR_W - 0.7) / 2,
+      y: sy,
+      w: 0.7,
+      h: 0.7,
+      fill: { color: SIDEBAR_ACCENT },
+    });
+    slide.addText(initials, {
+      x: (SIDEBAR_W - 0.7) / 2,
+      y: sy,
+      w: 0.7,
+      h: 0.7,
+      fontSize: 18,
+      fontFace: "Arial",
+      bold: true,
+      color: WHITE,
+      align: "center",
+      valign: "middle",
+    });
+    sy += 0.8;
+  }
 
   // Name
   slide.addText(info.fullName || "Name", {

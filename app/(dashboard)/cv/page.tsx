@@ -57,7 +57,7 @@ function emptyAward() {
 
 function initialCVData(): CVData {
   return {
-    personalInfo: { fullName: "", email: "", phone: "", location: "", linkedin: "", website: "" },
+    personalInfo: { fullName: "", email: "", phone: "", location: "", linkedin: "", website: "", photo: "" },
     education: [emptyEducation()],
     experience: [],
     projects: [],
@@ -77,6 +77,7 @@ function demoCVData(): CVData {
       location: "Ankara, Turkey",
       linkedin: "linkedin.com/in/aysekaya",
       website: "",
+      photo: "",
     },
     education: [
       {
@@ -445,6 +446,94 @@ const inputStyle = {
 };
 const labelClass = "text-xs font-medium block mb-1";
 const labelStyle = { color: "var(--muted)" };
+
+/* ====== Photo Upload Component ====== */
+function PhotoUpload({
+  photo,
+  onChange,
+}: {
+  photo: string;
+  onChange: (dataUrl: string) => void;
+}) {
+  async function handleFile(file: File) {
+    // Resize and compress to keep localStorage manageable
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.src = url;
+    await new Promise((resolve) => { img.onload = resolve; });
+    URL.revokeObjectURL(url);
+
+    const canvas = document.createElement("canvas");
+    const size = 300; // 300x300 max
+    let w = img.width;
+    let h = img.height;
+    if (w > h) { h = (h / w) * size; w = size; }
+    else { w = (w / h) * size; h = size; }
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(img, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    onChange(dataUrl);
+  }
+
+  return (
+    <div className="col-span-2 flex items-center gap-4">
+      <div
+        className="w-16 h-16 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center"
+        style={{
+          backgroundColor: photo ? "transparent" : "var(--blue-bg)",
+          border: `2px dashed ${photo ? "var(--blue-border)" : "var(--border)"}`,
+        }}
+      >
+        {photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={photo} alt="CV Fotoğrafı" className="w-full h-full object-cover" />
+        ) : (
+          <User className="w-6 h-6" style={{ color: "var(--muted)", opacity: 0.4 }} />
+        )}
+      </div>
+      <div className="flex-1">
+        <label className={labelClass} style={labelStyle}>
+          CV Fotoğrafı
+          <span className="font-normal ml-1">(opsiyonel — tek sayfa CV&apos;de görünür)</span>
+        </label>
+        <div className="flex items-center gap-2">
+          <label
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: "var(--blue-bg)",
+              border: "1px solid var(--blue-border)",
+              color: "var(--blue)",
+            }}
+          >
+            <Plus className="w-3 h-3" />
+            {photo ? "Değiştir" : "Fotoğraf Yükle"}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFile(file);
+              }}
+            />
+          </label>
+          {photo && (
+            <button
+              onClick={() => onChange("")}
+              className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+              style={{ color: "var(--danger)" }}
+            >
+              <Trash2 className="w-3 h-3" />
+              Kaldır
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ====== Input Component ====== */
 function Field({
@@ -859,6 +948,7 @@ export default function CVPage() {
         {step === 0 && (
           <div className="grid grid-cols-2 gap-3">
             <Field label="Ad Soyad *" value={data.personalInfo.fullName} onChange={(v) => updatePersonal("fullName", v)} placeholder="Elif Yılmaz" fullWidth />
+            <PhotoUpload photo={data.personalInfo.photo || ""} onChange={(v) => updatePersonal("photo", v)} />
             <Field label="E-posta" value={data.personalInfo.email || ""} onChange={(v) => updatePersonal("email", v)} placeholder="elif@email.com" />
             <Field label="Telefon" value={data.personalInfo.phone || ""} onChange={(v) => updatePersonal("phone", v)} placeholder="+90 532 111 2233" />
             <Field label="Konum" value={data.personalInfo.location || ""} onChange={(v) => updatePersonal("location", v)} placeholder="İstanbul, Türkiye" fullWidth />
