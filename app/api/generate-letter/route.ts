@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateMotivationLetter } from "@/lib/claude";
+import { generateMotivationLetter } from "@/lib/gemini";
 
 export async function POST(request: NextRequest) {
   try {
