@@ -302,22 +302,18 @@ export default function MapClient({
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const img = e.target as HTMLImageElement;
-                    img.onerror = null; // prevent loop
+                    img.onerror = null;
                     const FALLBACK = "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+                    img.src = FALLBACK; // show immediately, upgrade if wiki loads
                     if (selected.wikiTitle) {
-                      fetch(
-                        `https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`,
-                        { headers: { "Api-User-Agent": "Pusula/1.0" } }
-                      )
+                      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
                         .then((r) => r.json())
                         .then((data) => {
-                          img.src = data?.thumbnail?.source
-                            ? data.thumbnail.source.replace(/\/\d+px-/, "/640px-")
-                            : FALLBACK;
+                          if (data?.thumbnail?.source) {
+                            img.src = data.thumbnail.source.replace(/\/\d+px-/, "/640px-");
+                          }
                         })
-                        .catch(() => { img.src = FALLBACK; });
-                    } else {
-                      img.src = FALLBACK;
+                        .catch(() => {});
                     }
                   }}
                 />
