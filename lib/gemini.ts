@@ -12,6 +12,7 @@ export interface CVData {
     location?: string;
     linkedin?: string;
     website?: string;
+    photo?: string;
   };
   education: {
     institution: string;
@@ -367,6 +368,7 @@ Return ONLY valid JSON with the same structure as input. No markdown, no backtic
     enhanced.personalInfo.phone = rawData.personalInfo.phone || enhanced.personalInfo.phone;
     enhanced.personalInfo.linkedin = rawData.personalInfo.linkedin || enhanced.personalInfo.linkedin;
     enhanced.personalInfo.website = rawData.personalInfo.website || enhanced.personalInfo.website;
+    enhanced.personalInfo.photo = rawData.personalInfo.photo;
     enhanced.detectedField = rawData.detectedField;
     return enhanced;
   } catch {

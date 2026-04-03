@@ -4,6 +4,7 @@ import {
   Page,
   Text,
   View,
+  Image,
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
@@ -335,34 +336,47 @@ export function OnePageCVDocument({ data }: { data: CVData }) {
         >
           {/* Name + Title area */}
           <View style={{ marginBottom: 12, alignItems: "center" }}>
-            {/* Initials circle */}
-            <View
-              style={{
-                width: 46,
-                height: 46,
-                borderRadius: 23,
-                backgroundColor: SIDEBAR_ACCENT,
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 8,
-              }}
-            >
-              <Text
+            {/* Photo or Initials circle */}
+            {info.photo ? (
+              <Image
+                src={info.photo}
                 style={{
-                  fontFamily: "Lato",
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: COLORS.white,
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  marginBottom: 8,
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 23,
+                  backgroundColor: SIDEBAR_ACCENT,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 8,
                 }}
               >
-                {(info.fullName || "N")
-                  .split(" ")
-                  .map((w) => w[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase()}
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: 17,
+                    fontWeight: 700,
+                    color: COLORS.white,
+                  }}
+                >
+                  {(info.fullName || "N")
+                    .split(" ")
+                    .map((w) => w[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase()}
+                </Text>
+              </View>
+            )}
             <Text
               style={{
                 fontFamily: "Lato",
