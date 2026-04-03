@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { University } from "@/types";
 import type { EligibilityInfo } from "./client";
+import { universityMapData } from "@/lib/university-map-data";
 
 interface SelectedUni {
   university: University;
@@ -136,10 +137,11 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       selectedRef.current = null;
 
       universities.forEach((uni) => {
-        if (!uni.lat || !uni.lng) return;
+        const mapData = universityMapData.find((d) => d.id === uni.id);
+        if (!mapData) return;
         if (!activeCountries.has(uni.country)) return;
 
-        const color = uni.countryColor || "#3b82f6";
+        const color = mapData.countryColor;
         const eligibility = eligibilityMap.get(uni.id);
 
         let opacity = 1;
@@ -180,7 +182,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         });
 
         const normalIcon = makeIcon(false);
-        const marker = L.marker([uni.lat, uni.lng], { icon: normalIcon });
+        const marker = L.marker([mapData.lat, mapData.lng], { icon: normalIcon });
 
         marker.bindTooltip(
           `<div style="font-size:12px;font-weight:600;color:#1e293b;background:#ffffff;border:1px solid rgba(30,64,175,0.12);padding:4px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${uni.name}</div>`,
@@ -196,10 +198,10 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
 
           onSelectRef.current({
             university: uni,
-            imageUrl: uni.imageUrl || "",
-            website: uni.website || "",
-            durationYears: uni.durationYears || 2,
-            countryColor: uni.countryColor || "#3b82f6",
+            imageUrl: mapData.imageUrl,
+            website: mapData.website,
+            durationYears: mapData.durationYears,
+            countryColor: mapData.countryColor,
           });
         });
 
