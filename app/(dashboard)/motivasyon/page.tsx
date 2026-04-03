@@ -105,6 +105,7 @@ export default function MotivasyonPage() {
   const [extracurriculars, setExtracurriculars] = useState("");
   const [careerGoals, setCareerGoals] = useState("");
   const [tone, setTone] = useState("balanced");
+  const [letterLanguage, setLetterLanguage] = useState("en");
   const [targetWordCount, setTargetWordCount] = useState(500);
 
   // Output state
@@ -188,6 +189,7 @@ export default function MotivasyonPage() {
           extracurriculars,
           careerGoals,
           tone,
+          letterLanguage,
           wordCount: targetWordCount,
           universityInsights: universityInsights || undefined,
         }),
@@ -222,6 +224,7 @@ export default function MotivasyonPage() {
             gpa,
           },
           instruction: editInstruction,
+          letterLanguage,
         }),
       });
 
@@ -261,7 +264,7 @@ export default function MotivasyonPage() {
               spacing: { after: 200 },
               children: [
                 new TextRun({
-                  text: "Motivation Letter",
+                  text: letterLanguage === "fr" ? "Lettre de Motivation" : "Motivation Letter",
                   bold: true,
                   size: 28,
                   font: "Calibri",
@@ -636,7 +639,33 @@ export default function MotivasyonPage() {
                 />
               </div>
 
-              {/* Tone & Word Count */}
+              {/* Language, Tone & Word Count */}
+              <div>
+                <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+                  Mektup Dili
+                </label>
+                <div className="flex gap-2">
+                  {[
+                    { value: "en", label: "English", flag: "🇬🇧" },
+                    { value: "fr", label: "Français", flag: "🇫🇷" },
+                  ].map((lang) => (
+                    <button
+                      key={lang.value}
+                      type="button"
+                      onClick={() => setLetterLanguage(lang.value)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                      style={{
+                        backgroundColor: letterLanguage === lang.value ? "var(--blue-bg)" : "var(--surface2)",
+                        border: `1px solid ${letterLanguage === lang.value ? "var(--blue-border)" : "var(--border)"}`,
+                        color: letterLanguage === lang.value ? "var(--blue)" : "var(--muted)",
+                      }}
+                    >
+                      <span>{lang.flag}</span>
+                      {lang.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
