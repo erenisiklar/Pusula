@@ -376,6 +376,52 @@ Return ONLY valid JSON with the same structure as input. No markdown, no backtic
 }
 
 // =============================================
+// MOTIVATION LETTER
+// =============================================
+
+export async function generateMotivationLetter(params: {
+  studentName: string;
+  university: string;
+  program: string;
+  country: string;
+  gpa: number;
+  strengths: string;
+  motivation: string;
+}): Promise<string> {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 1500,
+    },
+  });
+
+  const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. Write compelling, authentic motivation letters in English, approximately 500 words. Be specific and personal, avoid generic phrases.
+
+Write a motivation letter for the following student:
+
+Name: ${params.studentName}
+University: ${params.university}
+Program: ${params.program}
+Country: ${params.country}
+GPA: ${params.gpa}/100
+Key Strengths: ${params.strengths}
+Personal Motivation: ${params.motivation}
+
+Write a professional, compelling motivation letter in English (~500 words). Include:
+1. Strong opening paragraph
+2. Academic background and achievements
+3. Why this specific program and university
+4. Career goals and how this program fits
+5. Closing with enthusiasm and commitment
+
+Output ONLY the letter text, nothing else.`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+// =============================================
 // MAIN PIPELINE
 // =============================================
 
