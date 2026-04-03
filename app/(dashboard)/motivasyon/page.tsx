@@ -569,6 +569,34 @@ export default function MotivasyonPage() {
             />
           </div>
 
+          {/* Letter Language */}
+          <div>
+            <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+              Mektup Dili
+            </label>
+            <div className="flex gap-2">
+              {[
+                { value: "en", label: "English", flag: "🇬🇧" },
+                { value: "fr", label: "Français", flag: "🇫🇷" },
+              ].map((lang) => (
+                <button
+                  key={lang.value}
+                  type="button"
+                  onClick={() => setLetterLanguage(lang.value)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: letterLanguage === lang.value ? "var(--blue-bg)" : "var(--surface2)",
+                    border: `1px solid ${letterLanguage === lang.value ? "var(--blue-border)" : "var(--border)"}`,
+                    color: letterLanguage === lang.value ? "var(--blue)" : "var(--muted)",
+                  }}
+                >
+                  <span>{lang.flag}</span>
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Advanced toggle */}
           <button
             type="button"
@@ -639,33 +667,7 @@ export default function MotivasyonPage() {
                 />
               </div>
 
-              {/* Language, Tone & Word Count */}
-              <div>
-                <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
-                  Mektup Dili
-                </label>
-                <div className="flex gap-2">
-                  {[
-                    { value: "en", label: "English", flag: "🇬🇧" },
-                    { value: "fr", label: "Français", flag: "🇫🇷" },
-                  ].map((lang) => (
-                    <button
-                      key={lang.value}
-                      type="button"
-                      onClick={() => setLetterLanguage(lang.value)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
-                      style={{
-                        backgroundColor: letterLanguage === lang.value ? "var(--blue-bg)" : "var(--surface2)",
-                        border: `1px solid ${letterLanguage === lang.value ? "var(--blue-border)" : "var(--border)"}`,
-                        color: letterLanguage === lang.value ? "var(--blue)" : "var(--muted)",
-                      }}
-                    >
-                      <span>{lang.flag}</span>
-                      {lang.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Tone & Word Count */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
@@ -936,8 +938,8 @@ export default function MotivasyonPage() {
                   Henüz mektup oluşturulmadı
                 </p>
                 <p className="text-xs max-w-xs" style={{ color: "var(--muted)" }}>
-                  Sol taraftaki formu doldurun. AI, seçtiğiniz üniversite ve programa özel
-                  İngilizce motivasyon mektubu oluşturacak.
+                  Sol taraftaki formu doldurun. AI, seçtiğiniz üniversite ve programa özel{" "}
+                  {letterLanguage === "fr" ? "Fransızca" : "İngilizce"} motivasyon mektubu oluşturacak.
                 </p>
                 <div className="flex items-center gap-4 mt-6">
                   {[
