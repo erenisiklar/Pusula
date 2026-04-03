@@ -577,10 +577,43 @@ function StringListField({
 /* ============================================ */
 /* MAIN PAGE COMPONENT                          */
 /* ============================================ */
+const LOCAL_STORAGE_KEY = "pusula-cv-data";
+const LOCAL_STORAGE_STEP_KEY = "pusula-cv-step";
+
+function loadSavedData(): CVData | null {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return null;
+}
+
+function loadSavedStep(): number {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_STEP_KEY);
+    if (saved) return parseInt(saved, 10) || 0;
+  } catch {}
+  return 0;
+}
+
+function hasStepContent(data: CVData, stepIndex: number): boolean {
+  switch (stepIndex) {
+    case 0: return !!data.personalInfo.fullName.trim();
+    case 1: return data.education.some((e) => !!e.institution.trim());
+    case 2: return data.experience.some((e) => !!e.company.trim());
+    case 3: return data.projects.some((p) => !!p.name.trim());
+    case 4: return data.leadership.some((l) => !!l.organization.trim());
+    case 5: return (data.skills.technical?.length || 0) > 0 || (data.skills.languages?.length || 0) > 0;
+    case 6: return data.awards.some((a) => !!a.title.trim());
+    default: return false;
+  }
+}
+
 export default function CVPage() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<CVData>(initialCVData);
   const [enhancedData, setEnhancedData] = useState<CVData | null>(null);
+  const [restored, setRestored] = useState(false);
 
   // PDF preview state
   const [onePageUrl, setOnePageUrl] = useState<string | null>(null);
@@ -588,6 +621,35 @@ export default function CVPage() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [enhancing, setEnhancing] = useState(false);
   const [enhanceError, setEnhanceError] = useState("");
+
+  // Restore from localStorage on mount
+  useEffect(() => {
+    const saved = loadSavedData();
+    if (saved && saved.personalInfo?.fullName) {
+      setData(saved);
+      setStep(loadSavedStep());
+      setRestored(true);
+      setTimeout(() => setRestored(false), 3000);
+    }
+  }, []);
+
+  // Autosave to localStorage on data/step change
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(LOCAL_STORAGE_STEP_KEY, String(step));
+    } catch {}
+  }, [data, step]);
+
+  function clearSavedData() {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    localStorage.removeItem(LOCAL_STORAGE_STEP_KEY);
+    setData(initialCVData());
+    setStep(0);
+    setEnhancedData(null);
+    setOnePageUrl(null);
+    setHarvardUrl(null);
+  }
 
   // Cleanup blob URLs
   useEffect(() => {
@@ -677,22 +739,54 @@ export default function CVPage() {
         <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
           CV Oluşturucu
         </h1>
-        <button
-          onClick={() => { setData(demoCVData()); setStep(0); }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
-          style={{
-            backgroundColor: "var(--gold-bg)",
-            border: "1px solid var(--gold-border)",
-            color: "var(--gold)",
-          }}
-        >
-          <Zap className="w-3.5 h-3.5" />
-          Demo ile Doldur
-        </button>
+        <div className="flex items-center gap-2">
+          {data.personalInfo.fullName.trim() && (
+            <button
+              onClick={clearSavedData}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor: "var(--danger-bg)",
+                border: "1px solid rgba(220,38,38,0.15)",
+                color: "var(--danger)",
+              }}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Sıfırla
+            </button>
+          )}
+          <button
+            onClick={() => { setData(demoCVData()); setStep(0); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: "var(--gold-bg)",
+              border: "1px solid var(--gold-border)",
+              color: "var(--gold)",
+            }}
+          >
+            <Zap className="w-3.5 h-3.5" />
+            Demo ile Doldur
+          </button>
+        </div>
       </div>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
         Bilgilerinizi adım adım girin — profesyonel PDF CV&apos;ler otomatik oluşturulur
+        <span className="ml-2 text-[10px] opacity-60">otomatik kaydedilir</span>
       </p>
+
+      {/* Restored notification */}
+      {restored && (
+        <div
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs mb-4 animate-pulse"
+          style={{
+            backgroundColor: "var(--success-bg)",
+            border: "1px solid rgba(22,163,74,0.25)",
+            color: "var(--success)",
+          }}
+        >
+          <Check className="w-3.5 h-3.5" />
+          Önceki CV veriniz geri yüklendi. Kaldığınız yerden devam edebilirsiniz.
+        </div>
+      )}
 
       {/* Progress Bar */}
       <div className="flex items-center gap-1 mb-6 overflow-x-auto pb-2">
@@ -700,6 +794,7 @@ export default function CVPage() {
           const Icon = s.icon;
           const isActive = i === step;
           const isDone = i < step;
+          const hasFilled = i < STEPS.length - 1 && hasStepContent(data, i);
           return (
             <button
               key={i}
@@ -707,7 +802,7 @@ export default function CVPage() {
                 setStep(i);
                 if (i === STEPS.length - 1) generatePdfs();
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap relative"
               style={{
                 backgroundColor: isActive
                   ? "var(--blue-bg)"
@@ -728,6 +823,12 @@ export default function CVPage() {
             >
               <Icon className="w-3.5 h-3.5" />
               {s.label}
+              {hasFilled && !isActive && (
+                <span
+                  className="w-1.5 h-1.5 rounded-full absolute -top-0.5 -right-0.5"
+                  style={{ backgroundColor: "var(--success)" }}
+                />
+              )}
             </button>
           );
         })}
@@ -1037,6 +1138,29 @@ export default function CVPage() {
                 {(pdfLoading || enhancing) ? <Loader2 className="w-3 h-3 animate-spin" /> : <Eye className="w-3 h-3" />}
                 Yeniden Oluştur
               </button>
+            </div>
+
+            {/* Quick Edit Links */}
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {STEPS.slice(0, -1).map((s, i) => {
+                const Icon = s.icon;
+                const filled = hasStepContent(data, i);
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setStep(i)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-opacity hover:opacity-80"
+                    style={{
+                      backgroundColor: filled ? "var(--success-bg)" : "var(--surface2)",
+                      border: `1px solid ${filled ? "rgba(22,163,74,0.25)" : "var(--border)"}`,
+                      color: filled ? "var(--success)" : "var(--muted)",
+                    }}
+                  >
+                    <Icon className="w-3 h-3" />
+                    {s.label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* AI Enhancement Status */}
