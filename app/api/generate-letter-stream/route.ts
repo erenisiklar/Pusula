@@ -181,6 +181,7 @@ export async function POST(request: NextRequest) {
       careerGoals,
       tone = "balanced",
       wordCount = 500,
+      universityInsights,
     } = body;
 
     if (!studentName || !university || !program || !strengths || !motivation) {
@@ -209,6 +210,16 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join("\n");
 
+    const insightsSection = universityInsights
+      ? `\nUNIVERSITY-SPECIFIC INSIGHTS (scraped from their official website — use these to make the letter highly specific and personalized):
+${universityInsights.mission ? `Program Mission: ${universityInsights.mission}` : ""}
+${universityInsights.keywords?.length ? `Key Academic Terms: ${universityInsights.keywords.join(", ")}` : ""}
+${universityInsights.values?.length ? `Institutional Values: ${universityInsights.values.join(", ")}` : ""}
+${universityInsights.uniqueAspects?.length ? `Distinctive Features: ${universityInsights.uniqueAspects.join("; ")}` : ""}
+
+IMPORTANT: Reference these specific details naturally in the letter — especially in the [WHY_THIS_PROGRAM] section. Weave in the keywords and unique aspects to show the student has done their research.`
+      : "";
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
       generationConfig: {
@@ -225,7 +236,7 @@ export async function POST(request: NextRequest) {
 STRICT WORD LIMIT: Write EXACTLY ${aiLimit} words or fewer. Do NOT exceed ${aiLimit} words under any circumstances. This is a hard system limit — the application portal will reject anything longer.
 
 ${langLevelInstruction}
-
+${insightsSection}
 Write a motivation letter for the following student:
 
 Name: ${studentName}

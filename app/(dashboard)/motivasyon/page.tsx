@@ -15,12 +15,21 @@ import {
   Sparkles,
   PenLine,
   X,
+  Globe,
+  ScanSearch,
 } from "lucide-react";
 
 interface LetterSection {
   key: string;
   label: string;
   content: string;
+}
+
+interface UniversityInsights {
+  mission?: string;
+  keywords?: string[];
+  values?: string[];
+  uniqueAspects?: string[];
 }
 
 const SECTION_LABELS: Record<string, string> = {
@@ -110,6 +119,12 @@ export default function MotivasyonPage() {
   const [editInstruction, setEditInstruction] = useState("");
   const [editingSection, setEditingSection] = useState<string | null>(null);
 
+  // University scraping
+  const [universityUrl, setUniversityUrl] = useState("");
+  const [scraping, setScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState("");
+  const [universityInsights, setUniversityInsights] = useState<UniversityInsights | null>(null);
+
   // UI state
   const [showTips, setShowTips] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -120,6 +135,27 @@ export default function MotivasyonPage() {
     if (sections.length === 0) return rawLetter;
     return sections.map((s) => s.content).join("\n\n");
   }, [sections, rawLetter]);
+
+  async function handleScrape() {
+    if (!universityUrl) return;
+    setScraping(true);
+    setScrapeError("");
+    setUniversityInsights(null);
+    try {
+      const res = await fetch("/api/scrape-university", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: universityUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Site taranamadı.");
+      setUniversityInsights(data.insights);
+    } catch (err) {
+      setScrapeError(err instanceof Error ? err.message : "Site taranamadı.");
+    } finally {
+      setScraping(false);
+    }
+  }
 
   async function handleGenerate() {
     if (!studentName || !strengths || !motivation) {
@@ -148,6 +184,7 @@ export default function MotivasyonPage() {
           careerGoals,
           tone,
           wordCount: targetWordCount,
+          universityInsights: universityInsights || undefined,
         }),
       });
 
@@ -364,6 +401,97 @@ export default function MotivasyonPage() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* University URL Scraper */}
+          <div>
+            <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+              Program Sayfası URL&apos;si
+              <span
+                className="ml-1.5 text-[10px] font-normal px-1.5 py-0.5 rounded"
+                style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)" }}
+              >
+                AI kişiselleştirme
+              </span>
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={universityUrl}
+                onChange={(e) => {
+                  setUniversityUrl(e.target.value);
+                  setUniversityInsights(null);
+                  setScrapeError("");
+                }}
+                placeholder="https://www.university.edu/program"
+                className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  border: `1px solid ${universityInsights ? "var(--blue-border)" : "var(--border)"}`,
+                  color: "var(--text)",
+                }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleScrape(); }}
+              />
+              <button
+                type="button"
+                onClick={handleScrape}
+                disabled={!universityUrl || scraping}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 disabled:opacity-40 flex-shrink-0"
+                style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)", border: "1px solid var(--blue-border)" }}
+              >
+                {scraping ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <ScanSearch className="w-3.5 h-3.5" />
+                )}
+                {scraping ? "Tarıyor..." : "Tara"}
+              </button>
+            </div>
+
+            {scrapeError && (
+              <p className="mt-1.5 text-[11px]" style={{ color: "var(--danger)" }}>
+                {scrapeError}
+              </p>
+            )}
+
+            {universityInsights && (
+              <div
+                className="mt-2 rounded-lg p-3 space-y-2"
+                style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)" }}
+              >
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "var(--blue)" }}>
+                  <Globe className="w-3.5 h-3.5" />
+                  Site tarandı — mektup kişiselleştirilecek
+                </div>
+                {universityInsights.mission && (
+                  <p className="text-[11px] leading-relaxed" style={{ color: "var(--text)" }}>
+                    {universityInsights.mission}
+                  </p>
+                )}
+                {universityInsights.keywords && universityInsights.keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {universityInsights.keywords.map((kw) => (
+                      <span
+                        key={kw}
+                        className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                        style={{ backgroundColor: "var(--blue-border)", color: "var(--blue)" }}
+                      >
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {universityInsights.uniqueAspects && universityInsights.uniqueAspects.length > 0 && (
+                  <ul className="space-y-0.5">
+                    {universityInsights.uniqueAspects.map((aspect) => (
+                      <li key={aspect} className="text-[11px] flex items-start gap-1" style={{ color: "var(--muted)" }}>
+                        <span style={{ color: "var(--blue)" }}>•</span> {aspect}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
 
           {/* GPA */}
