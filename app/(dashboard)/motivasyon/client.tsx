@@ -950,7 +950,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
               </div>
 
               {/* Tone & Word Count */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
                     Yazım Tonu

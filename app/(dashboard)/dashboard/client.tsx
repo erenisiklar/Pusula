@@ -153,7 +153,7 @@ export default function DashboardClient({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -176,7 +176,7 @@ export default function DashboardClient({
         })}
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left column */}
         <div className="space-y-6">
           {/* Top matches — only if profile exists */}

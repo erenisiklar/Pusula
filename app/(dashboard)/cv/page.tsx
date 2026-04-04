@@ -938,7 +938,7 @@ export default function CVPage() {
 
         {/* STEP 0: Personal Info */}
         {step === 0 && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Ad Soyad *" value={data.personalInfo.fullName} onChange={(v) => updatePersonal("fullName", v)} placeholder="Elif Yılmaz" fullWidth />
             <PhotoUpload photo={data.personalInfo.photo || ""} onChange={(v) => updatePersonal("photo", v)} />
             <Field label="E-posta" value={data.personalInfo.email || ""} onChange={(v) => updatePersonal("email", v)} placeholder="elif@email.com" />
@@ -979,7 +979,7 @@ export default function CVPage() {
           <div>
             {data.education.map((edu, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("education", data.education.filter((_, j) => j !== i))}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Kurum" value={edu.institution} onChange={(v) => {
                     const copy = [...data.education]; copy[i] = { ...copy[i], institution: v }; update("education", copy);
                   }} placeholder="Robert Kolej" fullWidth />
@@ -1018,7 +1018,7 @@ export default function CVPage() {
             )}
             {data.experience.map((exp, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("experience", data.experience.filter((_, j) => j !== i))}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Şirket / Kurum" value={exp.company} onChange={(v) => {
                     const copy = [...data.experience]; copy[i] = { ...copy[i], company: v }; update("experience", copy);
                   }} placeholder="TurkTech Yazılım" fullWidth />
@@ -1051,7 +1051,7 @@ export default function CVPage() {
             )}
             {data.projects.map((proj, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("projects", data.projects.filter((_, j) => j !== i))}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Proje Adı" value={proj.name} onChange={(v) => {
                     const copy = [...data.projects]; copy[i] = { ...copy[i], name: v }; update("projects", copy);
                   }} placeholder="Duygu Analizi Uygulaması" fullWidth />
@@ -1091,7 +1091,7 @@ export default function CVPage() {
             )}
             {data.leadership.map((lead, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("leadership", data.leadership.filter((_, j) => j !== i))}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Organizasyon" value={lead.organization} onChange={(v) => {
                     const copy = [...data.leadership]; copy[i] = { ...copy[i], organization: v }; update("leadership", copy);
                   }} placeholder="Yazılım Kulübü" fullWidth />
@@ -1169,7 +1169,7 @@ export default function CVPage() {
             )}
             {data.awards.map((award, i) => (
               <EntryCard key={i} index={i} onRemove={() => update("awards", data.awards.filter((_, j) => j !== i))}>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Ödül Adı" value={award.title} onChange={(v) => {
                     const copy = [...data.awards]; copy[i] = { ...copy[i], title: v }; update("awards", copy);
                   }} placeholder="TÜBİTAK Proje Yarışması Birincilik" fullWidth />
@@ -1288,7 +1288,7 @@ export default function CVPage() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <PdfCard
                 title="Tek Sayfa CV"
                 subtitle="Modern iki kolonlu tasarım"
@@ -1627,7 +1627,7 @@ function LanguagesSection({
               <Trash2 className="w-3.5 h-3.5" />
             </button>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Language */}
               <div>
                 <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Dil</label>
@@ -1794,7 +1794,7 @@ function LanguagesSection({
                   </button>
 
                   {entry.showSections && (
-                    <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                       {entry.sectionEntries.map((sec, j) => (
                         <div key={j}>
                           <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>
@@ -1938,7 +1938,7 @@ function ExamScoresSection({
               <Trash2 className="w-3.5 h-3.5" />
             </button>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Exam type */}
               <div className="col-span-2">
                 <label className="text-xs font-medium block mb-1" style={{ color: "var(--muted)" }}>Sınav</label>

@@ -103,7 +103,7 @@ export default function AcceptanceClient({ stats }: { stats: AcceptanceRow[] }) 
       </p>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div className="rounded-xl px-5 py-4" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4" style={{ color: "var(--blue)" }} />
@@ -202,8 +202,8 @@ export default function AcceptanceClient({ stats }: { stats: AcceptanceRow[] }) 
                   </div>
                   <div className="mt-1.5"><TrendBadge trend={d.trend} /></div>
                 </div>
-                <div className="flex items-center gap-6 flex-shrink-0">
-                  <div className="flex gap-6">
+                <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
+                  <div className="flex gap-3 sm:gap-6">
                     <div className="text-center">
                       <div className="text-sm font-bold" style={{ color: "var(--text)" }}>{d.totalApplicants.toLocaleString()}</div>
                       <div className="text-[11px]" style={{ color: "var(--muted)" }}>başvuran</div>

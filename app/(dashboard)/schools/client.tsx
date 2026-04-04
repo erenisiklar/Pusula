@@ -124,7 +124,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
       </p>
 
       {/* Summary bar */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {(["eligible", "possible", "reach", "unlikely"] as EligibilityStatus[]).map((status) => {
           const cfg = statusConfig[status];
           return (
@@ -144,10 +144,10 @@ export default function SchoolsClient({ universities }: { universities: Universi
         })}
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Left panel - filters */}
         <div
-          className="w-72 flex-shrink-0 rounded-xl p-5 space-y-5 h-fit sticky top-6"
+          className="w-full lg:w-72 lg:flex-shrink-0 rounded-xl p-5 space-y-5 h-fit lg:sticky lg:top-6"
           style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
         >
           <h2 className="font-semibold text-sm" style={{ color: "var(--text)" }}>
@@ -441,7 +441,7 @@ function UniversityCard({
           className="px-5 pb-4 pt-2 space-y-3"
           style={{ borderTop: "1px solid var(--border)" }}
         >
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <DetailBox
               label="GPA"
               score={breakdown.gpaScore}
@@ -461,7 +461,7 @@ function UniversityCard({
               maxScore={20}
             />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <DetailBox
               label="Sıralama"
               score={breakdown.rankingScore}
