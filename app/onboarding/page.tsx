@@ -54,12 +54,13 @@ const DEPARTMENTS: { value: string; label: string; icon: typeof Monitor }[] = [
 ];
 
 const LANG_CERTS = [
-  { value: "IELTS", label: "IELTS", placeholder: "Örn: 6.5" },
-  { value: "TOEFL", label: "TOEFL", placeholder: "Örn: 90" },
-  { value: "TestDaF", label: "TestDaF", placeholder: "Örn: 4" },
-  { value: "DELF/DALF", label: "DELF/DALF", placeholder: "Örn: B2" },
-  { value: "Cambridge", label: "Cambridge", placeholder: "Örn: C1" },
-  { value: "YOK", label: "Henüz yok", placeholder: "" },
+  { value: "IELTS", label: "IELTS", subtitle: "International English Language Testing System", placeholder: "Örn: 7.5", color: "#c0392b", scoreHint: "0 – 9" },
+  { value: "TOEFL", label: "TOEFL", subtitle: "Test of English as a Foreign Language", placeholder: "Örn: 95", color: "#0077c8", scoreHint: "0 – 120" },
+  { value: "TestDaF", label: "TestDaF", subtitle: "Test Deutsch als Fremdsprache", placeholder: "Örn: 4", color: "#006633", scoreHint: "TDN 3 – 5" },
+  { value: "DELF/DALF", label: "DELF / DALF", subtitle: "Diplôme d'Études en Langue Française", placeholder: "Örn: B2", color: "#002395", scoreHint: "A1 – C2" },
+  { value: "Cambridge", label: "Cambridge", subtitle: "Cambridge English Qualifications", placeholder: "Örn: C1", color: "#8B1A32", scoreHint: "A2 – C2" },
+  { value: "DELE", label: "DELE", subtitle: "Diploma de Español como Lengua Extranjera", placeholder: "Örn: B2", color: "#c60b1e", scoreHint: "A1 – C2" },
+  { value: "CELI/CILS", label: "CELI / CILS", subtitle: "Certificazione di Italiano", placeholder: "Örn: B2", color: "#008C45", scoreHint: "A1 – C2" },
 ];
 
 const STEPS = [
@@ -90,8 +91,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
   const [fullName, setFullName] = useState("");
   const [gpa, setGpa] = useState(75);
   const [targetDepartment, setTargetDepartment] = useState("");
-  const [languageCert, setLanguageCert] = useState("IELTS");
-  const [languageScore, setLanguageScore] = useState(6.5);
+  const [selectedCerts, setSelectedCerts] = useState<Record<string, string>>({}); // cert -> score
   const [budgetEUR, setBudgetEUR] = useState(3000);
   const [targetCountries, setTargetCountries] = useState<string[]>([]);
 
@@ -101,12 +101,35 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
     );
   }
 
+  function toggleCert(certValue: string) {
+    setSelectedCerts((prev) => {
+      const next = { ...prev };
+      if (certValue in next) {
+        delete next[certValue];
+      } else {
+        next[certValue] = "";
+      }
+      return next;
+    });
+  }
+
+  function setCertScore(certValue: string, score: string) {
+    setSelectedCerts((prev) => ({ ...prev, [certValue]: score }));
+  }
+
   function handleFinish() {
+    const certs = Object.entries(selectedCerts)
+      .filter(([, score]) => score.trim().length > 0)
+      .map(([cert, score]) => ({ cert, score }));
+
+    const primary = certs[0];
+
     onComplete({
       fullName,
       gpa,
-      languageCert: languageCert === "YOK" ? "" : languageCert,
-      languageScore: languageCert === "YOK" ? 0 : languageScore,
+      languageCerts: certs,
+      languageCert: primary?.cert || "",
+      languageScore: primary ? parseFloat(primary.score) || 0 : 0,
       budgetEUR,
       targetCountries,
       targetDepartment,
@@ -415,50 +438,110 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
           {/* Step 1: Language */}
           {step === 1 && (
-            <div key="step-1" className="space-y-6 animate-fade-in-up">
+            <div key="step-1" className="space-y-5 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
-                  Dil Sertifikan
+                  Dil Sertifikaların
                 </h2>
                 <p className="text-sm" style={{ color: "var(--muted)" }}>
-                  Varsa dil sertifikanı seç, yoksa &quot;Henüz yok&quot; de
+                  Sahip olduğun sertifikaları seç ve puanını gir (birden fazla seçebilirsin)
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                {LANG_CERTS.map((cert) => (
-                  <button
-                    key={cert.value}
-                    type="button"
-                    onClick={() => setLanguageCert(cert.value)}
-                    className="px-4 py-3 rounded-xl text-sm font-medium transition-all text-left"
-                    style={{
-                      backgroundColor: languageCert === cert.value ? "var(--blue-bg)" : "var(--surface)",
-                      border: `1px solid ${languageCert === cert.value ? "var(--blue-border)" : "var(--border)"}`,
-                      color: languageCert === cert.value ? "var(--blue)" : "var(--text)",
-                    }}
-                  >
-                    {cert.label}
-                  </button>
-                ))}
+              <div className="space-y-2">
+                {LANG_CERTS.map((cert) => {
+                  const isSelected = cert.value in selectedCerts;
+                  return (
+                    <div
+                      key={cert.value}
+                      className="rounded-xl transition-all overflow-hidden"
+                      style={{
+                        border: `1.5px solid ${isSelected ? cert.color : "var(--border)"}`,
+                        backgroundColor: isSelected ? `${cert.color}08` : "var(--surface)",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => toggleCert(cert.value)}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left transition-all"
+                      >
+                        {/* Brand badge */}
+                        <div
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-[10px] font-black tracking-tight leading-none text-center"
+                          style={{
+                            backgroundColor: isSelected ? cert.color : `${cert.color}15`,
+                            color: isSelected ? "#fff" : cert.color,
+                            border: `1px solid ${cert.color}30`,
+                          }}
+                        >
+                          {cert.value === "DELF/DALF" ? "FR" : cert.value === "CELI/CILS" ? "IT" : cert.value === "DELE" ? "ES" : cert.value.slice(0, 4).toUpperCase()}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold" style={{ color: isSelected ? cert.color : "var(--text)" }}>
+                            {cert.label}
+                          </div>
+                          <div className="text-[10px] truncate" style={{ color: "var(--muted)" }}>
+                            {cert.subtitle}
+                          </div>
+                        </div>
+
+                        {/* Toggle indicator */}
+                        <div
+                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
+                          style={{
+                            backgroundColor: isSelected ? cert.color : "transparent",
+                            border: `2px solid ${isSelected ? cert.color : "var(--border)"}`,
+                          }}
+                        >
+                          {isSelected && <Check className="w-3 h-3" style={{ color: "#fff" }} />}
+                        </div>
+                      </button>
+
+                      {/* Score input — slides open when selected */}
+                      {isSelected && (
+                        <div
+                          className="px-4 pb-3 animate-fade-in"
+                          style={{ borderTop: `1px solid ${cert.color}20` }}
+                        >
+                          <div className="flex items-center gap-3 mt-2.5">
+                            <div className="flex-1">
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                value={selectedCerts[cert.value] || ""}
+                                onChange={(e) => setCertScore(cert.value, e.target.value)}
+                                placeholder={cert.placeholder}
+                                className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 transition-shadow"
+                                style={{
+                                  backgroundColor: "var(--surface)",
+                                  border: `1px solid ${cert.color}30`,
+                                  color: "var(--text)",
+                                }}
+                                autoFocus
+                              />
+                            </div>
+                            <span className="text-[10px] font-medium flex-shrink-0" style={{ color: "var(--muted)" }}>
+                              {cert.scoreHint}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
-              {languageCert !== "YOK" && (
-                <div>
-                  <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
-                    Puanın
-                  </label>
-                  <input
-                    type="text"
-                    value={languageScore}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      if (v === "" || !isNaN(Number(v))) setLanguageScore(Number(v) || 0);
-                    }}
-                    placeholder={LANG_CERTS.find((c) => c.value === languageCert)?.placeholder}
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
-                    style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
-                  />
+              {Object.keys(selectedCerts).length === 0 && (
+                <p className="text-xs text-center py-2" style={{ color: "var(--muted)" }}>
+                  Henüz sertifikan yoksa bu adımı atlayabilirsin
+                </p>
+              )}
+
+              {Object.keys(selectedCerts).length > 0 && (
+                <div className="flex items-center justify-center gap-2 text-xs" style={{ color: "var(--blue)" }}>
+                  <Check className="w-3.5 h-3.5" />
+                  {Object.keys(selectedCerts).length} sertifika seçildi
                 </div>
               )}
             </div>

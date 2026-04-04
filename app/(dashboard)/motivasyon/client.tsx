@@ -210,11 +210,15 @@ export default function MotivasyonClient({ universities }: { universities: Unive
   const [gpa, setGpa] = useState(profile?.gpa ?? 75);
   const [strengths, setStrengths] = useState("");
   const [motivation, setMotivation] = useState("");
-  const [languageLevel, setLanguageLevel] = useState(
-    profile?.languageCert && profile.languageScore
-      ? `${profile.languageCert} ${profile.languageScore}`
-      : ""
-  );
+  const [languageLevel, setLanguageLevel] = useState(() => {
+    if (profile?.languageCerts && profile.languageCerts.length > 0) {
+      return profile.languageCerts.map((c) => `${c.cert} ${c.score}`).join(", ");
+    }
+    if (profile?.languageCert && profile.languageScore) {
+      return `${profile.languageCert} ${profile.languageScore}`;
+    }
+    return "";
+  });
   const [extracurriculars, setExtracurriculars] = useState("");
   const [careerGoals, setCareerGoals] = useState("");
   const [tone, setTone] = useState("balanced");
