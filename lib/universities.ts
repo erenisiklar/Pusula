@@ -1,3 +1,8 @@
+// ⚠️ DIKKAT: Bu dosya artık sadece seed/migration scriptleri için kullanılıyor.
+// Sayfalarda üniversite verisi için Supabase'den çekin:
+//   import { getUniversities } from "@/lib/supabase/queries";
+// Doğrudan bu dosyadan import YAPMAYIN — veri tutarsızlığına yol açar.
+
 import type { University } from "@/types";
 
 export const universities: University[] = [
