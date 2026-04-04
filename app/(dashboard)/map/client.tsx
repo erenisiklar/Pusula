@@ -129,6 +129,7 @@ export default function MapClient({
 
   useEffect(() => {
     if (!selected) return;
+    const sel = selected;
     setCampusImg(FALLBACK_IMG);
     setImgFallbackUsed(false);
 
@@ -136,9 +137,9 @@ export default function MapClient({
 
     async function loadImage() {
       // 1) Wikipedia REST API dene
-      if (selected.wikiTitle) {
+      if (sel.wikiTitle) {
         try {
-          const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`);
+          const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${sel.wikiTitle}`);
           if (r.ok) {
             const data = await r.json();
             const imgUrl = data?.originalimage?.source || data?.thumbnail?.source;
@@ -151,15 +152,15 @@ export default function MapClient({
       }
 
       // 2) Wikimedia Commons imageUrl dene (bazıları çalışıyor)
-      if (selected.imageUrl && !cancelled) {
-        setCampusImg(selected.imageUrl);
+      if (sel.imageUrl && !cancelled) {
+        setCampusImg(sel.imageUrl);
         return;
       }
 
       // 3) Hiçbiri yoksa — üniversite adıyla Wikipedia arama yap
       if (!cancelled) {
         try {
-          const name = selected.university.name.replace(/ /g, "_");
+          const name = sel.university.name.replace(/ /g, "_");
           const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${name}`);
           if (r.ok) {
             const data = await r.json();
