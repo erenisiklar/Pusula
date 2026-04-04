@@ -2,7 +2,7 @@
 
 ## Proje
 
-Türkiye'den Avrupa üniversitelerine başvurmak isteyen öğrenciler için AI destekli rehber platform. Öğrenci GPA ve dil sertifikası girince hangi üniversitelere girebileceğini görür.
+Türkiye'den Avrupa üniversitelerine başvurmak isteyen öğrenciler için AI destekli rehber platform. **Ana odak: Liseden sonra direkt başvurulabilecek lisans (bachelor) programları.** Yüksek lisans da desteklenir. Öğrenci GPA ve dil sertifikası girince hangi üniversitelere girebileceğini görür.
 
 ## Renk Paleti — ASLA DEĞİŞTİRME
 
@@ -47,6 +47,24 @@ Next.js 14 App Router, Supabase, Claude API (claude-haiku-4-5), Tailwind CSS, sh
 ## Claude API
 
 Model: `claude-haiku-4-5`. Kullanım: motivasyon mektubu üretimi, CV optimize, eligibility açıklaması (Türkçe). **Eligibility HESAPLAMASI için kullanma — deterministik yap.**
+
+## Veri Mimarisi — UYULMASI ZORUNLU
+
+Üniversite verisi **tek kaynak: Supabase**. Tüm sayfalarda `getUniversities()` kullan:
+
+```tsx
+// page.tsx → server component
+import { getUniversities } from "@/lib/supabase/queries";
+export default async function Page() {
+  const universities = await getUniversities();
+  return <Client universities={universities} />;
+}
+
+// client.tsx → props ile al
+export default function Client({ universities }: { universities: University[] }) { ... }
+```
+
+**`lib/universities.ts`'den doğrudan import YAPMA** — o dosya sadece seed scriptleri için. Doğrudan import veri tutarsızlığına yol açar.
 
 ## Kurallar
 

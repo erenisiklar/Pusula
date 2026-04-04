@@ -1,199 +1,51 @@
-"use client";
+import { getUniversities } from "@/lib/supabase/queries";
+import DashboardClient from "./client";
 
-import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap } from "lucide-react";
-import Link from "next/link";
+export default async function DashboardPage() {
+  const universities = await getUniversities();
 
-const stats = [
-  { label: "Üniversite", value: "15", icon: School, color: "var(--blue)" },
-  { label: "Mektup", value: "0", icon: FileText, color: "var(--gold)" },
-  { label: "Yaklaşan Deadline", value: "3", icon: Calendar, color: "var(--danger)" },
-  { label: "Başvuru", value: "0", icon: CheckCircle, color: "var(--success)" },
-];
+  const totalPrograms = universities.length;
+  const totalCountries = new Set(universities.map((u) => u.country)).size;
+  const freePrograms = universities.filter((u) => u.tuitionEUR === 0).length;
 
-const todos = [
-  { text: "GPA ve dil puanını gir", done: false, href: "/schools" },
-  { text: "Uygun üniversiteleri keşfet", done: false, href: "/schools" },
-  { text: "Motivasyon mektubu oluştur", done: false, href: "/motivasyon" },
-  { text: "Başvuru takvimini kontrol et", done: false, href: "/takvim" },
-  { text: "CV'ni hazırla", done: false, href: "/cv" },
-];
+  // Yaklaşan deadline: önümüzdeki 60 gün içindeki deadline'lar
+  const now = new Date();
+  const sixtyDaysLater = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
 
-export default function DashboardPage() {
-  const progress = 10;
+  // Türkçe ay isimlerini parse et
+  const monthMap: Record<string, number> = {
+    "ocak": 0, "şubat": 1, "mart": 2, "nisan": 3, "mayıs": 4, "haziran": 5,
+    "temmuz": 6, "ağustos": 7, "eylül": 8, "ekim": 9, "kasım": 10, "aralık": 11,
+  };
+
+  let upcomingDeadlines = 0;
+  for (const uni of universities) {
+    if (!uni.deadline) continue;
+    const lower = uni.deadline.toLowerCase();
+    // "15 Ocak", "1 Mayıs", "28 Şubat" gibi formatları parse et
+    const match = lower.match(/(\d{1,2})\s+(\S+)/);
+    if (!match) continue;
+    const day = parseInt(match[1]);
+    const monthStr = match[2].replace(/[()]/g, "").trim();
+    const month = monthMap[monthStr];
+    if (month == null) continue;
+    // Yılı belirle: eğer ay geçmişse gelecek yıl
+    let year = now.getFullYear();
+    const deadlineDate = new Date(year, month, day);
+    if (deadlineDate < now) {
+      deadlineDate.setFullYear(year + 1);
+    }
+    if (deadlineDate <= sixtyDaysLater) {
+      upcomingDeadlines++;
+    }
+  }
 
   return (
-    <div>
-      {/* Hero */}
-      <div
-        className="rounded-xl p-6 mb-6"
-        style={{
-          background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)",
-        }}
-      >
-        <h1 className="text-2xl font-bold mb-2" style={{ color: "#ffffff" }}>
-          Hoş geldin! 👋
-        </h1>
-        <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Avrupa&apos;daki hayalindeki üniversiteye giden yolculuğuna başla.
-        </p>
-
-        {/* Progress bar */}
-        <div className="flex items-center gap-3">
-          <div
-            className="flex-1 h-2 rounded-full overflow-hidden"
-            style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
-          >
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${progress}%`,
-                background: "linear-gradient(90deg, #3b82f6, var(--gold))",
-              }}
-            />
-          </div>
-          <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>
-            %{progress}
-          </span>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={stat.label}
-              className="rounded-xl px-5 py-4"
-              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <Icon className="w-5 h-5" style={{ color: stat.color }} />
-              </div>
-              <div className="text-2xl font-bold" style={{ color: "var(--text)" }}>
-                {stat.value}
-              </div>
-              <div className="text-xs" style={{ color: "var(--muted)" }}>
-                {stat.label}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="grid grid-cols-2 gap-6">
-        {/* Todo list */}
-        <div
-          className="rounded-xl p-5"
-          style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-        >
-          <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
-            Yapılacaklar
-          </h2>
-          <div className="space-y-2">
-            {todos.map((todo) => (
-              <Link
-                key={todo.text}
-                href={todo.href}
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors hover:opacity-80"
-                style={{ backgroundColor: "var(--surface2)" }}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
-                    style={{
-                      borderColor: todo.done ? "var(--success)" : "var(--border)",
-                      backgroundColor: todo.done ? "var(--success)" : "transparent",
-                    }}
-                  />
-                  <span
-                    className="text-sm"
-                    style={{ color: todo.done ? "var(--muted)" : "var(--text)" }}
-                  >
-                    {todo.text}
-                  </span>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5" style={{ color: "var(--muted)" }} />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick actions */}
-        <div
-          className="rounded-xl p-5"
-          style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-        >
-          <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
-            Hızlı Erişim
-          </h2>
-          <div className="space-y-3">
-            <Link
-              href="/schools"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)" }}
-            >
-              <School className="w-5 h-5" style={{ color: "var(--blue-light)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--blue-light)" }}>
-                  Okul Bulucu
-                </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  GPA&apos;nıza uygun okulları keşfedin
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/motivasyon"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}
-            >
-              <FileText className="w-5 h-5" style={{ color: "var(--gold-light)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--gold-light)" }}>
-                  Motivasyon Mektubu
-                </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  AI ile mektup oluşturun
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/cv"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--success-bg)", border: "1px solid rgba(34,197,94,0.25)" }}
-            >
-              <GraduationCap className="w-5 h-5" style={{ color: "var(--success)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--success)" }}>
-                  CV Olusturucu
-                </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  AI ile CV&apos;nizi optimize edin
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/takvim"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{
-                backgroundColor: "var(--danger-bg)",
-                border: "1px solid rgba(239,68,68,0.25)",
-              }}
-            >
-              <Calendar className="w-5 h-5" style={{ color: "var(--danger)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--danger)" }}>
-                  Başvuru Takvimi
-                </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  Deadline&apos;ları takip edin
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    <DashboardClient
+      totalPrograms={totalPrograms}
+      totalCountries={totalCountries}
+      freePrograms={freePrograms}
+      upcomingDeadlines={upcomingDeadlines}
+    />
   );
 }

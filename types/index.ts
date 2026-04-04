@@ -24,11 +24,25 @@ export interface University {
   tuitionEUR: number;
   description?: string;
   website?: string;
+  lat?: number;
+  lng?: number;
+  imageUrl?: string;
+  durationYears?: number;
+  countryColor?: string;
   deadline?: string;
   flag: string;
   rankings?: UniversityRanking[];
   acceptanceRate?: number; // 0-100, e.g. 15 = 15%
   competitiveness?: "very_high" | "high" | "medium" | "low"; // selectivity level
+  dataVerified?: boolean; // true if data comes from official source
+  programRestricted?: boolean; // true for numerus fixus, NC-limited, concours programs
+  level?: "bachelor" | "master" | "associate"; // bachelor=lisans, master=yüksek lisans, associate=ön lisans
+  // Motivation letter fields
+  motivationLetterType?: "motivation_letter" | "personal_statement" | "statement_of_purpose" | "cover_letter";
+  motivationLanguage?: string; // preferred letter language: 'en' | 'de' | 'fr' | 'it' | 'nl'
+  motivationGuidelines?: string; // university-specific guidelines
+  motivationTonePreference?: "academic" | "personal" | "research_focused" | "project_focused";
+  motivationMaxWords?: number; // university's word limit
 }
 
 export interface UserProfile {
@@ -58,11 +72,13 @@ export interface EligibilityResult {
     budgetScore: number;
     rankingScore: number;
     acceptanceScore: number;
+    countryScore: number;
     gpaDetail: string;
     languageDetail: string;
     budgetDetail: string;
     rankingDetail: string;
     acceptanceDetail: string;
+    countryDetail: string;
   };
 }
 

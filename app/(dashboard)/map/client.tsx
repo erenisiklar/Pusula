@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import type { University } from "@/types";
 import type { AcceptanceRow } from "@/lib/supabase/queries";
-import { universityMapData } from "@/lib/university-map-data";
 import { ExternalLink, X, Clock, Euro, GraduationCap, Users, MessageSquare, TrendingUp } from "lucide-react";
 
 interface SelectedUni {
   university: University;
   imageUrl: string;
+  wikiTitle: string | null;
   website: string;
   durationYears: number;
   countryColor: string;
@@ -21,12 +21,25 @@ export interface EligibilityInfo {
 }
 
 const COUNTRIES = [
-  { name: "Almanya",  color: "#3b82f6" },
-  { name: "Hollanda", color: "#f97316" },
-  { name: "İtalya",   color: "#22c55e" },
-  { name: "Fransa",   color: "#a855f7" },
-  { name: "İspanya",  color: "#ef4444" },
-  { name: "İsveç",    color: "#f59e0b" },
+  { name: "Almanya",    color: "#3b82f6" },
+  { name: "Hollanda",   color: "#f59e0b" },
+  { name: "İtalya",     color: "#22c55e" },
+  { name: "Fransa",     color: "#60a5fa" },
+  { name: "İspanya",    color: "#ef4444" },
+  { name: "İsveç",      color: "#fbbf24" },
+  { name: "İngiltere",  color: "#3b82f6" },
+  { name: "İsviçre",    color: "#22c55e" },
+  { name: "Belçika",    color: "#f59e0b" },
+  { name: "Avusturya",  color: "#ef4444" },
+  { name: "Danimarka",  color: "#60a5fa" },
+  { name: "Norveç",     color: "#3b82f6" },
+  { name: "Finlandiya", color: "#22c55e" },
+  { name: "Portekiz",   color: "#fbbf24" },
+  { name: "İrlanda",    color: "#22c55e" },
+  { name: "Polonya",    color: "#ef4444" },
+  { name: "Çekya",      color: "#3b82f6" },
+  { name: "Macaristan", color: "#f59e0b" },
+  { name: "Estonya",    color: "#60a5fa" },
 ];
 
 const STATUS_CONFIG = {
@@ -76,6 +89,9 @@ export default function MapClient({
   }> | null>(null);
 
   const [selected, setSelected] = useState<SelectedUni | null>(null);
+  const [campusImg, setCampusImg] = useState<string>(
+    "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80"
+  );
   const [activeCountries, setActiveCountries] = useState<Set<string>>(
     new Set(COUNTRIES.map((c) => c.name))
   );
@@ -108,14 +124,66 @@ export default function MapClient({
     import("./LeafletMap").then((mod) => setMapComponent(() => mod.default));
   }, []);
 
-  // keep unused enriched away from bundle — only used for map data validation
-  void universityMapData;
+  const FALLBACK_IMG = "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+  const [imgFallbackUsed, setImgFallbackUsed] = useState(false);
+
+  useEffect(() => {
+    if (!selected) return;
+    const sel = selected;
+    setCampusImg(FALLBACK_IMG);
+    setImgFallbackUsed(false);
+
+    let cancelled = false;
+
+    async function loadImage() {
+      // 1) Wikipedia REST API dene
+      if (sel.wikiTitle) {
+        try {
+          const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${sel.wikiTitle}`);
+          if (r.ok) {
+            const data = await r.json();
+            const imgUrl = data?.originalimage?.source || data?.thumbnail?.source;
+            if (imgUrl && !cancelled) {
+              setCampusImg(imgUrl);
+              return;
+            }
+          }
+        } catch (_) { /* devam et */ }
+      }
+
+      // 2) Wikimedia Commons imageUrl dene (bazıları çalışıyor)
+      if (sel.imageUrl && !cancelled) {
+        setCampusImg(sel.imageUrl);
+        return;
+      }
+
+      // 3) Hiçbiri yoksa — üniversite adıyla Wikipedia arama yap
+      if (!cancelled) {
+        try {
+          const name = sel.university.name.replace(/ /g, "_");
+          const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${name}`);
+          if (r.ok) {
+            const data = await r.json();
+            const imgUrl = data?.originalimage?.source || data?.thumbnail?.source;
+            if (imgUrl && !cancelled) {
+              setCampusImg(imgUrl);
+              return;
+            }
+          }
+        } catch (_) { /* fallback'te kal */ }
+      }
+    }
+
+    loadImage();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected?.university.id]);
 
   function toggleCountry(name: string) {
     setActiveCountries((prev) => {
       const next = new Set(prev);
       if (next.has(name)) {
-        if (next.size > 1) next.delete(name); // always keep at least one
+        if (next.size > 1) next.delete(name);
       } else {
         next.add(name);
       }
@@ -135,7 +203,7 @@ export default function MapClient({
         <div>
           <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Üniversite Haritası</h1>
           <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
-            Pinlere tıklayarak üniversite detaylarını görün
+            {universities.length} üniversite · {COUNTRIES.length} ülke — Pinlere tıklayarak detay görün
           </p>
         </div>
 
@@ -181,8 +249,8 @@ export default function MapClient({
             }}
           >
             <option value="">Dil sertifikası</option>
-            <option value="yes">Var ✓</option>
-            <option value="no">Yok ✗</option>
+            <option value="yes">Var</option>
+            <option value="no">Yok</option>
           </select>
           <input
             type="number"
@@ -213,32 +281,32 @@ export default function MapClient({
                 cursor: "pointer",
               }}
             >
-              Temizle ×
+              Temizle
             </button>
           )}
         </div>
       </div>
 
       {/* Country legend / toggle */}
-      <div className="flex items-center gap-3 mb-3 flex-wrap">
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
         {COUNTRIES.map((c) => {
           const active = activeCountries.has(c.name);
           return (
             <button
               key={c.name}
               onClick={() => toggleCountry(c.name)}
-              className="flex items-center gap-1.5 text-xs transition-opacity"
+              className="flex items-center gap-1 text-xs transition-opacity"
               style={{
                 opacity: active ? 1 : 0.35,
                 color: active ? "var(--text)" : "var(--muted)",
                 cursor: "pointer",
                 background: "none",
                 border: "none",
-                padding: 0,
+                padding: "2px 4px",
               }}
             >
               <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 style={{
                   backgroundColor: c.color,
                   boxShadow: active ? `0 0 0 2px ${c.color}30` : "none",
@@ -284,12 +352,14 @@ export default function MapClient({
               {/* Campus image */}
               <div className="relative h-44 flex-shrink-0 overflow-hidden">
                 <img
-                  src={selected.imageUrl}
+                  src={campusImg}
                   alt={selected.university.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+                  onError={() => {
+                    if (!imgFallbackUsed) {
+                      setImgFallbackUsed(true);
+                      setCampusImg(FALLBACK_IMG);
+                    }
                   }}
                 />
                 <div
@@ -304,7 +374,6 @@ export default function MapClient({
                   <X className="w-3.5 h-3.5" style={{ color: "var(--white)" }} />
                 </button>
 
-                {/* Eligibility badge */}
                 {selectedEligibility && (
                   <div
                     className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-semibold"
@@ -329,7 +398,6 @@ export default function MapClient({
 
               {/* Details */}
               <div className="p-4 space-y-3 flex-1 overflow-y-auto">
-                {/* Acceptance rate */}
                 {selectedAcceptance && (
                   <div
                     className="px-3 py-2.5 rounded-lg flex items-center justify-between"
@@ -350,7 +418,6 @@ export default function MapClient({
                   </div>
                 )}
 
-                {/* Program */}
                 <div className="px-3 py-2.5 rounded-lg" style={{ backgroundColor: "var(--surface2)" }}>
                   <div className="flex items-center gap-2 mb-1">
                     <GraduationCap className="w-3.5 h-3.5" style={{ color: "var(--blue)" }} />
@@ -360,7 +427,6 @@ export default function MapClient({
                   <div className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>{selected.university.department}</div>
                 </div>
 
-                {/* Tuition + Duration */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="px-3 py-2.5 rounded-lg" style={{ backgroundColor: "var(--surface2)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
@@ -384,7 +450,6 @@ export default function MapClient({
                   </div>
                 </div>
 
-                {/* Requirements */}
                 <div className="px-3 py-2.5 rounded-lg space-y-1.5" style={{ backgroundColor: "var(--surface2)" }}>
                   <div className="text-xs font-medium mb-1" style={{ color: "var(--muted)" }}>Gereksinimler</div>
                   <div className="flex justify-between text-xs">
@@ -405,7 +470,6 @@ export default function MapClient({
                   )}
                 </div>
 
-                {/* Buttons */}
                 <div className="grid grid-cols-2 gap-2">
                   <a
                     href={selected.website}
@@ -431,7 +495,6 @@ export default function MapClient({
                   </Link>
                 </div>
 
-                {/* Student reviews placeholder */}
                 <div
                   className="px-3 py-3 rounded-lg"
                   style={{ backgroundColor: "var(--surface2)", border: "1px dashed var(--border)" }}

@@ -86,10 +86,35 @@ export default function DashboardLayout({
         {/* Footer */}
         <div
           className="px-4 py-3 text-xs border-t"
-          style={{ color: "rgba(255,255,255,0.4)", borderColor: "rgba(255,255,255,0.08)" }}
+          style={{ color: "rgba(255,255,255,0.35)", borderColor: "rgba(255,255,255,0.1)" }}
         >
           <p>Pusula v1.0 MVP</p>
-          <p className="mt-1 opacity-70">Almanya · İtalya · Hollanda</p>
+          <div className="mt-1 opacity-70 overflow-hidden" style={{ maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)" }}>
+            <div
+              className="flex gap-4 whitespace-nowrap"
+              style={{
+                animation: "ticker 30s linear infinite",
+                width: "max-content",
+              }}
+            >
+              {[
+                "Almanya", "Avusturya", "Belçika", "Çekya", "Danimarka",
+                "Estonya", "Finlandiya", "Fransa", "Hollanda", "İngiltere",
+                "İrlanda", "İspanya", "İsveç", "İsviçre", "İtalya",
+                "Macaristan", "Norveç", "Polonya", "Portekiz",
+              ].map((c) => (
+                <span key={c}>{c}</span>
+              ))}
+              {[
+                "Almanya", "Avusturya", "Belçika", "Çekya", "Danimarka",
+                "Estonya", "Finlandiya", "Fransa", "Hollanda", "İngiltere",
+                "İrlanda", "İspanya", "İsveç", "İsviçre", "İtalya",
+                "Macaristan", "Norveç", "Polonya", "Portekiz",
+              ].map((c) => (
+                <span key={`dup-${c}`}>{c}</span>
+              ))}
+            </div>
+          </div>
         </div>
       </aside>
 

@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { University } from "@/types";
 import type { EligibilityInfo } from "./client";
-import { universityMapData } from "@/lib/university-map-data";
+import { universityMapData, getWikiTitle } from "@/lib/university-map-data";
 
 interface SelectedUni {
   university: University;
   imageUrl: string;
+  wikiTitle: string | null;
   website: string;
   durationYears: number;
   countryColor: string;
@@ -50,7 +51,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
   const [mapReady, setMapReady]     = useState(false);
   const [isSatellite, setIsSatellite] = useState(false);
 
-  // Always keep onSelectRef current
   onSelectRef.current = onSelect;
 
   // ── Init map once ──────────────────────────────────────────────
@@ -60,11 +60,14 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
     (async () => {
       const L = (await import("leaflet")).default;
       await import("leaflet/dist/leaflet.css");
-      await import("leaflet.markercluster");
-      await import("leaflet.markercluster/dist/MarkerCluster.css");
-      await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
+      try {
+        await import("leaflet.markercluster");
+        await import("leaflet.markercluster/dist/MarkerCluster.css");
+        await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
+      } catch (e) {
+        console.warn("MarkerCluster plugin failed to load:", e);
+      }
 
-      // Fix broken default icons from webpack
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
@@ -85,29 +88,35 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       const tile = L.tileLayer(DARK_TILE.url, DARK_TILE.options).addTo(map);
       tileRef.current = tile;
 
-      // Dark-themed cluster group
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cluster = (L as any).markerClusterGroup({
-        showCoverageOnHover: false,
-        maxClusterRadius: 45,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        iconCreateFunction: (c: any) => {
-          const count = c.getChildCount();
-          return L.divIcon({
-            html: `<div style="
-              width:36px;height:36px;border-radius:50%;
-              background:rgba(30,64,175,0.95);
-              border:2px solid rgba(30,64,175,0.3);
-              display:flex;align-items:center;justify-content:center;
-              font-size:13px;font-weight:700;color:#ffffff;
-              box-shadow:0 2px 8px rgba(30,64,175,0.3);
-            ">${count}</div>`,
-            iconSize: [36, 36] as [number, number],
-            iconAnchor: [18, 18] as [number, number],
-            className: "",
-          });
-        },
-      });
+      let cluster: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof (L as any).markerClusterGroup === "function") {
+        cluster = (L as any).markerClusterGroup({
+          showCoverageOnHover: false,
+          maxClusterRadius: 45,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          iconCreateFunction: (c: any) => {
+            const count = c.getChildCount();
+            return L.divIcon({
+              html: `<div style="
+                width:36px;height:36px;border-radius:50%;
+                background:rgba(30,64,175,0.95);
+                border:2px solid rgba(30,64,175,0.3);
+                display:flex;align-items:center;justify-content:center;
+                font-size:13px;font-weight:700;color:#ffffff;
+                box-shadow:0 2px 8px rgba(30,64,175,0.3);
+              ">${count}</div>`,
+              iconSize: [36, 36] as [number, number],
+              iconAnchor: [18, 18] as [number, number],
+              className: "",
+            });
+          },
+        });
+      } else {
+        console.warn("MarkerCluster not available, using LayerGroup");
+        cluster = L.layerGroup();
+      }
       clusterRef.current = cluster;
       map.addLayer(cluster);
 
@@ -129,14 +138,16 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       selectedRef.current = null;
 
       universities.forEach((uni) => {
+        // Koordinatlar: önce uni.lat/lng (Supabase), yoksa mapData fallback
         const mapData = universityMapData.find((d) => d.id === uni.id);
-        if (!mapData) return;
+        const lat = uni.lat ?? mapData?.lat;
+        const lng = uni.lng ?? mapData?.lng;
+        if (lat == null || lng == null) return;
         if (!activeCountries.has(uni.country)) return;
 
-        const color = mapData.countryColor;
+        const color = uni.countryColor || mapData?.countryColor || "#3b82f6";
         const eligibility = eligibilityMap.get(uni.id);
 
-        // Opacity + ring based on eligibility
         let opacity = 1;
         let ringColor = "rgba(255,255,255,0.85)";
 
@@ -175,7 +186,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         });
 
         const normalIcon = makeIcon(false);
-        const marker = L.marker([mapData.lat, mapData.lng], { icon: normalIcon });
+        const marker = L.marker([lat, lng], { icon: normalIcon });
 
         marker.bindTooltip(
           `<div style="font-size:12px;font-weight:600;color:#1e293b;background:#ffffff;border:1px solid rgba(30,64,175,0.12);padding:4px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${uni.name}</div>`,
@@ -183,20 +194,19 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         );
 
         marker.on("click", () => {
-          // Restore previous selection
           if (selectedRef.current && selectedRef.current.id !== uni.id) {
             selectedRef.current.marker.setIcon(selectedRef.current.normalIcon);
           }
-          // Animate selected pin
           marker.setIcon(makeIcon(true));
           selectedRef.current = { id: uni.id, marker, normalIcon };
 
           onSelectRef.current({
             university: uni,
-            imageUrl: mapData.imageUrl,
-            website: mapData.website,
-            durationYears: mapData.durationYears,
-            countryColor: mapData.countryColor,
+            imageUrl: uni.imageUrl || mapData?.imageUrl || "",
+            wikiTitle: getWikiTitle(uni.id),
+            website: uni.website || mapData?.website || "",
+            durationYears: uni.durationYears || mapData?.durationYears || 3,
+            countryColor: uni.countryColor || mapData?.countryColor || "#3b82f6",
           });
         });
 
@@ -227,7 +237,6 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         style={{ width: "100%", height: "100%", minHeight: 500, backgroundColor: "#f1f5f9" }}
       />
 
-      {/* Satellite / map toggle */}
       <button
         onClick={() => setIsSatellite((v) => !v)}
         style={{
@@ -247,7 +256,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
           transition: "background-color 0.2s",
         }}
       >
-        {isSatellite ? "🗺 Harita" : "🛰 Uydu"}
+        {isSatellite ? "Harita" : "Uydu"}
       </button>
     </div>
   );

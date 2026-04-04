@@ -43,7 +43,7 @@ function TrendBadge({ trend }: { trend: number }) {
   );
 }
 
-const countries = ["Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç"];
+import { COUNTRIES as countries } from "@/lib/constants";
 type SortKey = "rate-asc" | "rate-desc" | "applicants-desc" | "gpa-desc";
 
 export default function AcceptanceClient({ stats }: { stats: AcceptanceRow[] }) {
@@ -213,7 +213,7 @@ export default function AcceptanceClient({ stats }: { stats: AcceptanceRow[] }) 
                       <div className="text-[11px]" style={{ color: "var(--muted)" }}>kabul</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm font-bold" style={{ color: "var(--text)" }}>{d.avgGPA.toFixed(1)}</div>
+                      <div className="text-sm font-bold" style={{ color: "var(--text)" }}>{d.avgGPA.toFixed(0)}/100</div>
                       <div className="text-[11px]" style={{ color: "var(--muted)" }}>ort. GPA</div>
                     </div>
                   </div>

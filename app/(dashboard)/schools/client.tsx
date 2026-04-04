@@ -3,8 +3,8 @@
 import { useState, useMemo } from "react";
 import { calculateEligibility, getStatusLabel } from "@/lib/eligibility";
 import type { University, EligibilityResult, EligibilityStatus, StudentInput } from "@/types";
-import { Trophy } from "lucide-react";
 import {
+  Trophy,
   ChevronDown,
   ChevronUp,
   Search,
@@ -13,12 +13,7 @@ import {
   Wallet,
   AlertTriangle,
 } from "lucide-react";
-
-const countries = [
-  "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
-  "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
-  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan",
-];
+import { COUNTRIES as countries } from "@/lib/constants";
 const departments = [
   "Tümü",
   "Bilgisayar Mühendisliği",
@@ -30,8 +25,10 @@ const departments = [
   "Uluslararası İlişkiler",
   "Elektrik-Elektronik Mühendisliği",
   "Makine Mühendisliği",
-  "Tıp",
-  "Hukuk",
+  "Psikoloji",
+  "Havacılık Mühendisliği",
+  "Tıp Bilimleri",
+  "Tasarım",
 ];
 const langCerts = ["IELTS", "TOEFL", "TestDaF", "Cambridge", "DELF/DALF", "DELE", "CELI/CILS"];
 
@@ -117,10 +114,10 @@ export default function SchoolsClient({ universities }: { universities: Universi
   return (
     <div>
       <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>
-        Okul Bulucu
+        Üniversite Bulucu
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
-        GPA ve dil puanınızı girerek uygun üniversiteleri keşfedin
+        Lise notunuzu ve dil puanınızı girerek Avrupa&apos;daki lisans programlarını keşfedin
       </p>
 
       {/* Summary bar */}
@@ -354,7 +351,11 @@ function UniversityCard({
   return (
     <div
       className="rounded-xl overflow-hidden transition-all"
-      style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+      style={{
+        backgroundColor: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderLeft: "3px solid var(--blue)",
+      }}
     >
       <div
         className="flex items-center justify-between px-5 py-4 cursor-pointer hover:opacity-90 transition-opacity"
@@ -457,7 +458,7 @@ function UniversityCard({
               maxScore={20}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <DetailBox
               label="Sıralama"
               score={breakdown.rankingScore}
@@ -469,6 +470,12 @@ function UniversityCard({
               score={breakdown.acceptanceScore}
               detail={breakdown.acceptanceDetail}
               maxScore={10}
+            />
+            <DetailBox
+              label="Ülke Sistemi"
+              score={breakdown.countryScore}
+              detail={breakdown.countryDetail}
+              maxScore={8}
             />
           </div>
 
