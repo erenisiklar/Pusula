@@ -14,6 +14,20 @@ import {
   ArrowLeft,
   Check,
   Sparkles,
+  Monitor,
+  Wrench,
+  Briefcase,
+  TrendingUp,
+  Building2,
+  Scale,
+  Users,
+  Brain,
+  Zap,
+  Cog,
+  Plane,
+  HeartPulse,
+  Palette,
+  HelpCircle,
 } from "lucide-react";
 
 const COUNTRIES = [
@@ -23,11 +37,20 @@ const COUNTRIES = [
   "Portekiz",
 ];
 
-const DEPARTMENTS = [
-  "Bilgisayar Mühendisliği", "Mühendislik", "İşletme", "Ekonomi",
-  "Mimarlık", "Siyaset Bilimi", "Uluslararası İlişkiler", "Psikoloji",
-  "Elektrik-Elektronik Mühendisliği", "Makine Mühendisliği",
-  "Havacılık Mühendisliği", "Tıp Bilimleri", "Tasarım",
+const DEPARTMENTS: { value: string; label: string; icon: typeof Monitor }[] = [
+  { value: "Bilgisayar Mühendisliği", label: "Bilgisayar Müh.", icon: Monitor },
+  { value: "Mühendislik", label: "Mühendislik", icon: Wrench },
+  { value: "İşletme", label: "İşletme", icon: Briefcase },
+  { value: "Ekonomi", label: "Ekonomi", icon: TrendingUp },
+  { value: "Mimarlık", label: "Mimarlık", icon: Building2 },
+  { value: "Siyaset Bilimi", label: "Siyaset Bilimi", icon: Scale },
+  { value: "Uluslararası İlişkiler", label: "Uluslararası İlişkiler", icon: Users },
+  { value: "Psikoloji", label: "Psikoloji", icon: Brain },
+  { value: "Elektrik-Elektronik Mühendisliği", label: "Elektrik-Elektronik", icon: Zap },
+  { value: "Makine Mühendisliği", label: "Makine Müh.", icon: Cog },
+  { value: "Havacılık Mühendisliği", label: "Havacılık Müh.", icon: Plane },
+  { value: "Tıp Bilimleri", label: "Tıp Bilimleri", icon: HeartPulse },
+  { value: "Tasarım", label: "Tasarım", icon: Palette },
 ];
 
 const LANG_CERTS = [
@@ -175,13 +198,15 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
         <div className="w-full max-w-md py-8">
           {/* Department Quiz — full-screen overlay */}
           {showQuiz ? (
-            <DepartmentQuiz
-              onComplete={(dept) => {
-                setTargetDepartment(dept);
-                setShowQuiz(false);
-              }}
-              onSkip={() => setShowQuiz(false)}
-            />
+            <div className="animate-fade-in-up">
+              <DepartmentQuiz
+                onComplete={(dept) => {
+                  setTargetDepartment(dept);
+                  setShowQuiz(false);
+                }}
+                onSkip={() => setShowQuiz(false)}
+              />
+            </div>
           ) : (
           <>
           {/* Mobile step indicator */}
@@ -199,7 +224,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
           {/* Step 0: Academic */}
           {step === 0 && (
-            <div className="space-y-6">
+            <div key="step-0" className="space-y-6 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
                   Akademik Bilgilerin
@@ -309,44 +334,88 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               </div>
 
               <div>
-                <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+                <label className="text-xs font-medium block mb-2" style={{ color: "var(--muted)" }}>
                   Hedef Bölüm
                 </label>
-                <select
-                  value={targetDepartment}
-                  onChange={(e) => setTargetDepartment(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
-                  style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
-                >
-                  <option value="">Henüz karar vermedim</option>
-                  {DEPARTMENTS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
 
-                {/* Quiz trigger — only when no department selected */}
-                {!targetDepartment && (
-                  <button
-                    type="button"
-                    onClick={() => setShowQuiz(true)}
-                    className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:opacity-90"
-                    style={{
-                      backgroundColor: "var(--gold-bg)",
-                      border: "1px solid var(--gold-border)",
-                      color: "var(--gold)",
-                    }}
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Hangi bölüm bana uygun? — Keşfet
-                  </button>
-                )}
+                {/* Department chips grid */}
+                <div className="grid grid-cols-2 gap-1.5 mb-3">
+                  {DEPARTMENTS.map((dept) => {
+                    const Icon = dept.icon;
+                    const isSelected = targetDepartment === dept.value;
+                    return (
+                      <button
+                        key={dept.value}
+                        type="button"
+                        onClick={() => setTargetDepartment(isSelected ? "" : dept.value)}
+                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
+                        style={{
+                          backgroundColor: isSelected ? "var(--blue-bg)" : "var(--surface)",
+                          border: `1.5px solid ${isSelected ? "var(--blue)" : "var(--border)"}`,
+                          color: isSelected ? "var(--blue)" : "var(--text)",
+                          transform: isSelected ? "scale(1.02)" : "scale(1)",
+                        }}
+                      >
+                        <Icon className="w-3.5 h-3.5 flex-shrink-0" style={{ opacity: isSelected ? 1 : 0.5 }} />
+                        <span className="truncate">{dept.label}</span>
+                        {isSelected && <Check className="w-3 h-3 ml-auto flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Quiz card — always visible but more prominent when no department */}
+                <button
+                  type="button"
+                  onClick={() => setShowQuiz(true)}
+                  className="w-full rounded-xl p-4 text-left transition-all hover:scale-[1.01] active:scale-[0.99] animate-fade-in"
+                  style={{
+                    background: targetDepartment
+                      ? "var(--surface)"
+                      : "linear-gradient(135deg, rgba(217,119,6,0.08) 0%, rgba(30,64,175,0.06) 100%)",
+                    border: `1.5px solid ${targetDepartment ? "var(--border)" : "var(--gold-border)"}`,
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{
+                        background: targetDepartment
+                          ? "var(--surface2)"
+                          : "linear-gradient(135deg, var(--gold-bg) 0%, var(--blue-bg) 100%)",
+                        border: `1px solid ${targetDepartment ? "var(--border)" : "var(--gold-border)"}`,
+                      }}
+                    >
+                      <HelpCircle className="w-4 h-4" style={{ color: targetDepartment ? "var(--muted)" : "var(--gold)" }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold mb-0.5" style={{ color: targetDepartment ? "var(--muted)" : "var(--text)" }}>
+                        {targetDepartment ? "Bölümünden emin değil misin?" : "Hangi bölüm sana uygun?"}
+                      </div>
+                      <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                        10 soruluk kısa testimizle ilgi alanlarına en uygun bölümü keşfet
+                      </p>
+                    </div>
+                    <div
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold flex-shrink-0 mt-0.5"
+                      style={{
+                        backgroundColor: targetDepartment ? "var(--surface2)" : "var(--gold-bg)",
+                        color: targetDepartment ? "var(--muted)" : "var(--gold)",
+                        border: `1px solid ${targetDepartment ? "var(--border)" : "var(--gold-border)"}`,
+                      }}
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      Teste Başla
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
           )}
 
           {/* Step 1: Language */}
           {step === 1 && (
-            <div className="space-y-6">
+            <div key="step-1" className="space-y-6 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
                   Dil Sertifikan
@@ -397,7 +466,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
           {/* Step 2: Budget */}
           {step === 2 && (
-            <div className="space-y-6">
+            <div key="step-2" className="space-y-6 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
                   Yıllık Bütçen
@@ -446,7 +515,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
           {/* Step 3: Target Countries */}
           {step === 3 && (
-            <div className="space-y-6">
+            <div key="step-3" className="space-y-6 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
                   Hedef Ülkelerin

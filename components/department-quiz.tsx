@@ -269,7 +269,7 @@ export default function DepartmentQuiz({ onComplete, onSkip }: DepartmentQuizPro
     const maxScore = sorted[0][1];
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in-up">
         <div className="text-center">
           <div className="text-4xl mb-3">{info.emoji}</div>
           <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
@@ -368,7 +368,7 @@ export default function DepartmentQuiz({ onComplete, onSkip }: DepartmentQuizPro
 
   // ─── Question screen ───
   return (
-    <div className="space-y-6">
+    <div key={`q-${currentQ}`} className="space-y-6 animate-fade-in">
       {/* Progress */}
       <div>
         <div className="flex items-center justify-between text-[11px] mb-2" style={{ color: "var(--muted)" }}>
