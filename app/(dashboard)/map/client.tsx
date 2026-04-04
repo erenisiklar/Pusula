@@ -128,12 +128,6 @@ export default function MapClient({
 
   useEffect(() => {
     if (!selected) return;
-    // Önce university-map-data'daki Wikimedia Commons fotoğrafını kullan
-    if (selected.imageUrl && selected.imageUrl !== FALLBACK_IMG) {
-      setCampusImg(selected.imageUrl);
-      return;
-    }
-    // imageUrl yoksa Wikipedia API'den dene
     setCampusImg(FALLBACK_IMG);
 
     // Wikipedia API'den gerçek makale thumbnail'ini çek (en güvenilir kaynak)
