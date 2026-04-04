@@ -128,22 +128,30 @@ export default function MapClient({
 
   useEffect(() => {
     if (!selected) return;
-    // Önce university-map-data'daki Wikimedia Commons fotoğrafını kullan
-    if (selected.imageUrl && selected.imageUrl !== FALLBACK_IMG) {
-      setCampusImg(selected.imageUrl);
-      return;
-    }
-    // imageUrl yoksa Wikipedia API'den dene
     setCampusImg(FALLBACK_IMG);
-    if (!selected.wikiTitle) return;
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.thumbnail?.source) {
-          setCampusImg(data.thumbnail.source.replace(/\/\d+px-/, "/640px-"));
-        }
-      })
-      .catch(() => {});
+
+    // Wikipedia API'den gerçek makale thumbnail'ini çek (en güvenilir kaynak)
+    if (selected.wikiTitle) {
+      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.thumbnail?.source) {
+            setCampusImg(data.thumbnail.source.replace(/\/\d+px-/, "/640px-"));
+          } else if (selected.imageUrl) {
+            // Wikipedia thumbnail yoksa Wikimedia Commons imageUrl'i dene
+            setCampusImg(selected.imageUrl);
+          }
+        })
+        .catch(() => {
+          // Wikipedia API başarısızsa imageUrl'i dene
+          if (selected.imageUrl) {
+            setCampusImg(selected.imageUrl);
+          }
+        });
+    } else if (selected.imageUrl) {
+      // wikiTitle yoksa doğrudan imageUrl kullan
+      setCampusImg(selected.imageUrl);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected?.university.id]);
 
