@@ -122,6 +122,76 @@ const STEP_PANELS = [
   },
 ];
 
+// ─── Animated counter hook ───
+function useCountUp(target: number | null, duration = 1200) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (target === null || target === 0) { setCount(0); return; }
+    let start = 0;
+    const step = Math.ceil(target / (duration / 16));
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { setCount(target); clearInterval(timer); }
+      else setCount(start);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, duration]);
+  return count;
+}
+
+// ─── Time-based greeting ───
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 6) return "İyi geceler";
+  if (h < 12) return "Günaydın";
+  if (h < 18) return "İyi günler";
+  return "İyi akşamlar";
+}
+
+// ─── Confetti ───
+function Confetti() {
+  const pieces = Array.from({ length: 40 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.8,
+    duration: 1.5 + Math.random() * 2,
+    color: ["#1e40af", "#d97706", "#16a34a", "#3b82f6", "#f59e0b", "#dc2626"][i % 6],
+    size: 4 + Math.random() * 6,
+    shape: i % 3, // 0=square, 1=circle, 2=rectangle
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+      {pieces.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            position: "absolute",
+            left: `${p.left}%`,
+            top: -10,
+            width: p.shape === 2 ? p.size * 2 : p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            borderRadius: p.shape === 1 ? "50%" : "1px",
+            animation: `confetti-fall ${p.duration}s ease-in ${p.delay}s both`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Animated stat for left panel ───
+function AnimatedStat({ value }: { value: string }) {
+  const numMatch = value.match(/^(\d+)/);
+  const num = numMatch ? parseInt(numMatch[1]) : null;
+  const suffix = numMatch ? value.slice(numMatch[1].length) : value;
+  const animated = useCountUp(num, 800);
+
+  if (num === null) return <>{value}</>;
+  return <>{animated}{suffix}</>;
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const { setProfile, hasProfile } = useProfile();
@@ -198,11 +268,12 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: "var(--bg)" }}>
-      <div className="w-full max-w-lg animate-fade-in-up">
+      <Confetti />
+      <div className="w-full max-w-lg">
         {/* Celebration header */}
         <div className="text-center mb-8">
           <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5"
+            className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5 animate-scale-in"
             style={{
               background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)",
               boxShadow: "0 8px 32px rgba(15, 29, 61, 0.3)",
@@ -210,25 +281,34 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
           >
             <Compass className="w-10 h-10" style={{ color: "var(--gold)" }} />
           </div>
-          <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
-            Profilin hazır, {profile.fullName.split(" ")[0]}!
+          <h1 className="text-2xl font-bold mb-2 animate-float-up" style={{ color: "var(--text)" }}>
+            {getGreeting()}, {profile.fullName.split(" ")[0]}!
           </h1>
+          <p className="text-lg font-bold mb-1 animate-float-up" style={{ color: "var(--text)", animationDelay: "0.1s" }}>
+            Profilin hazır
+          </p>
           {eligibleCount !== null ? (
-            <p className="text-sm" style={{ color: "var(--muted)" }}>
-              <span className="font-bold" style={{ color: "var(--success)" }}>{eligibleCount} programa</span> başvurabilirsin
-              {totalCount > 0 && <span> (toplam {totalCount} program arasından)</span>}
+            <p className="text-sm animate-float-up" style={{ color: "var(--muted)", animationDelay: "0.2s" }}>
+              <span className="font-bold text-base" style={{ color: "var(--success)" }}>
+                {useCountUp(eligibleCount)} programa
+              </span>{" "}
+              başvurabilirsin
+              {totalCount > 0 && <span> ({totalCount} program arasından)</span>}
             </p>
           ) : (
-            <p className="text-sm" style={{ color: "var(--muted)" }}>
-              Sana uygun programlar hesaplanıyor...
-            </p>
+            <div className="flex items-center justify-center gap-2 animate-float-up" style={{ animationDelay: "0.2s" }}>
+              <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--blue)", borderTopColor: "transparent" }} />
+              <p className="text-sm" style={{ color: "var(--muted)" }}>
+                Sana uygun programlar hesaplanıyor...
+              </p>
+            </div>
           )}
         </div>
 
         {/* Profile summary card */}
         <div
-          className="rounded-2xl overflow-hidden mb-6"
-          style={{ border: "1px solid var(--border)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
+          className="rounded-2xl overflow-hidden mb-6 animate-float-up"
+          style={{ border: "1px solid var(--border)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)", animationDelay: "0.3s" }}
         >
           {/* Header stripe */}
           <div
@@ -329,8 +409,9 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
         {/* CTA */}
         <button
           onClick={onContinue}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98] animate-float-up"
           style={{
+            animationDelay: "0.5s",
             background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)",
             color: "#fff",
             boxShadow: "0 4px 16px rgba(15, 29, 61, 0.25)",
@@ -443,7 +524,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}
             >
               <div className="text-3xl font-black mb-1" style={{ color: "var(--gold)" }}>
-                {STEP_PANELS[step].stat}
+                <AnimatedStat value={STEP_PANELS[step].stat} />
               </div>
               <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
                 {STEP_PANELS[step].statLabel}
