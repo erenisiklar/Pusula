@@ -17,6 +17,7 @@ import {
   X,
   Globe,
   ScanSearch,
+  Info,
 } from "lucide-react";
 
 interface LetterSection {
@@ -39,6 +40,35 @@ const SECTION_LABELS: Record<string, string> = {
   EXPERIENCE: "Deneyim & Aktiviteler",
   CAREER_GOALS: "Kariyer Hedefleri",
   CLOSING: "Kapanış",
+};
+
+const LETTER_TYPE_LABELS: Record<string, string> = {
+  motivation_letter: "Motivasyon Mektubu",
+  personal_statement: "Personal Statement",
+  statement_of_purpose: "Statement of Purpose",
+  cover_letter: "Cover Letter",
+};
+
+const LETTER_TYPE_DESCRIPTIONS: Record<string, string> = {
+  motivation_letter: "Kişisel motivasyonunuzu ve akademik hedeflerinizi açıklayan standart mektup formatı",
+  personal_statement: "Konu hakkındaki tutkunuzu ve entelektüel yolculuğunuzu anlatan kişisel deneme (UCAS formatı)",
+  statement_of_purpose: "Akademik hedeflerinizi, deneyimlerinizi ve kariyer planlarınızı özetleyen profesyonel belge",
+  cover_letter: "Resmi selamlama ve kapanışlı, kısa ve öz profesyonel mektup formatı",
+};
+
+const MOTIVATION_LANGUAGE_LABELS: Record<string, { label: string; flag: string }> = {
+  en: { label: "English", flag: "🇬🇧" },
+  de: { label: "Deutsch", flag: "🇩🇪" },
+  fr: { label: "Français", flag: "🇫🇷" },
+  it: { label: "Italiano", flag: "🇮🇹" },
+  nl: { label: "Nederlands", flag: "🇳🇱" },
+};
+
+const TONE_LABELS: Record<string, string> = {
+  academic: "Akademik Odaklı",
+  personal: "Kişisel & Samimi",
+  research_focused: "Araştırma Odaklı",
+  project_focused: "Proje & Uygulama Odaklı",
 };
 
 const TIPS = [
@@ -139,6 +169,29 @@ export default function MotivasyonClient({ universities }: { universities: Unive
 
   const uni = universities.find((u) => u.id === selectedUni)!;
 
+  // Auto-set letter language and word count when university changes
+  const handleUniChange = useCallback((uniId: string) => {
+    setSelectedUni(uniId);
+    const selected = universities.find((u) => u.id === uniId);
+    if (selected) {
+      if (selected.motivationLanguage) {
+        setLetterLanguage(selected.motivationLanguage);
+      }
+      if (selected.motivationMaxWords) {
+        // Map to nearest available option
+        const options = [300, 500, 750, 1000];
+        const closest = options.reduce((prev, curr) =>
+          Math.abs(curr - (selected.motivationMaxWords || 500)) < Math.abs(prev - (selected.motivationMaxWords || 500)) ? curr : prev
+        );
+        setTargetWordCount(closest);
+      }
+    }
+    // Reset scrape data when university changes
+    setUniversityInsights(null);
+    setScrapeError("");
+    setScrapeWarning("");
+  }, [universities]);
+
   const getPlainText = useCallback(() => {
     if (sections.length === 0) return rawLetter;
     return sections.map((s) => s.content).join("\n\n");
@@ -222,6 +275,9 @@ export default function MotivasyonClient({ universities }: { universities: Unive
           letterLanguage,
           wordCount: targetWordCount,
           universityInsights: universityInsights || undefined,
+          motivationLetterType: uni.motivationLetterType || undefined,
+          motivationGuidelines: uni.motivationGuidelines || undefined,
+          motivationTonePreference: uni.motivationTonePreference || undefined,
         }),
       });
 
@@ -294,7 +350,9 @@ export default function MotivasyonClient({ universities }: { universities: Unive
               spacing: { after: 200 },
               children: [
                 new TextRun({
-                  text: letterLanguage === "fr" ? "Lettre de Motivation" : "Motivation Letter",
+                  text: uni.motivationLetterType
+                    ? (LETTER_TYPE_LABELS[uni.motivationLetterType] || "Motivation Letter")
+                    : (letterLanguage === "fr" ? "Lettre de Motivation" : "Motivation Letter"),
                   bold: true,
                   size: 28,
                   font: "Calibri",
@@ -425,7 +483,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
             </label>
             <select
               value={selectedUni}
-              onChange={(e) => setSelectedUni(e.target.value)}
+              onChange={(e) => handleUniChange(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
               style={{
                 backgroundColor: "var(--surface2)",
@@ -440,6 +498,63 @@ export default function MotivasyonClient({ universities }: { universities: Unive
               ))}
             </select>
           </div>
+
+          {/* University Motivation Requirements */}
+          {uni && (uni.motivationLetterType || uni.motivationGuidelines) && (
+            <div
+              className="rounded-lg p-3 space-y-2"
+              style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)" }}
+            >
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "var(--blue)" }}>
+                <Info className="w-3.5 h-3.5" />
+                Bu Üniversitenin Beklentileri
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {uni.motivationLetterType && (
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: "var(--blue-border)", color: "var(--blue)" }}
+                  >
+                    {LETTER_TYPE_LABELS[uni.motivationLetterType] || uni.motivationLetterType}
+                  </span>
+                )}
+                {uni.motivationLanguage && MOTIVATION_LANGUAGE_LABELS[uni.motivationLanguage] && (
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: "var(--blue-border)", color: "var(--blue)" }}
+                  >
+                    {MOTIVATION_LANGUAGE_LABELS[uni.motivationLanguage].flag} {MOTIVATION_LANGUAGE_LABELS[uni.motivationLanguage].label}
+                  </span>
+                )}
+                {uni.motivationTonePreference && (
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: "var(--gold-bg)", color: "var(--gold)" }}
+                  >
+                    {TONE_LABELS[uni.motivationTonePreference] || uni.motivationTonePreference}
+                  </span>
+                )}
+                {uni.motivationMaxWords && (
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: "var(--surface2)", color: "var(--muted)" }}
+                  >
+                    Maks. {uni.motivationMaxWords} kelime
+                  </span>
+                )}
+              </div>
+              {uni.motivationLetterType && LETTER_TYPE_DESCRIPTIONS[uni.motivationLetterType] && (
+                <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                  {LETTER_TYPE_DESCRIPTIONS[uni.motivationLetterType]}
+                </p>
+              )}
+              {uni.motivationGuidelines && (
+                <p className="text-[11px] leading-relaxed" style={{ color: "var(--text)" }}>
+                  {uni.motivationGuidelines}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* University URL Scraper */}
           <div>
@@ -627,10 +742,13 @@ export default function MotivasyonClient({ universities }: { universities: Unive
             <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
               Mektup Dili
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {[
                 { value: "en", label: "English", flag: "🇬🇧" },
+                { value: "de", label: "Deutsch", flag: "🇩🇪" },
                 { value: "fr", label: "Français", flag: "🇫🇷" },
+                { value: "it", label: "Italiano", flag: "🇮🇹" },
+                { value: "nl", label: "Nederlands", flag: "🇳🇱" },
               ].map((lang) => (
                 <button
                   key={lang.value}

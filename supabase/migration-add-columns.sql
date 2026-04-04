@@ -67,6 +67,31 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'universities' AND column_name = 'description') THEN
     ALTER TABLE universities ADD COLUMN description text;
   END IF;
+
+  -- motivation_letter_type
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'universities' AND column_name = 'motivation_letter_type') THEN
+    ALTER TABLE universities ADD COLUMN motivation_letter_type text DEFAULT 'motivation_letter';
+  END IF;
+
+  -- motivation_language
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'universities' AND column_name = 'motivation_language') THEN
+    ALTER TABLE universities ADD COLUMN motivation_language text;
+  END IF;
+
+  -- motivation_guidelines
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'universities' AND column_name = 'motivation_guidelines') THEN
+    ALTER TABLE universities ADD COLUMN motivation_guidelines text;
+  END IF;
+
+  -- motivation_tone_preference
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'universities' AND column_name = 'motivation_tone_preference') THEN
+    ALTER TABLE universities ADD COLUMN motivation_tone_preference text;
+  END IF;
+
+  -- motivation_max_words
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'universities' AND column_name = 'motivation_max_words') THEN
+    ALTER TABLE universities ADD COLUMN motivation_max_words int;
+  END IF;
 END $$;
 
 -- Add unique constraint to acceptance_stats if not exists

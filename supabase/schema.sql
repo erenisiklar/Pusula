@@ -25,6 +25,12 @@ create table if not exists universities (
   competitiveness text, -- 'very_high' | 'high' | 'medium' | 'low'
   data_verified boolean default false,
   program_restricted boolean default false,
+  -- Motivation letter fields
+  motivation_letter_type text default 'motivation_letter', -- 'motivation_letter' | 'personal_statement' | 'statement_of_purpose' | 'cover_letter'
+  motivation_language text, -- preferred letter language: 'en' | 'de' | 'fr' | 'it' | 'nl'
+  motivation_guidelines text, -- university-specific guidelines/questions
+  motivation_tone_preference text, -- 'academic' | 'personal' | 'research_focused' | 'project_focused'
+  motivation_max_words int, -- university's word/character limit if known
   -- Map & display fields
   lat double precision,
   lng double precision,

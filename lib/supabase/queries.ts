@@ -30,6 +30,11 @@ function mapUniversity(row: Record<string, unknown>): University {
     durationYears: row.duration_years as number | undefined,
     countryColor: row.country_color as string | undefined,
     website: row.website as string | undefined,
+    motivationLetterType: row.motivation_letter_type as University["motivationLetterType"],
+    motivationLanguage: row.motivation_language as string | undefined,
+    motivationGuidelines: row.motivation_guidelines as string | undefined,
+    motivationTonePreference: row.motivation_tone_preference as University["motivationTonePreference"],
+    motivationMaxWords: row.motivation_max_words as number | undefined,
   };
 }
 
