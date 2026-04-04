@@ -65,8 +65,22 @@ export default function DashboardClient({
   const possibleCount = eligibilityResults.filter((r) => r.status === "possible").length;
   const reachCount = eligibilityResults.filter((r) => r.status === "reach").length;
 
-  // Top 5 best-matching universities
-  const topMatches = eligibilityResults.slice(0, 5);
+  // Top 5 best-matching universities — filtered by profile preferences
+  const topMatches = useMemo(() => {
+    if (!profile) return [];
+    const filtered = eligibilityResults.filter((r) => {
+      // Filter by target countries
+      if (profile.targetCountries.length > 0 && !profile.targetCountries.includes(r.university.country)) {
+        return false;
+      }
+      // Filter by target department (skip if not specified)
+      if (profile.targetDepartment && r.university.department !== profile.targetDepartment) {
+        return false;
+      }
+      return true;
+    });
+    return filtered.slice(0, 5);
+  }, [eligibilityResults, profile]);
 
   // Progress calculation
   const progressSteps = [
