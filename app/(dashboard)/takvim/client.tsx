@@ -155,7 +155,7 @@ export default function TakvimClient({ universities }: { universities: Universit
   const [personalEvents, setPersonalEvents] = useState<PersonalEvent[]>([]);
   const [showEventModal, setShowEventModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<PersonalEvent | null>(null);
-  const [eventForm, setEventForm] = useState({ title: "", description: "", color: "blue" });
+  const [eventForm, setEventForm] = useState({ title: "", description: "", color: "blue", day: 1 });
 
   // Load events from localStorage on mount
   useEffect(() => {
@@ -186,24 +186,24 @@ export default function TakvimClient({ universities }: { universities: Universit
 
   function openAddEvent(day?: number) {
     setEditingEvent(null);
-    setEventForm({ title: "", description: "", color: "blue" });
-    if (day) setSelectedDay(day);
+    const defaultDay = day || selectedDay || today.getDate();
+    setEventForm({ title: "", description: "", color: "blue", day: defaultDay });
     setShowEventModal(true);
   }
 
   function openEditEvent(event: PersonalEvent) {
     setEditingEvent(event);
-    setEventForm({ title: event.title, description: event.description, color: event.color });
+    setEventForm({ title: event.title, description: event.description, color: event.color, day: event.day });
     setShowEventModal(true);
   }
 
   function handleSaveEvent() {
-    if (!eventForm.title.trim() || selectedDay === null) return;
+    if (!eventForm.title.trim() || !eventForm.day) return;
     let updated: PersonalEvent[];
     if (editingEvent) {
       updated = personalEvents.map((e) =>
         e.id === editingEvent.id
-          ? { ...e, title: eventForm.title.trim(), description: eventForm.description.trim(), color: eventForm.color }
+          ? { ...e, title: eventForm.title.trim(), description: eventForm.description.trim(), color: eventForm.color, day: eventForm.day }
           : e
       );
     } else {
@@ -212,7 +212,7 @@ export default function TakvimClient({ universities }: { universities: Universit
         title: eventForm.title.trim(),
         description: eventForm.description.trim(),
         month: currentMonth,
-        day: selectedDay,
+        day: eventForm.day,
         year: currentYear,
         color: eventForm.color,
         createdAt: new Date().toISOString(),
@@ -867,14 +867,30 @@ export default function TakvimClient({ universities }: { universities: Universit
               </button>
             </div>
 
-            {/* Date display */}
-            <div
-              className="text-xs mb-4 px-3 py-2 rounded-lg"
-              style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)" }}
-            >
-              {selectedDay !== null
-                ? `${selectedDay} ${months[currentMonth]} ${currentYear}`
-                : `${months[currentMonth]} ${currentYear} — lütfen bir gün seçin`}
+            {/* Date picker */}
+            <div className="mb-3">
+              <label className="text-xs font-medium block mb-1" style={{ color: "var(--text)" }}>
+                Tarih
+              </label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={eventForm.day}
+                  onChange={(e) => setEventForm({ ...eventForm, day: parseInt(e.target.value) })}
+                  className="px-3 py-2 rounded-lg text-sm outline-none"
+                  style={{
+                    backgroundColor: "var(--surface2)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text)",
+                  }}
+                >
+                  {Array.from({ length: daysInMonth }).map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </select>
+                <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                  {months[currentMonth]} {currentYear}
+                </span>
+              </div>
             </div>
 
             {/* Title */}
@@ -960,7 +976,7 @@ export default function TakvimClient({ universities }: { universities: Universit
               </button>
               <button
                 onClick={handleSaveEvent}
-                disabled={!eventForm.title.trim() || selectedDay === null}
+                disabled={!eventForm.title.trim() || !eventForm.day}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
                 style={{
                   backgroundColor: "var(--blue)",
