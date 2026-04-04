@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile, type StudentProfile } from "@/lib/profile-context";
+import { createClient } from "@/lib/supabase/client";
+import { calculateEligibility } from "@/lib/eligibility";
+import type { University, StudentInput } from "@/types";
 import DepartmentQuiz from "@/components/department-quiz";
 import {
   Compass,
@@ -81,8 +84,42 @@ const LANG_CERTS = [
 const STEPS = [
   { icon: GraduationCap, title: "Akademik Bilgiler", subtitle: "GPA ve bölüm tercihin" },
   { icon: Languages, title: "Dil Sertifikan", subtitle: "Dil seviyeni belirle" },
-  { icon: Wallet, title: "Bütçe", subtitle: "Yıllık eğitim bütçen" },
+  { icon: Wallet, title: "Bütçe", subtitle: "Eğitim bütçen" },
   { icon: Globe, title: "Hedef Ülkeler", subtitle: "Nereye gitmek istiyorsun?" },
+  { icon: Compass, title: "Zamanlama", subtitle: "Ne zaman başvuracaksın?" },
+];
+
+const STEP_PANELS = [
+  {
+    heading: "Her yıl binlerce Türk öğrenci Avrupa'da lisans okuyor",
+    stat: "250+",
+    statLabel: "Lisans programı veritabanımızda",
+    tip: "Profilini oluşturduktan sonra sana en uygun programları göstereceğiz.",
+  },
+  {
+    heading: "Dil sertifikan kapıları açar",
+    stat: "120+",
+    statLabel: "Program IELTS 6.5 ile başvurulabilir",
+    tip: "Birden fazla sertifikan varsa hepsini ekle — daha fazla program eşleşir.",
+  },
+  {
+    heading: "Avrupa'daki programların %40'ı ücretsiz",
+    stat: "%40",
+    statLabel: "Program ücretsiz veya düşük ücretli",
+    tip: "Almanya, Norveç ve Çekya'da devlet üniversiteleri harç almıyor.",
+  },
+  {
+    heading: "19 ülke, yüzlerce fırsat",
+    stat: "19",
+    statLabel: "Avrupa ülkesi veritabanımızda",
+    tip: "Ne kadar çok ülke seçersen o kadar fazla program eşleşir.",
+  },
+  {
+    heading: "Zamanlamayı doğru planla",
+    stat: "6-12",
+    statLabel: "Ay öncesinden başvuru hazırlığı ideal",
+    tip: "Erken başlarsan dil sınavı, vize ve burs başvuruları için yeterli zamanın olur.",
+  },
 ];
 
 export default function OnboardingPage() {
@@ -113,6 +150,51 @@ export default function OnboardingPage() {
 
 function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; onContinue: () => void }) {
   const countryFlags = COUNTRIES.filter((c) => profile.targetCountries.includes(c.name));
+  const [eligibleCount, setEligibleCount] = useState<number | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchAndCalculate() {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.from("universities").select("*").eq("level", "bachelor").order("name");
+        if (!data) return;
+
+        const universities: University[] = data.map((row: Record<string, unknown>) => ({
+          id: row.id as string,
+          name: row.name as string,
+          country: row.country as string,
+          countryCode: row.country_code as string,
+          city: row.city as string,
+          program: row.program as string,
+          department: row.department as string,
+          requiredGPA: row.required_gpa as number,
+          requiredLanguage: row.required_language as string,
+          requiredLanguageScore: row.required_language_score as string,
+          acceptedLanguages: (row.accepted_languages as University["acceptedLanguages"]) || [],
+          tuitionEUR: row.tuition_eur as number,
+          flag: row.flag as string,
+        }));
+
+        const input: StudentInput = {
+          gpa: profile.gpa,
+          languageCert: profile.languageCert || null,
+          languageScore: profile.languageScore || null,
+          budgetEUR: profile.budgetEUR,
+          targetCountries: profile.targetCountries,
+          targetDepartment: profile.targetDepartment,
+        };
+
+        const results = universities.map((u) => calculateEligibility(input, u));
+        const eligible = results.filter((r) => r.status === "eligible" || r.status === "possible").length;
+        setTotalCount(universities.length);
+        setEligibleCount(eligible);
+      } catch {
+        // silently fail
+      }
+    }
+    fetchAndCalculate();
+  }, [profile]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: "var(--bg)" }}>
@@ -131,9 +213,16 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
           <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
             Profilin hazır, {profile.fullName.split(" ")[0]}!
           </h1>
-          <p className="text-sm" style={{ color: "var(--muted)" }}>
-            Sana özel program önerileri ve başvuru rehberin hazırlanıyor
-          </p>
+          {eligibleCount !== null ? (
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              <span className="font-bold" style={{ color: "var(--success)" }}>{eligibleCount} programa</span> başvurabilirsin
+              {totalCount > 0 && <span> (toplam {totalCount} program arasından)</span>}
+            </p>
+          ) : (
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              Sana uygun programlar hesaplanıyor...
+            </p>
+          )}
         </div>
 
         {/* Profile summary card */}
@@ -271,6 +360,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
   const [selectedCerts, setSelectedCerts] = useState<Record<string, string>>({}); // cert -> score
   const [budgetEUR, setBudgetEUR] = useState(3000);
   const [targetCountries, setTargetCountries] = useState<string[]>([]);
+  const [applicationTimeline, setApplicationTimeline] = useState("");
 
   function toggleCountry(c: string) {
     setTargetCountries((prev) =>
@@ -310,6 +400,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
       budgetEUR,
       targetCountries,
       targetDepartment,
+      applicationTimeline,
       completedAt: new Date().toISOString(),
     });
   }
@@ -317,6 +408,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
   const canProceed = () => {
     if (step === 0) return fullName.trim().length > 0;
     if (step === 3) return targetCountries.length > 0;
+    if (step === 4) return applicationTimeline.length > 0;
     return true;
   };
 
@@ -328,7 +420,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
         style={{ background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)" }}
       >
         <div>
-          <div className="flex items-center gap-2 mb-12">
+          <div className="flex items-center gap-2 mb-10">
             <Compass className="w-7 h-7" style={{ color: "var(--gold)" }} />
             <span className="text-xl font-bold" style={{ color: "#fff" }}>
               Pusula
@@ -338,13 +430,30 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               />
             </span>
           </div>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: "#fff" }}>
-            Hayalindeki üniversiteyi bulalım
-          </h2>
-          <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-            Birkaç bilgiyi girdikten sonra sana en uygun programları, ülkeleri ve başvuru
-            süreçlerini gösterelim. Her şey sana özel şekillenecek.
-          </p>
+
+          {/* Dynamic content per step */}
+          <div key={`panel-${step}`} className="animate-fade-in">
+            <h2 className="text-xl font-bold mb-5 leading-snug" style={{ color: "#fff" }}>
+              {STEP_PANELS[step].heading}
+            </h2>
+
+            {/* Stat highlight */}
+            <div
+              className="rounded-xl p-4 mb-5"
+              style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}
+            >
+              <div className="text-3xl font-black mb-1" style={{ color: "var(--gold)" }}>
+                {STEP_PANELS[step].stat}
+              </div>
+              <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {STEP_PANELS[step].statLabel}
+              </div>
+            </div>
+
+            <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+              {STEP_PANELS[step].tip}
+            </p>
+          </div>
         </div>
 
         {/* Step indicators */}
@@ -909,6 +1018,62 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
             </div>
           )}
 
+          {/* Step 4: Application Timeline */}
+          {step === 4 && (
+            <div key="step-4" className="space-y-5 animate-fade-in-up">
+              <div>
+                <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
+                  Ne Zaman Başvuracaksın?
+                </h2>
+                <p className="text-sm" style={{ color: "var(--muted)" }}>
+                  Başvuru zamanlamanı bilmemiz sana daha iyi rehberlik etmemizi sağlar
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                {[
+                  { value: "this_year", icon: "🎯", label: "Bu yıl başvuracağım", desc: "Deadline'lar yakın — hemen hazırlığa başlamalısın" },
+                  { value: "next_year", icon: "📅", label: "Gelecek yıl başvuracağım", desc: "Harika zamanlama — dil sınavı ve araştırma için bolca vaktin var" },
+                  { value: "later", icon: "🔮", label: "2+ yıl sonra planlıyorum", desc: "Erkenden araştırmaya başlamak büyük avantaj" },
+                  { value: "exploring", icon: "🧭", label: "Sadece araştırıyorum", desc: "Henüz karar vermedim, seçeneklerimi görmek istiyorum" },
+                ].map((option) => {
+                  const isSelected = applicationTimeline === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setApplicationTimeline(option.value)}
+                      className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all"
+                      style={{
+                        backgroundColor: isSelected ? "var(--blue-bg)" : "var(--surface)",
+                        border: `1.5px solid ${isSelected ? "var(--blue)" : "var(--border)"}`,
+                        transform: isSelected ? "scale(1.01)" : "scale(1)",
+                      }}
+                    >
+                      <span className="text-xl flex-shrink-0">{option.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold" style={{ color: isSelected ? "var(--blue)" : "var(--text)" }}>
+                          {option.label}
+                        </div>
+                        <div className="text-[11px]" style={{ color: "var(--muted)" }}>
+                          {option.desc}
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <div
+                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: "var(--blue)" }}
+                        >
+                          <Check className="w-3 h-3" style={{ color: "#fff" }} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Navigation buttons */}
           <div className="flex items-center justify-between mt-8">
             {step > 0 ? (
@@ -924,7 +1089,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               <div />
             )}
 
-            {step < 3 ? (
+            {step < 4 ? (
               <button
                 onClick={() => setStep(step + 1)}
                 disabled={!canProceed()}

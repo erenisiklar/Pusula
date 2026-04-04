@@ -19,6 +19,7 @@ export interface StudentProfile {
   budgetEUR: number;
   targetCountries: string[];
   targetDepartment: string;
+  applicationTimeline: string; // "this_year" | "next_year" | "later" | "exploring"
   completedAt: string;
 }
 
