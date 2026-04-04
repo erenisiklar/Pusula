@@ -1,10 +1,10 @@
-import { universities } from "@/lib/universities";
-import { getAcceptanceStats } from "@/lib/supabase/queries";
+import { getUniversities, getAcceptanceStats } from "@/lib/supabase/queries";
 import AcceptanceClient from "./client";
 import type { AcceptanceRow } from "@/lib/supabase/queries";
+import type { University } from "@/types";
 
 // Generate realistic applicant counts based on competitiveness and school profile
-function estimateApplicants(uni: typeof universities[0]): number {
+function estimateApplicants(uni: University): number {
   const base: Record<string, number> = {
     "very_high": 8000,
     "high": 4500,
@@ -21,7 +21,7 @@ function estimateApplicants(uni: typeof universities[0]): number {
 }
 
 // Estimate avg admitted GPA based on required GPA and competitiveness
-function estimateAvgGPA(uni: typeof universities[0]): number {
+function estimateAvgGPA(uni: University): number {
   const req = uni.requiredGPA;
   const bump: Record<string, number> = {
     "very_high": 7,
@@ -33,7 +33,7 @@ function estimateAvgGPA(uni: typeof universities[0]): number {
 }
 
 // Estimate YoY trend
-function estimateTrend(uni: typeof universities[0]): number {
+function estimateTrend(uni: University): number {
   if (uni.competitiveness === "very_high") return Math.random() > 0.7 ? -1 : 0;
   if (uni.competitiveness === "high") return Math.random() > 0.5 ? 1 : 0;
   if (uni.acceptanceRate && uni.acceptanceRate > 40) return Math.random() > 0.6 ? 2 : 1;
@@ -41,7 +41,10 @@ function estimateTrend(uni: typeof universities[0]): number {
 }
 
 export default async function AcceptancePage() {
-  const supabaseStats = await getAcceptanceStats();
+  const [universities, supabaseStats] = await Promise.all([
+    getUniversities(),
+    getAcceptanceStats(),
+  ]);
 
   // Build a map of Supabase data (overrides static)
   const supabaseMap = new Map<string, AcceptanceRow>();

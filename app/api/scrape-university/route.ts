@@ -112,6 +112,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Step 1: Fetch the page
+  let html: string;
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -119,8 +121,11 @@ export async function POST(request: NextRequest) {
     const response = await fetch(parsedUrl.toString(), {
       signal: controller.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Pusula/1.0)",
-        Accept: "text/html,application/xhtml+xml",
+        // Use a realistic browser User-Agent to avoid WAF blocks
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
       },
     });
     clearTimeout(timeoutId);
@@ -128,16 +133,39 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         {
-          error: `Site yüklenemedi (HTTP ${response.status}). URL doğru olduğundan ve kamuya açık olduğundan emin olun. Not: Bazı siteler bu işleme izin vermeyebilir.`,
+          error: `Site sayfayı yüklemedi (HTTP ${response.status}). Bu site otomatik erişimi engelliyor olabilir. Programın İngilizce sayfasını deneyin.`,
         },
         { status: 400 }
       );
     }
 
-    const html = await response.text();
-    const plainText = stripHtml(html);
-    const truncated = plainText.slice(0, 6000);
+    html = await response.text();
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json(
+        { error: "Site yanıt vermedi (10s zaman aşımı). URL erişilebilir olduğundan emin olun." },
+        { status: 408 }
+      );
+    }
+    console.error("Fetch error:", error);
+    return NextResponse.json(
+      { error: "Siteye bağlanılamadı. URL'nin doğru ve kamuya açık olduğundan emin olun." },
+      { status: 502 }
+    );
+  }
 
+  // Step 2: Extract text and call Gemini
+  const plainText = stripHtml(html);
+  const truncated = plainText.slice(0, 6000);
+
+  if (truncated.trim().length < 100) {
+    return NextResponse.json(
+      { error: "Sayfadan yeterli içerik alınamadı. Bu site JavaScript ile yükleniyor olabilir. Farklı bir URL deneyin." },
+      { status: 422 }
+    );
+  }
+
+  try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
@@ -159,26 +187,20 @@ Extract the most useful information for a motivation letter. Return ONLY valid J
 
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
+
+    // Strip markdown code fences if present
     text = text.replace(/^```(?:json)?\n?/i, "").replace(/\n?```$/i, "").trim();
+
+    // Extract JSON object if there's surrounding text
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) text = jsonMatch[0];
 
     const insights = JSON.parse(text);
     return NextResponse.json({ insights });
   } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      return NextResponse.json(
-        {
-          error:
-            "Site yüklenirken zaman aşımı (10s). URL erişilebilir olduğundan emin olun. Not: Bazı siteler bu işleme izin vermeyebilir.",
-        },
-        { status: 408 }
-      );
-    }
-    console.error("Scrape error:", error);
+    console.error("Gemini error:", error);
     return NextResponse.json(
-      {
-        error:
-          "Site taranırken hata oluştu. URL erişilebilir olduğundan emin olun. Not: Bazı siteler bu işleme izin vermeyebilir.",
-      },
+      { error: "İçerik analiz edilirken hata oluştu. Lütfen tekrar deneyin." },
       { status: 500 }
     );
   }
