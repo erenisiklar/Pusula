@@ -39,6 +39,7 @@ export async function getUniversities(): Promise<University[]> {
     const { data, error } = await supabase
       .from("universities")
       .select("*")
+      .eq("level", "bachelor")
       .order("name");
     if (error) {
       console.error("[Supabase] universities fetch error:", error.message);
