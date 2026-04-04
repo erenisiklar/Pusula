@@ -88,14 +88,176 @@ const STEPS = [
 export default function OnboardingPage() {
   const router = useRouter();
   const { setProfile, hasProfile } = useProfile();
+  const [completedProfile, setCompletedProfile] = useState<StudentProfile | null>(null);
 
   // Redirect if already has profile
-  if (hasProfile) {
+  if (hasProfile && !completedProfile) {
     router.replace("/dashboard");
     return null;
   }
 
-  return <OnboardingWizard onComplete={(p) => { setProfile(p); router.push("/dashboard"); }} />;
+  if (completedProfile) {
+    return (
+      <CompletionScreen
+        profile={completedProfile}
+        onContinue={() => {
+          setProfile(completedProfile);
+          router.push("/dashboard");
+        }}
+      />
+    );
+  }
+
+  return <OnboardingWizard onComplete={(p) => setCompletedProfile(p)} />;
+}
+
+function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; onContinue: () => void }) {
+  const countryFlags = COUNTRIES.filter((c) => profile.targetCountries.includes(c.name));
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: "var(--bg)" }}>
+      <div className="w-full max-w-lg animate-fade-in-up">
+        {/* Celebration header */}
+        <div className="text-center mb-8">
+          <div
+            className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5"
+            style={{
+              background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)",
+              boxShadow: "0 8px 32px rgba(15, 29, 61, 0.3)",
+            }}
+          >
+            <Compass className="w-10 h-10" style={{ color: "var(--gold)" }} />
+          </div>
+          <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
+            Profilin hazır, {profile.fullName.split(" ")[0]}!
+          </h1>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            Sana özel program önerileri ve başvuru rehberin hazırlanıyor
+          </p>
+        </div>
+
+        {/* Profile summary card */}
+        <div
+          className="rounded-2xl overflow-hidden mb-6"
+          style={{ border: "1px solid var(--border)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
+        >
+          {/* Header stripe */}
+          <div
+            className="px-6 py-4"
+            style={{ background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
+              >
+                <GraduationCap className="w-5 h-5" style={{ color: "#fff" }} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold" style={{ color: "#fff" }}>
+                  {profile.fullName}
+                </div>
+                <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {profile.targetDepartment || "Bölüm keşfediliyor"}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Details */}
+          <div className="px-6 py-4 space-y-3" style={{ backgroundColor: "var(--surface)" }}>
+            {/* GPA */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{ color: "var(--muted)" }}>Not Ortalaması</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold" style={{
+                  color: profile.gpa >= 85 ? "var(--success)" : profile.gpa >= 70 ? "var(--blue)" : "var(--gold)",
+                }}>
+                  {profile.gpa}/100
+                </span>
+                <span
+                  className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                  style={{
+                    backgroundColor: profile.gpa >= 85 ? "var(--success-bg)" : profile.gpa >= 70 ? "var(--blue-bg)" : "var(--gold-bg)",
+                    color: profile.gpa >= 85 ? "var(--success)" : profile.gpa >= 70 ? "var(--blue)" : "var(--gold)",
+                  }}
+                >
+                  {profile.gpa >= 85 ? "Güçlü" : profile.gpa >= 70 ? "İyi" : "Orta"}
+                </span>
+              </div>
+            </div>
+
+            {/* Language certs */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{ color: "var(--muted)" }}>Dil Sertifikaları</span>
+              <div className="flex items-center gap-1.5">
+                {profile.languageCerts.length > 0 ? (
+                  profile.languageCerts.map((c) => (
+                    <span
+                      key={c.cert}
+                      className="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)" }}
+                    >
+                      {c.cert} {c.score}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[11px]" style={{ color: "var(--muted)" }}>Henüz yok</span>
+                )}
+              </div>
+            </div>
+
+            {/* Budget */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{ color: "var(--muted)" }}>Bütçe</span>
+              <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                {profile.budgetEUR === 99999
+                  ? "Fark etmez"
+                  : profile.budgetEUR === 0
+                    ? "Ücretsiz programlar"
+                    : `${profile.budgetEUR.toLocaleString("tr-TR")}€/yıl`}
+              </span>
+            </div>
+
+            {/* Countries */}
+            <div>
+              <span className="text-xs block mb-2" style={{ color: "var(--muted)" }}>Hedef Ülkeler</span>
+              <div className="flex flex-wrap gap-1">
+                {countryFlags.map((c) => (
+                  <span
+                    key={c.name}
+                    className="text-[11px] px-2 py-1 rounded-lg font-medium flex items-center gap-1"
+                    style={{ backgroundColor: "var(--surface2)", color: "var(--text)" }}
+                  >
+                    {c.flag} {c.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={onContinue}
+          className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
+          style={{
+            background: "linear-gradient(135deg, #0f1d3d 0%, #1e3a6e 100%)",
+            color: "#fff",
+            boxShadow: "0 4px 16px rgba(15, 29, 61, 0.25)",
+          }}
+        >
+          <Sparkles className="w-4 h-4" style={{ color: "var(--gold)" }} />
+          Programları Keşfetmeye Başla
+          <ArrowRight className="w-4 h-4" />
+        </button>
+
+        <p className="text-[10px] text-center mt-4" style={{ color: "var(--muted)" }}>
+          Profilini istediğin zaman güncelleyebilirsin
+        </p>
+      </div>
+    </div>
+  );
 }
 
 function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile) => void }) {
