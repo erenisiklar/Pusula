@@ -221,6 +221,23 @@ export default function SchoolsClient({ universities }: { universities: Universi
               <Wallet className="w-3.5 h-3.5" />
               Yıllık Bütçe (EUR)
             </label>
+            {budget >= 99999 ? (
+              <div className="flex items-center justify-between">
+                <span
+                  className="px-3 py-2 rounded-lg text-sm font-medium"
+                  style={{ backgroundColor: "var(--surface2)", color: "var(--muted)" }}
+                >
+                  Fark etmez
+                </span>
+                <button
+                  onClick={() => setBudget(5000)}
+                  className="text-[10px] font-medium hover:opacity-80"
+                  style={{ color: "var(--blue)" }}
+                >
+                  Düzenle
+                </button>
+              </div>
+            ) : (
             <input
               type="number"
               step="500"
@@ -234,6 +251,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
                 color: "var(--text)",
               }}
             />
+            )}
           </div>
 
           {/* Country */}
