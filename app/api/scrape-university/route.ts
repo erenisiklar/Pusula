@@ -158,9 +158,9 @@ export async function POST(request: NextRequest) {
   const plainText = stripHtml(html);
   const truncated = plainText.slice(0, 6000);
 
-  if (truncated.trim().length < 100) {
+  if (truncated.trim().length < 50) {
     return NextResponse.json(
-      { error: "Sayfadan yeterli içerik alınamadı. Bu site JavaScript ile yükleniyor olabilir. Farklı bir URL deneyin." },
+      { error: "Sayfadan yeterli içerik alınamadı. Bu site JavaScript ile yükleniyor olabilir. Programın İngilizce sayfasını veya farklı bir URL deneyin." },
       { status: 422 }
     );
   }
@@ -169,33 +169,44 @@ export async function POST(request: NextRequest) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      generationConfig: { temperature: 0.2, maxOutputTokens: 600 },
+      generationConfig: { temperature: 0.2, maxOutputTokens: 800 },
     });
 
-    const prompt = `You are analyzing a university or academic program webpage to help a student write a personalized motivation letter.
+    const prompt = `Analyze this university webpage text (may be in any language) to help a student write a motivation letter.
+Even if content is sparse, do your best to extract or infer relevant information.
 
 Webpage text:
 ${truncated}
 
-Extract the most useful information for a motivation letter. Return ONLY valid JSON (no markdown, no code blocks):
-{
-  "mission": "1-2 sentences about the program's mission or academic focus (empty string if not found)",
-  "keywords": ["5-8 key academic or research terms specific to this program"],
-  "values": ["3-5 institutional values or priorities"],
-  "uniqueAspects": ["2-4 distinctive features: research groups, teaching methods, partnerships, etc."]
-}`;
+Return ONLY a raw JSON object (no markdown, no explanation, no code fences). Use empty strings/arrays if info is missing:
+{"mission":"","keywords":[],"values":[],"uniqueAspects":[]}`;
 
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
 
-    // Strip markdown code fences if present
-    text = text.replace(/^```(?:json)?\n?/i, "").replace(/\n?```$/i, "").trim();
+    // Strip any markdown fences
+    text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
 
-    // Extract JSON object if there's surrounding text
+    // Extract first JSON object from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) text = jsonMatch[0];
+    if (!jsonMatch) {
+      // Gemini returned something unparseable — return empty insights instead of error
+      return NextResponse.json({
+        insights: { mission: "", keywords: [], values: [], uniqueAspects: [] },
+        warning: "Sayfa içeriği analiz edilemedi. Mektup yine de oluşturulabilir.",
+      });
+    }
 
-    const insights = JSON.parse(text);
+    let insights;
+    try {
+      insights = JSON.parse(jsonMatch[0]);
+    } catch {
+      return NextResponse.json({
+        insights: { mission: "", keywords: [], values: [], uniqueAspects: [] },
+        warning: "Sayfa içeriği tam olarak analiz edilemedi.",
+      });
+    }
+
     return NextResponse.json({ insights });
   } catch (error) {
     console.error("Gemini error:", error);

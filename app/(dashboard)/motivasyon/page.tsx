@@ -161,6 +161,7 @@ export default function MotivasyonPage() {
         throw new Error(data.error || "Site taranamadı.");
       }
       setUniversityInsights(data.insights);
+      if (data.warning) setScrapeError(data.warning); // show as soft warning, not blocking
     } catch (err) {
       setScrapeError(err instanceof Error ? err.message : "Site taranamadı.");
     } finally {
@@ -485,9 +486,9 @@ export default function MotivasyonPage() {
               <div
                 className="mt-1.5 rounded-lg px-3 py-2 text-[11px] leading-relaxed"
                 style={{
-                  backgroundColor: robotsBlocked ? "var(--gold-bg)" : "var(--danger-bg)",
-                  border: `1px solid ${robotsBlocked ? "var(--gold-border)" : "var(--danger)"}`,
-                  color: robotsBlocked ? "var(--gold-light)" : "var(--danger)",
+                  backgroundColor: (robotsBlocked || universityInsights) ? "var(--gold-bg)" : "var(--danger-bg)",
+                  border: `1px solid ${(robotsBlocked || universityInsights) ? "var(--gold-border)" : "var(--danger)"}`,
+                  color: (robotsBlocked || universityInsights) ? "var(--gold-light)" : "var(--danger)",
                 }}
               >
                 {scrapeError}
