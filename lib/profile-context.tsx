@@ -32,7 +32,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   // Load from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = sessionStorage.getItem(STORAGE_KEY);
       if (stored) {
         setProfileState(JSON.parse(stored));
       }
@@ -46,9 +46,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     if (profile) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
     } else {
-      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
     }
   }, [profile, loaded]);
 
