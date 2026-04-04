@@ -163,7 +163,7 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1" style={{ marginLeft: 220 }}>
-        <div className="p-6 max-w-7xl mx-auto">{children}</div>
+        <div key={pathname} className="p-6 max-w-7xl mx-auto animate-fade-in-up">{children}</div>
       </main>
     </div>
   );

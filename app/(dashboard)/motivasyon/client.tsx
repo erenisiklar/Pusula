@@ -569,7 +569,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Form — 2/5 width on large screens */}
         <div
-          className="lg:col-span-2 rounded-xl p-5 space-y-4 h-fit"
+          className="lg:col-span-2 rounded-xl p-5 space-y-4 h-fit animate-fade-in-up"
           style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
         >
           {/* Name */}
@@ -1028,7 +1028,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
         </div>
 
         {/* Output — 3/5 width on large screens */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className="lg:col-span-3 space-y-4 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           {/* Header bar */}
           <div
             className="rounded-xl p-4 flex items-center justify-between"

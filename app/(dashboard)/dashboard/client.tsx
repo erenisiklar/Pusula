@@ -140,13 +140,13 @@ export default function DashboardClient({
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        {stats.map((stat) => {
+        {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.label}
-              className="rounded-xl px-5 py-4"
-              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+              className="rounded-xl px-5 py-4 animate-float-up"
+              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", animationDelay: `${i * 0.07}s` }}
             >
               <div className="flex items-center justify-between mb-2">
                 <Icon className="w-5 h-5" style={{ color: stat.color }} />
@@ -164,7 +164,7 @@ export default function DashboardClient({
 
       <div className="grid grid-cols-2 gap-6">
         {/* Left column */}
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
           {/* Top matches — only if profile exists */}
           {profile && topMatches.length > 0 && (
             <div
@@ -266,7 +266,7 @@ export default function DashboardClient({
         </div>
 
         {/* Right column */}
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
           {/* Eligibility summary bars */}
           {profile && (
             <div
