@@ -779,7 +779,7 @@ export default function TakvimClient({ universities }: { universities: Universit
               style={{ color: "var(--text)" }}
             >
               <CalendarDays className="w-4 h-4" style={{ color: "var(--blue)" }} />
-              {selectedDay !== null
+              {selectedDay !== null && deadlineDays[selectedDay]
                 ? `${selectedDay} ${months[currentMonth]}`
                 : `${months[currentMonth]} Deadline'ları`}
               {sidebarDeadlines.length > 0 && (
