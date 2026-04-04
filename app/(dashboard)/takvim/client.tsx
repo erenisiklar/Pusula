@@ -155,7 +155,7 @@ export default function TakvimClient({ universities }: { universities: Universit
   const [personalEvents, setPersonalEvents] = useState<PersonalEvent[]>([]);
   const [showEventModal, setShowEventModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<PersonalEvent | null>(null);
-  const [eventForm, setEventForm] = useState({ title: "", description: "", color: "blue", day: 1 });
+  const [eventForm, setEventForm] = useState({ title: "", description: "", color: "blue", day: 1, month: 0, year: 2026 });
 
   // Load events from localStorage on mount
   useEffect(() => {
@@ -187,13 +187,13 @@ export default function TakvimClient({ universities }: { universities: Universit
   function openAddEvent(day?: number) {
     setEditingEvent(null);
     const defaultDay = day || selectedDay || today.getDate();
-    setEventForm({ title: "", description: "", color: "blue", day: defaultDay });
+    setEventForm({ title: "", description: "", color: "blue", day: defaultDay, month: currentMonth, year: currentYear });
     setShowEventModal(true);
   }
 
   function openEditEvent(event: PersonalEvent) {
     setEditingEvent(event);
-    setEventForm({ title: event.title, description: event.description, color: event.color, day: event.day });
+    setEventForm({ title: event.title, description: event.description, color: event.color, day: event.day, month: event.month, year: event.year });
     setShowEventModal(true);
   }
 
@@ -203,7 +203,7 @@ export default function TakvimClient({ universities }: { universities: Universit
     if (editingEvent) {
       updated = personalEvents.map((e) =>
         e.id === editingEvent.id
-          ? { ...e, title: eventForm.title.trim(), description: eventForm.description.trim(), color: eventForm.color, day: eventForm.day }
+          ? { ...e, title: eventForm.title.trim(), description: eventForm.description.trim(), color: eventForm.color, day: eventForm.day, month: eventForm.month, year: eventForm.year }
           : e
       );
     } else {
@@ -211,9 +211,9 @@ export default function TakvimClient({ universities }: { universities: Universit
         id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         title: eventForm.title.trim(),
         description: eventForm.description.trim(),
-        month: currentMonth,
+        month: eventForm.month,
         day: eventForm.day,
-        year: currentYear,
+        year: eventForm.year,
         color: eventForm.color,
         createdAt: new Date().toISOString(),
       };
@@ -223,6 +223,27 @@ export default function TakvimClient({ universities }: { universities: Universit
     saveEvents(updated);
     setShowEventModal(false);
     setEditingEvent(null);
+  }
+
+  // Mini calendar helpers for modal
+  const pickerDaysInMonth = new Date(eventForm.year, eventForm.month + 1, 0).getDate();
+  const pickerFirstDay = new Date(eventForm.year, eventForm.month, 1).getDay();
+  const pickerAdjustedFirst = pickerFirstDay === 0 ? 6 : pickerFirstDay - 1;
+
+  function pickerPrevMonth() {
+    setEventForm((f) => {
+      if (f.month === 0) return { ...f, month: 11, year: f.year - 1, day: 1 };
+      return { ...f, month: f.month - 1, day: 1 };
+    });
+  }
+  function pickerNextMonth() {
+    setEventForm((f) => {
+      if (f.month === 11) return { ...f, month: 0, year: f.year + 1, day: 1 };
+      return { ...f, month: f.month + 1, day: 1 };
+    });
+  }
+  function pickerGoToday() {
+    setEventForm((f) => ({ ...f, day: today.getDate(), month: today.getMonth(), year: today.getFullYear() }));
   }
 
   function handleDeleteEvent(id: string) {
@@ -867,30 +888,70 @@ export default function TakvimClient({ universities }: { universities: Universit
               </button>
             </div>
 
-            {/* Date picker */}
-            <div className="mb-3">
-              <label className="text-xs font-medium block mb-1" style={{ color: "var(--text)" }}>
-                Tarih
-              </label>
-              <div className="flex items-center gap-2">
-                <select
-                  value={eventForm.day}
-                  onChange={(e) => setEventForm({ ...eventForm, day: parseInt(e.target.value) })}
-                  className="px-3 py-2 rounded-lg text-sm outline-none"
-                  style={{
-                    backgroundColor: "var(--surface2)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text)",
-                  }}
-                >
-                  {Array.from({ length: daysInMonth }).map((_, i) => (
-                    <option key={i + 1} value={i + 1}>{i + 1}</option>
-                  ))}
-                </select>
-                <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
-                  {months[currentMonth]} {currentYear}
+            {/* Mini Calendar Picker */}
+            <div
+              className="mb-4 rounded-lg p-3"
+              style={{ backgroundColor: "var(--surface2)", border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                  {months[eventForm.month]} {eventForm.year}
                 </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={pickerPrevMonth}
+                    className="p-1 rounded hover:opacity-70 transition-opacity"
+                    style={{ color: "var(--muted)" }}
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={pickerNextMonth}
+                    className="p-1 rounded hover:opacity-70 transition-opacity"
+                    style={{ color: "var(--muted)" }}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              <div className="grid grid-cols-7 gap-0.5 mb-1">
+                {["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((d) => (
+                  <div key={d} className="text-center text-[10px] font-medium py-1" style={{ color: "var(--muted)" }}>
+                    {d}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-0.5">
+                {Array.from({ length: pickerAdjustedFirst }).map((_, i) => (
+                  <div key={`pe-${i}`} className="h-7" />
+                ))}
+                {Array.from({ length: pickerDaysInMonth }).map((_, i) => {
+                  const d = i + 1;
+                  const isPickerToday = d === today.getDate() && eventForm.month === today.getMonth() && eventForm.year === today.getFullYear();
+                  const isSelected = d === eventForm.day;
+                  return (
+                    <button
+                      key={d}
+                      onClick={() => setEventForm({ ...eventForm, day: d })}
+                      className="h-7 rounded-full text-xs font-medium flex items-center justify-center transition-all"
+                      style={{
+                        backgroundColor: isSelected ? "var(--blue)" : "transparent",
+                        color: isSelected ? "var(--white)" : isPickerToday ? "var(--blue)" : "var(--text)",
+                        border: isPickerToday && !isSelected ? "1px solid var(--blue-border)" : "1px solid transparent",
+                      }}
+                    >
+                      {d}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={pickerGoToday}
+                className="mt-2 text-xs font-medium transition-opacity hover:opacity-70"
+                style={{ color: "var(--blue)" }}
+              >
+                Bugün
+              </button>
             </div>
 
             {/* Title */}
