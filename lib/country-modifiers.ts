@@ -121,4 +121,10 @@ export const countryModifiers: Record<string, CountryModifier> = {
     systemBonus: 5,
     description: "Erişilebilir kabul sistemi, Stipendium Hungaricum burs imkânı",
   },
+  Estonya: {
+    gpaWeight: 1.0,
+    languageWeight: 1.0,
+    systemBonus: 3,
+    description: "Erişilebilir kabul sistemi, düşük yaşam maliyeti",
+  },
 };
