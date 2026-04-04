@@ -3,7 +3,9 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 
-import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search, LayoutGrid, List, CalendarRange } from "lucide-react";
+
+type ViewMode = "monthly" | "weekly" | "daily";
 import type { University } from "@/types";
 
 // ─── Personal Event Types ───────────────────────────────────
@@ -152,6 +154,14 @@ export default function TakvimClient({ universities }: { universities: Universit
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("monthly");
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+    return new Date(d.getFullYear(), d.getMonth(), diff);
+  });
+  const [currentDayDate, setCurrentDayDate] = useState<Date>(new Date());
 
   // ─── Personal Events State ──────────────────────────────
   const [personalEvents, setPersonalEvents] = useState<PersonalEvent[]>([]);
@@ -340,6 +350,35 @@ export default function TakvimClient({ universities }: { universities: Universit
     setCurrentMonth((m) => (m === 11 ? 0 : m + 1));
     setSelectedDay(null);
   }
+  function prevWeek() {
+    setCurrentWeekStart((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7));
+  }
+  function nextWeek() {
+    setCurrentWeekStart((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7));
+  }
+  function prevDay() {
+    setCurrentDayDate((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1));
+  }
+  function nextDay() {
+    setCurrentDayDate((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1));
+  }
+
+  // Week days array for weekly view
+  const weekDays = useMemo(() => {
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date(currentWeekStart);
+      d.setDate(d.getDate() + i);
+      return d;
+    });
+  }, [currentWeekStart]);
+
+  // Deadlines for a specific date (any month)
+  function getDeadlinesForDate(date: Date) {
+    return allDeadlines.filter((d) => d.month === date.getMonth() && d.day === date.getDate());
+  }
+  function getEventsForDate(date: Date) {
+    return personalEvents.filter((e) => e.month === date.getMonth() && e.day === date.getDate() && e.year === date.getFullYear());
+  }
 
   function handleExportICS() {
     const ics = generateICS(allDeadlines, currentYear);
@@ -511,184 +550,282 @@ export default function TakvimClient({ universities }: { universities: Universit
           className="lg:col-span-2 rounded-xl p-5"
           style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
         >
+          {/* View mode toggle + navigation */}
           <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={prevMonth}
-              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
-              style={{ backgroundColor: "var(--surface2)" }}
-            >
-              <ChevronLeft className="w-4 h-4" style={{ color: "var(--muted)" }} />
-            </button>
-            <h2 className="font-semibold" style={{ color: "var(--text)" }}>
-              {months[currentMonth]} {currentYear}
-            </h2>
-            <button
-              onClick={nextMonth}
-              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
-              style={{ backgroundColor: "var(--surface2)" }}
-            >
-              <ChevronRight className="w-4 h-4" style={{ color: "var(--muted)" }} />
-            </button>
-          </div>
-
-          {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-1">
-            {["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((d) => (
-              <div
-                key={d}
-                className="text-center text-xs font-medium py-2"
-                style={{ color: "var(--muted)" }}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={viewMode === "monthly" ? prevMonth : viewMode === "weekly" ? prevWeek : prevDay}
+                className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
+                style={{ backgroundColor: "var(--surface2)" }}
               >
-                {d}
+                <ChevronLeft className="w-4 h-4" style={{ color: "var(--muted)" }} />
+              </button>
+            </div>
+            <h2 className="font-semibold" style={{ color: "var(--text)" }}>
+              {viewMode === "monthly" && `${months[currentMonth]} ${currentYear}`}
+              {viewMode === "weekly" && `${weekDays[0].getDate()} ${months[weekDays[0].getMonth()]} – ${weekDays[6].getDate()} ${months[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`}
+              {viewMode === "daily" && `${currentDayDate.getDate()} ${months[currentDayDate.getMonth()]} ${currentDayDate.getFullYear()}`}
+            </h2>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={viewMode === "monthly" ? nextMonth : viewMode === "weekly" ? nextWeek : nextDay}
+                className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
+                style={{ backgroundColor: "var(--surface2)" }}
+              >
+                <ChevronRight className="w-4 h-4" style={{ color: "var(--muted)" }} />
+              </button>
+            </div>
+          </div>
+
+          {/* View mode tabs */}
+          <div className="flex items-center gap-1 mb-4">
+            {([
+              { mode: "monthly" as ViewMode, label: "Aylık", icon: LayoutGrid },
+              { mode: "weekly" as ViewMode, label: "Haftalık", icon: CalendarRange },
+              { mode: "daily" as ViewMode, label: "Günlük", icon: List },
+            ]).map(({ mode, label, icon: Icon }) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: viewMode === mode ? "var(--blue)" : "var(--surface2)",
+                  color: viewMode === mode ? "var(--white)" : "var(--muted)",
+                  border: `1px solid ${viewMode === mode ? "var(--blue)" : "var(--border)"}`,
+                }}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* ─── MONTHLY VIEW ─── */}
+          {viewMode === "monthly" && (
+            <>
+              <div className="grid grid-cols-7 gap-1 mb-1">
+                {["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((d) => (
+                  <div key={d} className="text-center text-xs font-medium py-2" style={{ color: "var(--muted)" }}>{d}</div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          {/* Days grid */}
-          <div className="grid grid-cols-7 gap-1">
-            {Array.from({ length: adjustedFirstDay }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-12" />
-            ))}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const day = i + 1;
-              const deadlines = deadlineDays[day];
-              const count = deadlines?.length || 0;
-              const hasDeadline = count > 0;
-              const dayEvts = eventDays[day] || [];
-              const hasEvent = dayEvts.length > 0;
-              const hasContent = hasDeadline || hasEvent;
-              const isSelected = selectedDay === day;
-              const isTodayDay = todayMonth === currentMonth && todayDate === day;
-              const isPast = currentMonth < todayMonth || (currentMonth === todayMonth && day < todayDate);
-
-              return (
-                <div
-                  key={day}
-                  onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all group"
-                  style={{
-                    backgroundColor: isSelected
-                      ? "var(--blue)"
-                      : isTodayDay
-                      ? "var(--blue-bg)"
-                      : hasDeadline
-                      ? isPast ? "var(--surface2)" : "var(--danger-bg)"
-                      : hasEvent
-                      ? "var(--blue-bg)"
-                      : "transparent",
-                    color: isSelected
-                      ? "var(--white)"
-                      : isPast && !isTodayDay
-                      ? "var(--muted)"
-                      : isTodayDay
-                      ? "var(--blue-light)"
-                      : "var(--text)",
-                    border: isSelected
-                      ? "1px solid var(--blue)"
-                      : isTodayDay
-                      ? "1px solid var(--blue-border)"
-                      : hasEvent && !hasDeadline
-                      ? "1px solid var(--blue-border)"
-                      : "1px solid transparent",
-                    cursor: "pointer",
-                    opacity: isPast && !hasContent ? 0.4 : 1,
-                  }}
-                >
-                  {day}
-                  <div className="flex items-center gap-0.5 absolute bottom-1">
-                    {hasDeadline && (
-                      count <= 3 ? (
-                        Array.from({ length: count }).map((_, j) => (
-                          <div
-                            key={`d-${j}`}
-                            className="w-1 h-1 rounded-full"
-                            style={{
-                              backgroundColor: isSelected ? "var(--white)" : isPast ? "var(--muted)" : "var(--danger)",
-                            }}
-                          />
-                        ))
-                      ) : (
-                        <span
-                          className="text-[8px] font-bold leading-none"
-                          style={{ color: isSelected ? "var(--white)" : isPast ? "var(--muted)" : "var(--danger)" }}
-                        >
-                          {count}
-                        </span>
-                      )
-                    )}
-                    {hasEvent && (
-                      <div
-                        className="w-1 h-1 rounded-full"
-                        style={{
-                          backgroundColor: isSelected ? "var(--white)" : `var(--${dayEvts[0].color})`,
-                        }}
-                      />
-                    )}
-                  </div>
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: adjustedFirstDay }).map((_, i) => (
+                  <div key={`empty-${i}`} className="h-12" />
+                ))}
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                  const day = i + 1;
+                  const deadlines = deadlineDays[day];
+                  const count = deadlines?.length || 0;
+                  const hasDeadline = count > 0;
+                  const dayEvts = eventDays[day] || [];
+                  const hasEvent = dayEvts.length > 0;
+                  const hasContent = hasDeadline || hasEvent;
+                  const isSelected = selectedDay === day;
+                  const isTodayDay = todayMonth === currentMonth && todayDate === day;
+                  const isPast = currentMonth < todayMonth || (currentMonth === todayMonth && day < todayDate);
+                  return (
+                    <div
+                      key={day}
+                      onClick={() => setSelectedDay(isSelected ? null : day)}
+                      className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all"
+                      style={{
+                        backgroundColor: isSelected ? "var(--blue)" : isTodayDay ? "var(--blue-bg)" : hasDeadline ? (isPast ? "var(--surface2)" : "var(--danger-bg)") : hasEvent ? "var(--blue-bg)" : "transparent",
+                        color: isSelected ? "var(--white)" : isPast && !isTodayDay ? "var(--muted)" : isTodayDay ? "var(--blue-light)" : "var(--text)",
+                        border: isSelected ? "1px solid var(--blue)" : isTodayDay ? "1px solid var(--blue-border)" : hasEvent && !hasDeadline ? "1px solid var(--blue-border)" : "1px solid transparent",
+                        cursor: "pointer",
+                        opacity: isPast && !hasContent ? 0.4 : 1,
+                      }}
+                    >
+                      {day}
+                      <div className="flex items-center gap-0.5 absolute bottom-1">
+                        {hasDeadline && (count <= 3
+                          ? Array.from({ length: count }).map((_, j) => <div key={`d-${j}`} className="w-1 h-1 rounded-full" style={{ backgroundColor: isSelected ? "var(--white)" : isPast ? "var(--muted)" : "var(--danger)" }} />)
+                          : <span className="text-[8px] font-bold leading-none" style={{ color: isSelected ? "var(--white)" : isPast ? "var(--muted)" : "var(--danger)" }}>{count}</span>
+                        )}
+                        {hasEvent && <div className="w-1 h-1 rounded-full" style={{ backgroundColor: isSelected ? "var(--white)" : `var(--${dayEvts[0].color})` }} />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {monthOnlyDeadlines.length > 0 && (
+                <div className="mt-3 px-3 py-2 rounded-lg text-xs" style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}>
+                  <span className="font-medium" style={{ color: "var(--gold)" }}>{months[currentMonth]} ayı içinde (gün belirtilmemiş):</span>
+                  <span style={{ color: "var(--text)" }}> {monthOnlyDeadlines.map((d) => d.university.name).join(", ")}</span>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </>
+          )}
 
-          {/* Month-only deadlines banner */}
-          {monthOnlyDeadlines.length > 0 && (
-            <div
-              className="mt-3 px-3 py-2 rounded-lg text-xs"
-              style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}
-            >
-              <span className="font-medium" style={{ color: "var(--gold)" }}>
-                {months[currentMonth]} ayı içinde (gün belirtilmemiş):
-              </span>
-              <span style={{ color: "var(--text)" }}>
-                {" "}{monthOnlyDeadlines.map((d) => d.university.name).join(", ")}
-              </span>
+          {/* ─── WEEKLY VIEW ─── */}
+          {viewMode === "weekly" && (
+            <div className="space-y-1">
+              {weekDays.map((date, idx) => {
+                const dayDeadlines = getDeadlinesForDate(date);
+                const dayEvents = getEventsForDate(date);
+                const isToday = date.toDateString() === today.toDateString();
+                const isPast = date < today && !isToday;
+                const dayNames = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+                return (
+                  <div
+                    key={idx}
+                    className="flex gap-3 px-3 py-2.5 rounded-lg transition-all"
+                    style={{
+                      backgroundColor: isToday ? "var(--blue-bg)" : "var(--surface2)",
+                      border: isToday ? "1px solid var(--blue-border)" : "1px solid transparent",
+                      opacity: isPast ? 0.5 : 1,
+                    }}
+                  >
+                    <div className="flex flex-col items-center justify-center w-12 flex-shrink-0">
+                      <div className="text-[10px] font-medium" style={{ color: "var(--muted)" }}>{dayNames[date.getDay()]}</div>
+                      <div
+                        className="text-lg font-bold rounded-full w-8 h-8 flex items-center justify-center"
+                        style={{
+                          backgroundColor: isToday ? "var(--blue)" : "transparent",
+                          color: isToday ? "var(--white)" : "var(--text)",
+                        }}
+                      >
+                        {date.getDate()}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      {dayDeadlines.length === 0 && dayEvents.length === 0 ? (
+                        <p className="text-xs py-1" style={{ color: "var(--muted)" }}>Etkinlik yok</p>
+                      ) : (
+                        <div className="space-y-1">
+                          {dayDeadlines.map((d, di) => (
+                            <div key={`wd-${di}`} className="flex items-center gap-2 text-xs">
+                              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--danger)" }} />
+                              <span className="truncate" style={{ color: "var(--text)" }}>{d.university.flag} {d.university.name}</span>
+                              <span className="text-[10px] flex-shrink-0" style={{ color: "var(--muted)" }}>{d.university.program}{d.label ? ` · ${d.label}` : ""}</span>
+                            </div>
+                          ))}
+                          {dayEvents.map((evt) => {
+                            const colorDef = EVENT_COLORS.find((c) => c.value === evt.color) || EVENT_COLORS[0];
+                            return (
+                              <div key={evt.id} className="flex items-center gap-2 text-xs">
+                                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorDef.text }} />
+                                <span className="truncate" style={{ color: "var(--text)" }}>{evt.title}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
-          {/* Legend */}
-          <div
-            className="flex items-center gap-5 mt-4 pt-3 text-xs"
-            style={{ borderTop: "1px solid var(--border)", color: "var(--muted)" }}
-          >
-            <div className="flex items-center gap-1.5">
-              <div className="flex gap-0.5">
-                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: "var(--danger)" }} />
-                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: "var(--danger)" }} />
+          {/* ─── DAILY VIEW ─── */}
+          {viewMode === "daily" && (() => {
+            const dayDeadlines = getDeadlinesForDate(currentDayDate);
+            const dayEvents = getEventsForDate(currentDayDate);
+            const isToday = currentDayDate.toDateString() === today.toDateString();
+            const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+            return (
+              <div>
+                <div className="text-center mb-4">
+                  <div className="text-xs font-medium" style={{ color: "var(--muted)" }}>{dayNames[currentDayDate.getDay()]}</div>
+                  <div
+                    className="text-3xl font-bold mx-auto mt-1 w-14 h-14 rounded-full flex items-center justify-center"
+                    style={{
+                      backgroundColor: isToday ? "var(--blue)" : "var(--surface2)",
+                      color: isToday ? "var(--white)" : "var(--text)",
+                    }}
+                  >
+                    {currentDayDate.getDate()}
+                  </div>
+                </div>
+
+                {dayDeadlines.length === 0 && dayEvents.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-sm" style={{ color: "var(--muted)" }}>Bu gün için etkinlik yok</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {dayDeadlines.length > 0 && (
+                      <div>
+                        <div className="text-[11px] font-medium mb-2 flex items-center gap-1.5" style={{ color: "var(--danger)" }}>
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--danger)" }} />
+                          Deadline&apos;lar ({dayDeadlines.length})
+                        </div>
+                        {dayDeadlines.map((d, idx) => (
+                          <Link
+                            href={`/schools?highlight=${d.university.id}`}
+                            key={`daily-d-${idx}`}
+                            className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg mb-1.5 transition-all hover:opacity-80 block"
+                            style={{ backgroundColor: "var(--surface2)" }}
+                          >
+                            <span className="text-base flex-shrink-0">{d.university.flag}</span>
+                            <div className="min-w-0 flex-1">
+                              <div className="text-xs font-medium" style={{ color: "var(--text)" }}>{d.university.name}</div>
+                              <div className="text-[11px]" style={{ color: "var(--muted)" }}>{d.university.program}{d.label ? ` · ${d.label}` : ""}</div>
+                            </div>
+                            <ExternalLink className="w-3 h-3 flex-shrink-0 mt-0.5" style={{ color: "var(--muted)", opacity: 0.5 }} />
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    {dayEvents.length > 0 && (
+                      <div>
+                        <div className="text-[11px] font-medium mb-2 flex items-center gap-1.5" style={{ color: "var(--blue)" }}>
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--blue)" }} />
+                          Kişisel Notlar ({dayEvents.length})
+                        </div>
+                        {dayEvents.map((evt) => {
+                          const colorDef = EVENT_COLORS.find((c) => c.value === evt.color) || EVENT_COLORS[0];
+                          return (
+                            <div
+                              key={evt.id}
+                              className="px-3 py-2.5 rounded-lg mb-1.5"
+                              style={{ backgroundColor: colorDef.bg, borderLeft: `3px solid ${colorDef.text}` }}
+                            >
+                              <div className="text-xs font-medium" style={{ color: "var(--text)" }}>{evt.title}</div>
+                              {evt.description && <div className="text-[11px] mt-0.5" style={{ color: "var(--muted)" }}>{evt.description}</div>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-              Deadline sayısı
+            );
+          })()}
+
+          {/* Legend (only in monthly view) */}
+          {viewMode === "monthly" && (
+            <div
+              className="flex items-center gap-5 mt-4 pt-3 text-xs"
+              style={{ borderTop: "1px solid var(--border)", color: "var(--muted)" }}
+            >
+              <div className="flex items-center gap-1.5">
+                <div className="flex gap-0.5">
+                  <div className="w-1 h-1 rounded-full" style={{ backgroundColor: "var(--danger)" }} />
+                  <div className="w-1 h-1 rounded-full" style={{ backgroundColor: "var(--danger)" }} />
+                </div>
+                Deadline sayısı
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)" }} />
+                Bugün
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "var(--blue)" }} />
+                Seçili gün
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded" style={{ opacity: 0.4, backgroundColor: "var(--surface2)" }} />
+                Geçmiş
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--blue)" }} />
+                Kişisel not
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className="w-3 h-3 rounded"
-                style={{
-                  backgroundColor: "var(--blue-bg)",
-                  border: "1px solid var(--blue-border)",
-                }}
-              />
-              Bugün
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className="w-3 h-3 rounded"
-                style={{ backgroundColor: "var(--blue)" }}
-              />
-              Seçili gün
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className="w-3 h-3 rounded"
-                style={{ opacity: 0.4, backgroundColor: "var(--surface2)" }}
-              />
-              Geçmiş
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: "var(--blue)" }}
-              />
-              Kişisel not
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Sidebar */}
