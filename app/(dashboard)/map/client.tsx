@@ -4,12 +4,13 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import type { University } from "@/types";
 import type { AcceptanceRow } from "@/lib/supabase/queries";
-import { universityMapData } from "@/lib/university-map-data";
+import { universityMapData, getWikiTitle } from "@/lib/university-map-data";
 import { ExternalLink, X, Clock, Euro, GraduationCap, Users, MessageSquare, TrendingUp } from "lucide-react";
 
 interface SelectedUni {
   university: University;
   imageUrl: string;
+  wikiTitle: string | null;
   website: string;
   durationYears: number;
   countryColor: string;
@@ -89,6 +90,9 @@ export default function MapClient({
   }> | null>(null);
 
   const [selected, setSelected] = useState<SelectedUni | null>(null);
+  const [campusImg, setCampusImg] = useState<string>(
+    "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80"
+  );
   const [activeCountries, setActiveCountries] = useState<Set<string>>(
     new Set(COUNTRIES.map((c) => c.name))
   );
@@ -120,6 +124,23 @@ export default function MapClient({
   useEffect(() => {
     import("./LeafletMap").then((mod) => setMapComponent(() => mod.default));
   }, []);
+
+  const FALLBACK_IMG = "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+
+  useEffect(() => {
+    if (!selected) return;
+    setCampusImg(FALLBACK_IMG);
+    if (!selected.wikiTitle) return;
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.thumbnail?.source) {
+          setCampusImg(data.thumbnail.source.replace(/\/\d+px-/, "/640px-"));
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected?.university.id]);
 
   void universityMapData;
 
@@ -296,13 +317,10 @@ export default function MapClient({
               {/* Campus image */}
               <div className="relative h-44 flex-shrink-0 overflow-hidden">
                 <img
-                  src={selected.imageUrl || "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80"}
+                  src={campusImg}
                   alt={selected.university.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
-                  }}
+                  onError={() => setCampusImg(FALLBACK_IMG)}
                 />
                 <div
                   className="absolute inset-0"

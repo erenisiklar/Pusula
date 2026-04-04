@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { University } from "@/types";
 import type { EligibilityInfo } from "./client";
-import { universityMapData } from "@/lib/university-map-data";
+import { universityMapData, getWikiTitle } from "@/lib/university-map-data";
 
 interface SelectedUni {
   university: University;
   imageUrl: string;
+  wikiTitle: string | null;
   website: string;
   durationYears: number;
   countryColor: string;
@@ -199,6 +200,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
           onSelectRef.current({
             university: uni,
             imageUrl: mapData.imageUrl,
+            wikiTitle: getWikiTitle(uni.id),
             website: mapData.website,
             durationYears: mapData.durationYears,
             countryColor: mapData.countryColor,
