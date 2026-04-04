@@ -3,8 +3,8 @@
 import { useState, useMemo } from "react";
 import { calculateEligibility, getStatusLabel } from "@/lib/eligibility";
 import type { University, EligibilityResult, EligibilityStatus, StudentInput } from "@/types";
-import { Trophy } from "lucide-react";
 import {
+  Trophy,
   ChevronDown,
   ChevronUp,
   Search,
@@ -13,12 +13,7 @@ import {
   Wallet,
   AlertTriangle,
 } from "lucide-react";
-
-const countries = [
-  "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
-  "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
-  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan", "Estonya",
-];
+import { COUNTRIES as countries } from "@/lib/constants";
 const departments = [
   "Tümü",
   "Bilgisayar Mühendisliği",
