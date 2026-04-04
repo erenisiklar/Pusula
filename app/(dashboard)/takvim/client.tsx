@@ -1,10 +1,44 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 
-import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star } from "lucide-react";
 import type { University } from "@/types";
+
+// ─── Personal Event Types ───────────────────────────────────
+interface PersonalEvent {
+  id: string;
+  title: string;
+  description: string;
+  month: number; // 0-11
+  day: number;
+  year: number;
+  color: string; // "blue" | "gold" | "success" | "danger"
+  createdAt: string;
+}
+
+const EVENT_COLORS = [
+  { value: "blue", label: "Mavi", bg: "var(--blue-bg)", border: "var(--blue-border)", text: "var(--blue)" },
+  { value: "gold", label: "Sarı", bg: "var(--gold-bg)", border: "var(--gold-border)", text: "var(--gold)" },
+  { value: "success", label: "Yeşil", bg: "var(--success-bg)", border: "1px solid rgba(22,163,74,0.15)", text: "var(--success)" },
+  { value: "danger", label: "Kırmızı", bg: "var(--danger-bg)", border: "1px solid rgba(220,38,38,0.15)", text: "var(--danger)" },
+];
+
+const STORAGE_KEY = "pusula-personal-events";
+
+function loadEvents(): PersonalEvent[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveEvents(events: PersonalEvent[]) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+}
 
 const months = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -116,6 +150,86 @@ export default function TakvimClient({ universities }: { universities: Universit
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [countryFilter, setCountryFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+
+  // ─── Personal Events State ──────────────────────────────
+  const [personalEvents, setPersonalEvents] = useState<PersonalEvent[]>([]);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<PersonalEvent | null>(null);
+  const [eventForm, setEventForm] = useState({ title: "", description: "", color: "blue" });
+
+  // Load events from localStorage on mount
+  useEffect(() => {
+    setPersonalEvents(loadEvents());
+  }, []);
+
+  // Events for current month
+  const monthEvents = useMemo(
+    () => personalEvents.filter((e) => e.month === currentMonth && e.year === currentYear),
+    [personalEvents, currentMonth, currentYear]
+  );
+
+  // Map day → events for current month
+  const eventDays = useMemo(() => {
+    const map: Record<number, PersonalEvent[]> = {};
+    monthEvents.forEach((e) => {
+      if (!map[e.day]) map[e.day] = [];
+      map[e.day].push(e);
+    });
+    return map;
+  }, [monthEvents]);
+
+  // Events for selected day
+  const selectedDayEvents = useMemo(
+    () => (selectedDay !== null ? eventDays[selectedDay] || [] : []),
+    [selectedDay, eventDays]
+  );
+
+  function openAddEvent(day?: number) {
+    setEditingEvent(null);
+    setEventForm({ title: "", description: "", color: "blue" });
+    if (day) setSelectedDay(day);
+    setShowEventModal(true);
+  }
+
+  function openEditEvent(event: PersonalEvent) {
+    setEditingEvent(event);
+    setEventForm({ title: event.title, description: event.description, color: event.color });
+    setShowEventModal(true);
+  }
+
+  function handleSaveEvent() {
+    if (!eventForm.title.trim() || selectedDay === null) return;
+    let updated: PersonalEvent[];
+    if (editingEvent) {
+      updated = personalEvents.map((e) =>
+        e.id === editingEvent.id
+          ? { ...e, title: eventForm.title.trim(), description: eventForm.description.trim(), color: eventForm.color }
+          : e
+      );
+    } else {
+      const newEvent: PersonalEvent = {
+        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        title: eventForm.title.trim(),
+        description: eventForm.description.trim(),
+        month: currentMonth,
+        day: selectedDay,
+        year: currentYear,
+        color: eventForm.color,
+        createdAt: new Date().toISOString(),
+      };
+      updated = [...personalEvents, newEvent];
+    }
+    setPersonalEvents(updated);
+    saveEvents(updated);
+    setShowEventModal(false);
+    setEditingEvent(null);
+  }
+
+  function handleDeleteEvent(id: string) {
+    const updated = personalEvents.filter((e) => e.id !== id);
+    setPersonalEvents(updated);
+    saveEvents(updated);
+  }
 
   const filteredUniversities = useMemo(
     () => countryFilter === "all" ? universities : universities.filter((u) => u.country === countryFilter),
@@ -312,6 +426,9 @@ export default function TakvimClient({ universities }: { universities: Universit
               const deadlines = deadlineDays[day];
               const count = deadlines?.length || 0;
               const hasDeadline = count > 0;
+              const dayEvts = eventDays[day] || [];
+              const hasEvent = dayEvts.length > 0;
+              const hasContent = hasDeadline || hasEvent;
               const isSelected = selectedDay === day;
               const isTodayDay = todayMonth === currentMonth && todayDate === day;
               const isPast = currentMonth < todayMonth || (currentMonth === todayMonth && day < todayDate);
@@ -319,8 +436,8 @@ export default function TakvimClient({ universities }: { universities: Universit
               return (
                 <div
                   key={day}
-                  onClick={() => hasDeadline ? setSelectedDay(isSelected ? null : day) : undefined}
-                  className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all"
+                  onClick={() => setSelectedDay(isSelected ? null : day)}
+                  className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all group"
                   style={{
                     backgroundColor: isSelected
                       ? "var(--blue)"
@@ -328,6 +445,8 @@ export default function TakvimClient({ universities }: { universities: Universit
                       ? "var(--blue-bg)"
                       : hasDeadline
                       ? isPast ? "var(--surface2)" : "var(--danger-bg)"
+                      : hasEvent
+                      ? "var(--blue-bg)"
                       : "transparent",
                     color: isSelected
                       ? "var(--white)"
@@ -340,18 +459,20 @@ export default function TakvimClient({ universities }: { universities: Universit
                       ? "1px solid var(--blue)"
                       : isTodayDay
                       ? "1px solid var(--blue-border)"
+                      : hasEvent && !hasDeadline
+                      ? "1px solid var(--blue-border)"
                       : "1px solid transparent",
-                    cursor: hasDeadline ? "pointer" : "default",
-                    opacity: isPast && !hasDeadline ? 0.4 : 1,
+                    cursor: "pointer",
+                    opacity: isPast && !hasContent ? 0.4 : 1,
                   }}
                 >
                   {day}
-                  {hasDeadline && (
-                    <div className="flex items-center gap-0.5 absolute bottom-1">
-                      {count <= 3 ? (
+                  <div className="flex items-center gap-0.5 absolute bottom-1">
+                    {hasDeadline && (
+                      count <= 3 ? (
                         Array.from({ length: count }).map((_, j) => (
                           <div
-                            key={j}
+                            key={`d-${j}`}
                             className="w-1 h-1 rounded-full"
                             style={{
                               backgroundColor: isSelected ? "var(--white)" : isPast ? "var(--muted)" : "var(--danger)",
@@ -365,9 +486,17 @@ export default function TakvimClient({ universities }: { universities: Universit
                         >
                           {count}
                         </span>
-                      )}
-                    </div>
-                  )}
+                      )
+                    )}
+                    {hasEvent && (
+                      <div
+                        className="w-1 h-1 rounded-full"
+                        style={{
+                          backgroundColor: isSelected ? "var(--white)" : `var(--${dayEvts[0].color})`,
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -423,6 +552,13 @@ export default function TakvimClient({ universities }: { universities: Universit
                 style={{ opacity: 0.4, backgroundColor: "var(--surface2)" }}
               />
               Geçmiş
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: "var(--blue)" }}
+              />
+              Kişisel not
             </div>
           </div>
         </div>
@@ -584,6 +720,110 @@ export default function TakvimClient({ universities }: { universities: Universit
             </div>
           </div>
 
+          {/* Personal Events Section */}
+          <div
+            className="rounded-xl p-5"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                className="font-semibold text-sm flex items-center gap-2"
+                style={{ color: "var(--text)" }}
+              >
+                <Star className="w-4 h-4" style={{ color: "var(--gold)" }} />
+                Kişisel Notlarım
+                {monthEvents.length > 0 && (
+                  <span
+                    className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: "var(--gold-bg)", color: "var(--gold)" }}
+                  >
+                    {monthEvents.length}
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={() => openAddEvent(selectedDay || undefined)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--blue-bg)",
+                  border: "1px solid var(--blue-border)",
+                  color: "var(--blue)",
+                }}
+              >
+                <Plus className="w-3 h-3" />
+                Ekle
+              </button>
+            </div>
+
+            {/* Show events for selected day, or all month events */}
+            {(selectedDay !== null ? selectedDayEvents : monthEvents).length === 0 ? (
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                {selectedDay !== null
+                  ? "Bu gün için not yok."
+                  : "Bu ay için not yok."}
+                <button
+                  onClick={() => openAddEvent(selectedDay || undefined)}
+                  className="ml-1 underline"
+                  style={{ color: "var(--blue)" }}
+                >
+                  Ekle
+                </button>
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {(selectedDay !== null ? selectedDayEvents : monthEvents).map((evt) => {
+                  const colorDef = EVENT_COLORS.find((c) => c.value === evt.color) || EVENT_COLORS[0];
+                  return (
+                    <div
+                      key={evt.id}
+                      className="px-3 py-2.5 rounded-lg"
+                      style={{
+                        backgroundColor: colorDef.bg,
+                        borderLeft: `3px solid ${colorDef.text}`,
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div
+                            className="text-xs font-medium"
+                            style={{ color: "var(--text)" }}
+                          >
+                            {evt.title}
+                          </div>
+                          {evt.description && (
+                            <div className="text-[11px] mt-0.5" style={{ color: "var(--muted)" }}>
+                              {evt.description}
+                            </div>
+                          )}
+                          <div
+                            className="text-[10px] mt-1 font-medium"
+                            style={{ color: colorDef.text }}
+                          >
+                            {evt.day} {months[evt.month]}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); openEditEvent(evt); }}
+                            className="p-1 rounded hover:opacity-70 transition-opacity"
+                          >
+                            <Pencil className="w-3 h-3" style={{ color: "var(--muted)" }} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id); }}
+                            className="p-1 rounded hover:opacity-70 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3" style={{ color: "var(--danger)" }} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* Disclaimer */}
           <div
             className="flex items-start gap-2 px-3 py-2.5 rounded-lg text-xs"
@@ -601,6 +841,138 @@ export default function TakvimClient({ universities }: { universities: Universit
           </div>
         </div>
       </div>
+
+      {/* ─── Add/Edit Event Modal ──────────────────────────── */}
+      {showEventModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+          onClick={() => setShowEventModal(false)}
+        >
+          <div
+            className="rounded-xl p-6 w-full max-w-md mx-4 shadow-xl"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold" style={{ color: "var(--text)" }}>
+                {editingEvent ? "Notu Düzenle" : "Yeni Not Ekle"}
+              </h3>
+              <button
+                onClick={() => setShowEventModal(false)}
+                className="p-1 rounded-lg hover:opacity-70 transition-opacity"
+                style={{ color: "var(--muted)" }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Date display */}
+            <div
+              className="text-xs mb-4 px-3 py-2 rounded-lg"
+              style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)" }}
+            >
+              {selectedDay !== null
+                ? `${selectedDay} ${months[currentMonth]} ${currentYear}`
+                : `${months[currentMonth]} ${currentYear} — lütfen bir gün seçin`}
+            </div>
+
+            {/* Title */}
+            <div className="mb-3">
+              <label className="text-xs font-medium block mb-1" style={{ color: "var(--text)" }}>
+                Başlık *
+              </label>
+              <input
+                type="text"
+                value={eventForm.title}
+                onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                placeholder="Örn: IELTS sınavı, Belge gönder..."
+                className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text)",
+                }}
+                maxLength={100}
+                autoFocus
+              />
+            </div>
+
+            {/* Description */}
+            <div className="mb-3">
+              <label className="text-xs font-medium block mb-1" style={{ color: "var(--text)" }}>
+                Açıklama
+              </label>
+              <textarea
+                value={eventForm.description}
+                onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                placeholder="Detaylar (opsiyonel)"
+                className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
+                rows={2}
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text)",
+                }}
+                maxLength={300}
+              />
+            </div>
+
+            {/* Color picker */}
+            <div className="mb-5">
+              <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--text)" }}>
+                Renk
+              </label>
+              <div className="flex gap-2">
+                {EVENT_COLORS.map((c) => (
+                  <button
+                    key={c.value}
+                    onClick={() => setEventForm({ ...eventForm, color: c.value })}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                    style={{
+                      backgroundColor: c.bg,
+                      border: eventForm.color === c.value
+                        ? `2px solid ${c.text}`
+                        : "2px solid transparent",
+                    }}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: c.text }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowEventModal(false)}
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--muted)",
+                }}
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleSaveEvent}
+                disabled={!eventForm.title.trim() || selectedDay === null}
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
+                style={{
+                  backgroundColor: "var(--blue)",
+                  color: "var(--white)",
+                }}
+              >
+                {editingEvent ? "Güncelle" : "Kaydet"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
