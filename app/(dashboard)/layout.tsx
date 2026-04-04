@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useProfile } from "@/lib/profile-context";
 import {
   GraduationCap,
   LayoutDashboard,
@@ -15,6 +17,7 @@ import {
   CheckCircle,
   Map,
   Compass,
+  User,
 } from "lucide-react";
 
 const navItems = [
@@ -37,6 +40,15 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { profile, hasProfile } = useProfile();
+
+  // Redirect to onboarding if no profile
+  useEffect(() => {
+    if (!hasProfile) {
+      router.replace("/onboarding");
+    }
+  }, [hasProfile, router]);
 
   return (
     <div className="flex min-h-screen">
@@ -82,6 +94,31 @@ export default function DashboardLayout({
             );
           })}
         </nav>
+
+        {/* Profile mini card */}
+        {profile && (
+          <div
+            className="mx-3 mb-2 px-3 py-2.5 rounded-lg"
+            style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: "rgba(59,130,246,0.25)" }}
+              >
+                <User className="w-3 h-3" style={{ color: "#60a5fa" }} />
+              </div>
+              <span className="text-xs font-medium truncate" style={{ color: "#fff" }}>
+                {profile.fullName}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[10px]" style={{ color: "rgba(255,255,255,0.45)" }}>
+              <span>GPA: {profile.gpa}</span>
+              <span>•</span>
+              <span>{profile.languageCert || "Dil yok"} {profile.languageScore > 0 ? profile.languageScore : ""}</span>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div

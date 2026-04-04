@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ProfileProvider } from "@/lib/profile-context";
 
 export const metadata: Metadata = {
   title: "Pusula — Avrupa Üniversite Rehberi",
@@ -14,7 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <ProfileProvider>{children}</ProfileProvider>
+      </body>
     </html>
   );
 }
