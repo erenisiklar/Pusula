@@ -147,7 +147,7 @@ export default function MapClient({
               return;
             }
           }
-        } catch { /* devam et */ }
+        } catch (_) { /* devam et */ }
       }
 
       // 2) Wikimedia Commons imageUrl dene (bazıları çalışıyor)
@@ -169,7 +169,7 @@ export default function MapClient({
               return;
             }
           }
-        } catch { /* fallback'te kal */ }
+        } catch (_) { /* fallback'te kal */ }
       }
     }
 
