@@ -3541,6 +3541,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 50.7753,
+    lng: 6.0839,
     level: "bachelor",
   },
   {
@@ -3562,6 +3564,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "88" }],
     dataVerified: true,
+    lat: 48.1497,
+    lng: 11.5679,
     level: "bachelor",
   },
   {
@@ -3583,6 +3587,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "88" }],
     dataVerified: true,
+    lat: 48.1497,
+    lng: 11.5679,
     level: "bachelor",
   },
   {
@@ -3604,6 +3610,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 50.7753,
+    lng: 6.0839,
     level: "bachelor",
   },
   {
@@ -3625,6 +3633,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 49.0119,
+    lng: 8.417,
     level: "bachelor",
   },
   {
@@ -3647,6 +3657,8 @@ export const universities: University[] = [
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
     programRestricted: true,
+    lat: 52.0021,
+    lng: 4.3731,
     level: "bachelor",
   },
   {
@@ -3669,6 +3681,8 @@ export const universities: University[] = [
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
     programRestricted: true,
+    lat: 52.0021,
+    lng: 4.3731,
     level: "bachelor",
   },
   {
@@ -3690,6 +3704,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
+    lat: 52.0021,
+    lng: 4.3731,
     level: "bachelor",
   },
   {
@@ -3711,6 +3727,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "78" }],
     dataVerified: true,
+    lat: 45.4785,
+    lng: 9.2276,
     level: "bachelor",
   },
   {
@@ -3732,6 +3750,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "78" }],
     dataVerified: true,
+    lat: 45.4785,
+    lng: 9.2276,
     level: "bachelor",
   },
   {
@@ -3753,6 +3773,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "78" }],
     dataVerified: true,
+    lat: 45.4785,
+    lng: 9.2276,
     level: "bachelor",
   },
   {
@@ -3773,6 +3795,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 45.0628,
+    lng: 7.6624,
     level: "bachelor",
   },
   {
@@ -3794,6 +3818,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 51.4988,
+    lng: -0.1749,
     level: "bachelor",
   },
   {
@@ -3815,6 +3841,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 51.4988,
+    lng: -0.1749,
     level: "bachelor",
   },
   {
@@ -3836,6 +3864,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 51.4988,
+    lng: -0.1749,
     level: "bachelor",
   },
   {
@@ -3857,6 +3887,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "87" }],
     dataVerified: true,
+    lat: 53.4668,
+    lng: -2.2339,
     level: "bachelor",
   },
   {
@@ -3877,6 +3909,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
+    lat: 57.6891,
+    lng: 11.9786,
     level: "bachelor",
   },
   {
@@ -3897,6 +3931,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "88" }],
     dataVerified: true,
+    lat: 55.7861,
+    lng: 12.5234,
     level: "bachelor",
   },
 
@@ -3923,6 +3959,8 @@ export const universities: University[] = [
     competitiveness: "low",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 47.4734,
+    lng: 19.0598,
     level: "bachelor",
   },
   {
@@ -3943,6 +3981,8 @@ export const universities: University[] = [
     competitiveness: "low",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 47.4734,
+    lng: 19.0598,
     level: "bachelor",
   },
   {
@@ -3963,6 +4003,8 @@ export const universities: University[] = [
     competitiveness: "low",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 47.4734,
+    lng: 19.0598,
     level: "bachelor",
   },
   {
@@ -3983,6 +4025,8 @@ export const universities: University[] = [
     competitiveness: "low",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 47.4734,
+    lng: 19.0622,
     level: "bachelor",
   },
   {
@@ -4003,6 +4047,8 @@ export const universities: University[] = [
     competitiveness: "low",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 47.4734,
+    lng: 19.0622,
     level: "bachelor",
   },
   {
@@ -4023,6 +4069,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 47.5316,
+    lng: 21.6273,
     level: "bachelor",
   },
   {
@@ -4043,6 +4091,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 46.253,
+    lng: 20.1414,
     level: "bachelor",
   },
 
@@ -4065,6 +4115,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 48.1989,
+    lng: 16.37,
     level: "bachelor",
   },
   {
@@ -4085,6 +4137,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 48.1989,
+    lng: 16.37,
     level: "bachelor",
   },
   {
@@ -4105,6 +4159,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 48.1989,
+    lng: 16.37,
     level: "bachelor",
   },
   {
@@ -4125,6 +4181,8 @@ export const universities: University[] = [
     competitiveness: "low",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 47.0589,
+    lng: 15.4599,
     level: "bachelor",
   },
   {
@@ -4145,6 +4203,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 48.213,
+    lng: 16.36,
     level: "bachelor",
   },
 
@@ -4168,6 +4228,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
     dataVerified: true,
+    lat: 47.3769,
+    lng: 8.5417,
     level: "bachelor",
   },
   {
@@ -4189,6 +4251,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
     dataVerified: true,
+    lat: 47.3769,
+    lng: 8.5417,
     level: "bachelor",
   },
   {
@@ -4210,6 +4274,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
     dataVerified: true,
+    lat: 47.3769,
+    lng: 8.5417,
     level: "bachelor",
   },
   {
@@ -4231,6 +4297,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 46.5191,
+    lng: 6.5668,
     level: "bachelor",
   },
   {
@@ -4252,6 +4320,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 46.5191,
+    lng: 6.5668,
     level: "bachelor",
   },
 
@@ -4274,6 +4344,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 63.4195,
+    lng: 10.4024,
     level: "bachelor",
   },
   {
@@ -4294,6 +4366,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 63.4195,
+    lng: 10.4024,
     level: "bachelor",
   },
   {
@@ -4314,6 +4388,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 59.94,
+    lng: 10.7225,
     level: "bachelor",
   },
   {
@@ -4334,6 +4410,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 60.3881,
+    lng: 5.3227,
     level: "bachelor",
   },
 
@@ -4361,6 +4439,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "78" }],
     dataVerified: true,
+    lat: 45.4785,
+    lng: 9.2276,
     level: "bachelor",
   },
   {
@@ -4381,6 +4461,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "5.5" }, { test: "TOEFL", minScore: "72" }],
     dataVerified: true,
+    lat: 45.0628,
+    lng: 7.6624,
     level: "bachelor",
   },
   {
@@ -4403,6 +4485,8 @@ export const universities: University[] = [
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
     programRestricted: true,
+    lat: 52.0021,
+    lng: 4.3731,
     level: "bachelor",
   },
   {
@@ -4424,6 +4508,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 51.5246,
+    lng: -0.134,
     level: "bachelor",
   },
 
@@ -4448,6 +4534,8 @@ export const universities: University[] = [
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
     programRestricted: true,
+    lat: 52.3559,
+    lng: 4.9554,
     level: "bachelor",
   },
   {
@@ -4469,6 +4557,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
     dataVerified: true,
+    lat: 51.5246,
+    lng: -0.134,
     level: "bachelor",
   },
   {
@@ -4490,6 +4580,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "92" }],
     dataVerified: true,
+    lat: 55.9445,
+    lng: -3.1892,
     level: "bachelor",
   },
 
@@ -4512,6 +4604,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "88" }],
     dataVerified: true,
+    lat: 50.088,
+    lng: 14.4208,
     level: "bachelor",
   },
   {
@@ -4532,6 +4626,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 44.4963,
+    lng: 11.3526,
     level: "bachelor",
   },
   {
@@ -4552,6 +4648,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.0" }, { test: "TOEFL", minScore: "80" }],
     dataVerified: true,
+    lat: 52.212,
+    lng: 20.9813,
     level: "bachelor",
   },
 
@@ -4574,6 +4672,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
+    lat: 53.2194,
+    lng: 6.5665,
     level: "bachelor",
   },
   {
@@ -4594,6 +4694,8 @@ export const universities: University[] = [
     competitiveness: "medium",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
+    lat: 50.8444,
+    lng: 5.689,
     level: "bachelor",
   },
   {
@@ -4615,6 +4717,8 @@ export const universities: University[] = [
     competitiveness: "very_high",
     acceptedLanguages: [{ test: "IELTS", minScore: "7.0" }, { test: "TOEFL", minScore: "100" }],
     dataVerified: true,
+    lat: 51.5115,
+    lng: -0.116,
     level: "bachelor",
   },
   {
@@ -4635,6 +4739,8 @@ export const universities: University[] = [
     competitiveness: "high",
     acceptedLanguages: [{ test: "IELTS", minScore: "6.5" }, { test: "TOEFL", minScore: "90" }],
     dataVerified: true,
+    lat: 53.3438,
+    lng: -6.2546,
     level: "bachelor",
   },
 ];
