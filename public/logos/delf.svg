@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 44">
+  <rect x="0" y="0" width="10" height="44" fill="#002395"/>
+  <rect x="10" y="0" width="10" height="44" fill="#ffffff"/>
+  <rect x="20" y="0" width="10" height="44" fill="#ed2939"/>
+  <text x="36" y="20" font-family="Georgia, serif" font-weight="700" font-size="16" fill="#002395">DELF</text>
+  <text x="36" y="38" font-family="Georgia, serif" font-weight="700" font-size="16" fill="#002395">DALF</text>
+</svg>

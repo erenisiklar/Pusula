@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 44">
+  <rect x="0" y="0" width="120" height="14" fill="#c60b1e"/>
+  <rect x="0" y="14" width="120" height="16" fill="#ffc400"/>
+  <rect x="0" y="30" width="120" height="14" fill="#c60b1e"/>
+  <text x="60" y="28" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="#ffffff" text-anchor="middle" letter-spacing="4">DELE</text>
+</svg>

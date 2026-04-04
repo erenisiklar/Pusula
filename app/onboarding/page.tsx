@@ -54,13 +54,13 @@ const DEPARTMENTS: { value: string; label: string; icon: typeof Monitor }[] = [
 ];
 
 const LANG_CERTS = [
-  { value: "IELTS", label: "IELTS", subtitle: "International English Language Testing System", placeholder: "Örn: 7.5", color: "#c0392b", scoreHint: "0 – 9" },
-  { value: "TOEFL", label: "TOEFL", subtitle: "Test of English as a Foreign Language", placeholder: "Örn: 95", color: "#0077c8", scoreHint: "0 – 120" },
-  { value: "TestDaF", label: "TestDaF", subtitle: "Test Deutsch als Fremdsprache", placeholder: "Örn: 4", color: "#006633", scoreHint: "TDN 3 – 5" },
-  { value: "DELF/DALF", label: "DELF / DALF", subtitle: "Diplôme d'Études en Langue Française", placeholder: "Örn: B2", color: "#002395", scoreHint: "A1 – C2" },
-  { value: "Cambridge", label: "Cambridge", subtitle: "Cambridge English Qualifications", placeholder: "Örn: C1", color: "#8B1A32", scoreHint: "A2 – C2" },
-  { value: "DELE", label: "DELE", subtitle: "Diploma de Español como Lengua Extranjera", placeholder: "Örn: B2", color: "#c60b1e", scoreHint: "A1 – C2" },
-  { value: "CELI/CILS", label: "CELI / CILS", subtitle: "Certificazione di Italiano", placeholder: "Örn: B2", color: "#008C45", scoreHint: "A1 – C2" },
+  { value: "IELTS", label: "IELTS", subtitle: "International English Language Testing System", placeholder: "Örn: 7.5", color: "#c1172c", scoreHint: "0 – 9", logo: "/logos/ielts.svg" },
+  { value: "TOEFL", label: "TOEFL", subtitle: "Test of English as a Foreign Language", placeholder: "Örn: 95", color: "#0077c8", scoreHint: "0 – 120", logo: "/logos/toefl.svg" },
+  { value: "TestDaF", label: "TestDaF", subtitle: "Test Deutsch als Fremdsprache", placeholder: "Örn: 4", color: "#006633", scoreHint: "TDN 3 – 5", logo: "/logos/testdaf.svg" },
+  { value: "DELF/DALF", label: "DELF / DALF", subtitle: "Diplôme d'Études en Langue Française", placeholder: "Örn: B2", color: "#002395", scoreHint: "A1 – C2", logo: "/logos/delf.svg" },
+  { value: "Cambridge", label: "Cambridge", subtitle: "Cambridge English Qualifications", placeholder: "Örn: C1", color: "#8B1A32", scoreHint: "A2 – C2", logo: "/logos/cambridge.svg" },
+  { value: "DELE", label: "DELE", subtitle: "Diploma de Español como Lengua Extranjera", placeholder: "Örn: B2", color: "#c60b1e", scoreHint: "A1 – C2", logo: "/logos/dele.svg" },
+  { value: "CELI/CILS", label: "CELI / CILS", subtitle: "Certificazione di Italiano", placeholder: "Örn: B2", color: "#008C45", scoreHint: "A1 – C2", logo: "/logos/celi.svg" },
 ];
 
 const STEPS = [
@@ -465,16 +465,20 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                         onClick={() => toggleCert(cert.value)}
                         className="w-full flex items-center gap-3 px-4 py-3 text-left transition-all"
                       >
-                        {/* Brand badge */}
+                        {/* Logo */}
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-[10px] font-black tracking-tight leading-none text-center"
+                          className="w-14 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden p-1.5"
                           style={{
-                            backgroundColor: isSelected ? cert.color : `${cert.color}15`,
-                            color: isSelected ? "#fff" : cert.color,
-                            border: `1px solid ${cert.color}30`,
+                            backgroundColor: isSelected ? `${cert.color}10` : "var(--surface2)",
+                            border: `1px solid ${isSelected ? `${cert.color}25` : "var(--border)"}`,
                           }}
                         >
-                          {cert.value === "DELF/DALF" ? "FR" : cert.value === "CELI/CILS" ? "IT" : cert.value === "DELE" ? "ES" : cert.value.slice(0, 4).toUpperCase()}
+                          <img
+                            src={cert.logo}
+                            alt={cert.label}
+                            className="w-full h-full object-contain"
+                            style={{ opacity: isSelected ? 1 : 0.6 }}
+                          />
                         </div>
 
                         <div className="flex-1 min-w-0">
