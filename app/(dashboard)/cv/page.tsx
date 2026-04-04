@@ -242,15 +242,7 @@ function duolingoLevel(s: number): string {
   if (s >= 85) return "B1";
   return "A2";
 }
-function tcfLevel(s: number): string {
-  if (s >= 600) return "C2";
-  if (s >= 500) return "C1";
-  if (s >= 400) return "B2";
-  if (s >= 300) return "B1";
-  if (s >= 200) return "A2";
-  return "A1";
-}
-function tefLevel(s: number): string {
+function frenchTestLevel(s: number): string {
   if (s >= 600) return "C2";
   if (s >= 500) return "C1";
   if (s >= 400) return "B2";
@@ -276,8 +268,8 @@ const LANGUAGE_EXAMS: Record<string, ExamInfo[]> = {
   "Fransızca": [
     { label: "DELF", maxScore: 100, scoreHint: "0 – 100 (Geçme: 50+)", sections: ["Compréhension Orale", "Compréhension Écrite", "Production Orale", "Production Écrite"], levelSelect: ["A1", "A2", "B1", "B2"] },
     { label: "DALF", maxScore: 100, scoreHint: "0 – 100 (Geçme: 50+)", sections: ["Compréhension Orale", "Compréhension Écrite", "Production Orale", "Production Écrite"], levelSelect: ["C1", "C2"] },
-    { label: "TCF", maxScore: 699, scoreHint: "100 – 699", levelFromScore: tcfLevel },
-    { label: "TEF", maxScore: 699, scoreHint: "0 – 699", levelFromScore: tefLevel },
+    { label: "TCF", maxScore: 699, scoreHint: "100 – 699", levelFromScore: frenchTestLevel },
+    { label: "TEF", maxScore: 699, scoreHint: "0 – 699", levelFromScore: frenchTestLevel },
   ],
   "İspanyolca": [
     { label: "DELE", maxScore: 100, scoreHint: "0 – 100 (Geçme: 60%)", levelSelect: ["A1", "A2", "B1", "B2", "C1", "C2"] },

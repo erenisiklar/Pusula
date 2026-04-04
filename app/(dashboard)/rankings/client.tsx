@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import type { University, UniversityRanking } from "@/types";
 import { Trophy, Search, ArrowUpDown, Filter, Globe } from "lucide-react";
+import { COUNTRIES as countries } from "@/lib/constants";
 
 type RankingSource = "Tümü" | "QS Europe" | "FT";
 
@@ -10,12 +11,6 @@ interface RankedEntry {
   university: University;
   ranking: UniversityRanking;
 }
-
-const countries = [
-  "Tümü", "Almanya", "Hollanda", "İtalya", "Fransa", "İspanya", "İsveç",
-  "İngiltere", "İsviçre", "Belçika", "Avusturya", "Danimarka", "Norveç",
-  "Finlandiya", "Portekiz", "İrlanda", "Polonya", "Çekya", "Macaristan", "Estonya",
-];
 
 export default function RankingsClient({ universities }: { universities: University[] }) {
   const [source, setSource] = useState<RankingSource>("QS Europe");

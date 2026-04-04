@@ -43,11 +43,7 @@ function TrendBadge({ trend }: { trend: number }) {
   );
 }
 
-const countries = [
-  "Tümü", "Almanya", "Avusturya", "Belçika", "Çekya", "Danimarka",
-  "Finlandiya", "Fransa", "Hollanda", "İngiltere", "İrlanda", "İspanya",
-  "İsveç", "İsviçre", "İtalya", "Macaristan", "Norveç", "Polonya", "Portekiz",
-];
+import { COUNTRIES as countries } from "@/lib/constants";
 type SortKey = "rate-asc" | "rate-desc" | "applicants-desc" | "gpa-desc";
 
 export default function AcceptanceClient({ stats }: { stats: AcceptanceRow[] }) {

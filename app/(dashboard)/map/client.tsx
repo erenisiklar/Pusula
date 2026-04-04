@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import type { University } from "@/types";
 import type { AcceptanceRow } from "@/lib/supabase/queries";
-import { universityMapData, getWikiTitle } from "@/lib/university-map-data";
 import { ExternalLink, X, Clock, Euro, GraduationCap, Users, MessageSquare, TrendingUp } from "lucide-react";
 
 interface SelectedUni {
@@ -141,8 +140,6 @@ export default function MapClient({
       .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected?.university.id]);
-
-  void universityMapData;
 
   function toggleCountry(name: string) {
     setActiveCountries((prev) => {
