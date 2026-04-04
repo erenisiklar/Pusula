@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 
-import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search, LayoutGrid, List, CalendarRange } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search, LayoutGrid, List, CalendarRange, Bell, BellRing } from "lucide-react";
 
 type ViewMode = "monthly" | "weekly" | "daily";
 import type { University } from "@/types";
@@ -397,6 +397,64 @@ export default function TakvimClient({ universities }: { universities: Universit
     return set.size;
   }, [filteredUniversities]);
 
+  // ─── Urgent Reminders ─────────────────────────────────────
+  const urgentDeadlines = useMemo(() => {
+    return allDeadlines
+      .map((d) => ({ ...d, daysLeft: daysRemaining(today, d.month, d.day) }))
+      .filter((d) => d.daysLeft !== null && d.daysLeft >= 0 && d.daysLeft <= 7)
+      .sort((a, b) => (a.daysLeft ?? 99) - (b.daysLeft ?? 99));
+  }, [allDeadlines, today]);
+
+  const urgentEvents = useMemo(() => {
+    return personalEvents
+      .map((e) => {
+        const eventDate = new Date(e.year, e.month, e.day);
+        const diff = Math.ceil((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        return { ...e, daysLeft: diff };
+      })
+      .filter((e) => e.daysLeft >= 0 && e.daysLeft <= 7)
+      .sort((a, b) => a.daysLeft - b.daysLeft);
+  }, [personalEvents, today]);
+
+  const totalUrgent = urgentDeadlines.length + urgentEvents.length;
+
+  // Browser notifications
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission>("default");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setNotifPermission(Notification.permission);
+    }
+  }, []);
+
+  function requestNotifications() {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    Notification.requestPermission().then((perm) => {
+      setNotifPermission(perm);
+      if (perm === "granted" && totalUrgent > 0) {
+        new Notification("Pusula — Yaklaşan Deadline'lar", {
+          body: `${totalUrgent} etkinlik 7 gün içinde sona eriyor!`,
+          icon: "/favicon.ico",
+        });
+      }
+    });
+  }
+
+  // Send notification on mount if permitted and urgent items exist
+  useEffect(() => {
+    if (notifPermission === "granted" && totalUrgent > 0 && typeof window !== "undefined" && "Notification" in window) {
+      const lastNotif = localStorage.getItem("pusula-last-notif-date");
+      const todayStr = today.toDateString();
+      if (lastNotif !== todayStr) {
+        localStorage.setItem("pusula-last-notif-date", todayStr);
+        new Notification("Pusula — Yaklaşan Deadline'lar", {
+          body: `${totalUrgent} etkinlik 7 gün içinde sona eriyor!`,
+          icon: "/favicon.ico",
+        });
+      }
+    }
+  }, [notifPermission, totalUrgent]);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
@@ -428,6 +486,27 @@ export default function TakvimClient({ universities }: { universities: Universit
             <Download className="w-3.5 h-3.5" />
             Takvime Aktar
           </button>
+          {/* Notification toggle */}
+          <button
+            onClick={requestNotifications}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-80 relative"
+            style={{
+              backgroundColor: notifPermission === "granted" ? "var(--success-bg)" : "var(--surface2)",
+              border: `1px solid ${notifPermission === "granted" ? "rgba(22,163,74,0.15)" : "var(--border)"}`,
+              color: notifPermission === "granted" ? "var(--success)" : "var(--muted)",
+            }}
+            title={notifPermission === "granted" ? "Bildirimler açık" : "Bildirimleri aç"}
+          >
+            {notifPermission === "granted" ? <BellRing className="w-3.5 h-3.5" /> : <Bell className="w-3.5 h-3.5" />}
+            {totalUrgent > 0 && (
+              <span
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center"
+                style={{ backgroundColor: "var(--danger)", color: "var(--white)" }}
+              >
+                {totalUrgent}
+              </span>
+            )}
+          </button>
         </div>
       </div>
       <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
@@ -438,6 +517,61 @@ export default function TakvimClient({ universities }: { universities: Universit
           </span>
         )}
       </p>
+
+      {/* Urgent Reminders Banner */}
+      {totalUrgent > 0 && (
+        <div
+          className="mb-4 px-4 py-3 rounded-xl flex items-start gap-3"
+          style={{ backgroundColor: "var(--danger-bg)", border: "1px solid rgba(220,38,38,0.15)" }}
+        >
+          <BellRing className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "var(--danger)" }} />
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold mb-1.5" style={{ color: "var(--danger)" }}>
+              {totalUrgent} etkinlik 7 gün içinde!
+            </div>
+            <div className="space-y-1">
+              {urgentDeadlines.slice(0, 4).map((d, idx) => (
+                <div key={`urg-d-${idx}`} className="flex items-center justify-between text-xs">
+                  <span className="truncate" style={{ color: "var(--text)" }}>
+                    {d.university.flag} {d.university.name}
+                    <span style={{ color: "var(--muted)" }}> · {d.university.program}</span>
+                  </span>
+                  <span
+                    className="flex-shrink-0 ml-2 px-1.5 py-0.5 rounded font-bold text-[10px]"
+                    style={{
+                      backgroundColor: d.daysLeft === 0 ? "var(--danger)" : d.daysLeft! <= 3 ? "var(--danger-bg)" : "var(--gold-bg)",
+                      color: d.daysLeft === 0 ? "var(--white)" : d.daysLeft! <= 3 ? "var(--danger)" : "var(--gold)",
+                    }}
+                  >
+                    {d.daysLeft === 0 ? "BUGÜN!" : d.daysLeft === 1 ? "YARIN!" : `${d.daysLeft} gün`}
+                  </span>
+                </div>
+              ))}
+              {urgentEvents.slice(0, 2).map((e) => (
+                <div key={`urg-e-${e.id}`} className="flex items-center justify-between text-xs">
+                  <span className="truncate" style={{ color: "var(--text)" }}>
+                    <span style={{ color: "var(--blue)" }}>&#9733;</span> {e.title}
+                  </span>
+                  <span
+                    className="flex-shrink-0 ml-2 px-1.5 py-0.5 rounded font-bold text-[10px]"
+                    style={{
+                      backgroundColor: e.daysLeft === 0 ? "var(--danger)" : e.daysLeft <= 3 ? "var(--danger-bg)" : "var(--gold-bg)",
+                      color: e.daysLeft === 0 ? "var(--white)" : e.daysLeft <= 3 ? "var(--danger)" : "var(--gold)",
+                    }}
+                  >
+                    {e.daysLeft === 0 ? "BUGÜN!" : e.daysLeft === 1 ? "YARIN!" : `${e.daysLeft} gün`}
+                  </span>
+                </div>
+              ))}
+              {(urgentDeadlines.length > 4 || urgentEvents.length > 2) && (
+                <div className="text-[10px] mt-1" style={{ color: "var(--muted)" }}>
+                  +{urgentDeadlines.length - 4 + urgentEvents.length - 2} daha...
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filters Panel */}
       {showFilters && (
