@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useProfile } from "@/lib/profile-context";
@@ -18,6 +18,8 @@ import {
   Map,
   Compass,
   User,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -42,6 +44,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { profile, hasProfile } = useProfile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect to onboarding if no profile
   useEffect(() => {
@@ -50,11 +53,46 @@ export default function DashboardLayout({
     }
   }, [hasProfile, router]);
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
   return (
     <div className="flex min-h-screen">
+      {/* Mobile header */}
+      <div
+        className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 md:hidden"
+        style={{ backgroundColor: "#0f1d3d" }}
+      >
+        <div className="flex items-center gap-2">
+          <Compass className="w-5 h-5" style={{ color: "var(--gold)" }} />
+          <span className="text-base font-bold" style={{ color: "#ffffff" }}>
+            Pusula
+          </span>
+        </div>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-1.5 rounded-lg"
+          style={{ color: "#ffffff" }}
+        >
+          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* Overlay for mobile sidebar */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
-        className="fixed left-0 top-0 h-screen flex flex-col"
+        className={`fixed left-0 top-0 h-screen flex flex-col z-50 transition-transform duration-200 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
         style={{
           width: 220,
           backgroundColor: "#0f1d3d",
@@ -128,7 +166,7 @@ export default function DashboardLayout({
 
         {/* Footer */}
         <div
-          className="px-4 py-3 text-xs border-t"
+          className="px-4 py-3 text-xs border-t hidden md:block"
           style={{ color: "rgba(255,255,255,0.35)", borderColor: "rgba(255,255,255,0.1)" }}
         >
           <p>Pusula v1.0 MVP</p>

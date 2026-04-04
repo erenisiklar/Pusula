@@ -223,7 +223,8 @@ export default function MotivasyonClient({ universities }: { universities: Unive
   const [careerGoals, setCareerGoals] = useState("");
   const [tone, setTone] = useState("balanced");
   const [letterLanguage, setLetterLanguage] = useState("en");
-  const [targetWordCount, setTargetWordCount] = useState(500);
+  const [minWordCount, setMinWordCount] = useState(400);
+  const [maxWordCount, setMaxWordCount] = useState(600);
 
   // Output state
   const [rawLetter, setRawLetter] = useState("");
@@ -279,12 +280,8 @@ export default function MotivasyonClient({ universities }: { universities: Unive
         setLetterLanguage(selected.motivationLanguage);
       }
       if (selected.motivationMaxWords) {
-        // Map to nearest available option
-        const options = [300, 500, 750, 1000];
-        const closest = options.reduce((prev, curr) =>
-          Math.abs(curr - (selected.motivationMaxWords || 500)) < Math.abs(prev - (selected.motivationMaxWords || 500)) ? curr : prev
-        );
-        setTargetWordCount(closest);
+        setMaxWordCount(selected.motivationMaxWords);
+        setMinWordCount(Math.round(selected.motivationMaxWords * 0.7));
       }
     }
     // Reset scrape data when university changes
@@ -374,7 +371,8 @@ export default function MotivasyonClient({ universities }: { universities: Unive
           careerGoals,
           tone,
           letterLanguage,
-          wordCount: targetWordCount,
+          wordCount: maxWordCount,
+          minWordCount: minWordCount,
           universityInsights: universityInsights || undefined,
           motivationLetterType: uni.motivationLetterType || undefined,
           motivationGuidelines: uni.motivationGuidelines || undefined,
@@ -954,7 +952,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
               </div>
 
               {/* Tone & Word Count */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
                     Yazım Tonu
@@ -976,23 +974,43 @@ export default function MotivasyonClient({ universities }: { universities: Unive
                 </div>
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
-                    Kelime Üst Sınırı
+                    Kelime Aralığı
                   </label>
-                  <select
-                    value={targetWordCount}
-                    onChange={(e) => setTargetWordCount(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
-                    style={{
-                      backgroundColor: "var(--surface2)",
-                      border: "1px solid var(--border)",
-                      color: "var(--text)",
-                    }}
-                  >
-                    <option value={300}>300 kelime</option>
-                    <option value={500}>500 kelime</option>
-                    <option value={750}>750 kelime</option>
-                    <option value={1000}>1000 kelime</option>
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={50}
+                      max={maxWordCount - 50}
+                      value={minWordCount}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (v > 0) setMinWordCount(v);
+                      }}
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow text-center"
+                      style={{
+                        backgroundColor: "var(--surface2)",
+                        border: "1px solid var(--border)",
+                        color: "var(--text)",
+                      }}
+                    />
+                    <span className="text-xs flex-shrink-0" style={{ color: "var(--muted)" }}>—</span>
+                    <input
+                      type="number"
+                      min={minWordCount + 50}
+                      max={2000}
+                      value={maxWordCount}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (v > 0) setMaxWordCount(v);
+                      }}
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow text-center"
+                      style={{
+                        backgroundColor: "var(--surface2)",
+                        border: "1px solid var(--border)",
+                        color: "var(--text)",
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1043,20 +1061,20 @@ export default function MotivasyonClient({ universities }: { universities: Unive
                   className="text-xs px-2 py-0.5 rounded-full font-medium"
                   style={{
                     backgroundColor:
-                      currentWordCount > targetWordCount
+                      currentWordCount > maxWordCount
                         ? "var(--danger-bg)"
-                        : currentWordCount >= targetWordCount * 0.8
+                        : currentWordCount >= minWordCount
                           ? "var(--success-bg)"
                           : "var(--gold-bg)",
                     color:
-                      currentWordCount > targetWordCount
+                      currentWordCount > maxWordCount
                         ? "var(--danger)"
-                        : currentWordCount >= targetWordCount * 0.8
+                        : currentWordCount >= minWordCount
                           ? "var(--success)"
                           : "var(--gold)",
                   }}
                 >
-                  {currentWordCount} / {targetWordCount} kelime
+                  {currentWordCount} / {minWordCount}–{maxWordCount} kelime
                 </span>
               )}
               {loading && (

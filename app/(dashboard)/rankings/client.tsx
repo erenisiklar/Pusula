@@ -70,7 +70,7 @@ export default function RankingsClient({ universities }: { universities: Univers
       </p>
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div
           className="rounded-xl px-5 py-4"
           style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
@@ -113,7 +113,7 @@ export default function RankingsClient({ universities }: { universities: Univers
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-5">
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
@@ -164,12 +164,12 @@ export default function RankingsClient({ universities }: { universities: Univers
 
       {/* Table */}
       <div
-        className="rounded-xl overflow-hidden"
+        className="rounded-xl overflow-x-auto"
         style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
       >
         {/* Header */}
         <div
-          className="grid px-5 py-3 text-xs font-medium"
+          className="grid px-5 py-3 text-xs font-medium min-w-[620px]"
           style={{
             gridTemplateColumns: "60px 1fr 140px 120px 100px 100px",
             color: "var(--muted)",
@@ -201,7 +201,7 @@ export default function RankingsClient({ universities }: { universities: Univers
           return (
             <div
               key={`${uni.id}-${ranking.source}-${idx}`}
-              className="grid px-5 py-3 items-center text-sm transition-colors hover:brightness-110"
+              className="grid px-5 py-3 items-center text-sm transition-colors hover:brightness-110 min-w-[620px]"
               style={{
                 gridTemplateColumns: "60px 1fr 140px 120px 100px 100px",
                 borderBottom: "1px solid var(--border)",

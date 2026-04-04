@@ -427,7 +427,7 @@ export default function MapClient({
                   <div className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>{selected.university.department}</div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className="px-3 py-2.5 rounded-lg" style={{ backgroundColor: "var(--surface2)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <Euro className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
@@ -470,7 +470,7 @@ export default function MapClient({
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <a
                     href={selected.website}
                     target="_blank"
