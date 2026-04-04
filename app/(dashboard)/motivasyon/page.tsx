@@ -105,6 +105,7 @@ export default function MotivasyonPage() {
   const [extracurriculars, setExtracurriculars] = useState("");
   const [careerGoals, setCareerGoals] = useState("");
   const [tone, setTone] = useState("balanced");
+  const [letterLanguage, setLetterLanguage] = useState("en");
   const [targetWordCount, setTargetWordCount] = useState(500);
 
   // Output state
@@ -114,10 +115,15 @@ export default function MotivasyonPage() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
-  // Section regeneration
+  // Section regeneration & inline editing
   const [regeneratingSection, setRegeneratingSection] = useState<string | null>(null);
   const [editInstruction, setEditInstruction] = useState("");
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [inlineEditingSection, setInlineEditingSection] = useState<string | null>(null);
+  const [inlineEditText, setInlineEditText] = useState("");
+
+  // Validation
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
 
   // University scraping
   const [universityUrl, setUniversityUrl] = useState("");
@@ -162,9 +168,28 @@ export default function MotivasyonPage() {
     }
   }
 
+  function handleStartInlineEdit(sectionKey: string, content: string) {
+    setInlineEditingSection(sectionKey);
+    setInlineEditText(content);
+  }
+
+  function handleSaveInlineEdit(sectionKey: string) {
+    setSections((prev) =>
+      prev.map((s) => (s.key === sectionKey ? { ...s, content: inlineEditText } : s))
+    );
+    setInlineEditingSection(null);
+    setInlineEditText("");
+  }
+
   async function handleGenerate() {
-    if (!studentName || !strengths || !motivation) {
-      setError("Lütfen Ad Soyad, Güçlü Yönler ve Motivasyon alanlarını doldurun.");
+    const errors: Record<string, boolean> = {};
+    if (!studentName) errors.studentName = true;
+    if (!strengths) errors.strengths = true;
+    if (!motivation) errors.motivation = true;
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setError("Lütfen zorunlu alanları doldurun.");
       return;
     }
     setError("");
@@ -188,6 +213,7 @@ export default function MotivasyonPage() {
           extracurriculars,
           careerGoals,
           tone,
+          letterLanguage,
           wordCount: targetWordCount,
           universityInsights: universityInsights || undefined,
         }),
@@ -222,6 +248,7 @@ export default function MotivasyonPage() {
             gpa,
           },
           instruction: editInstruction,
+          letterLanguage,
         }),
       });
 
@@ -261,7 +288,7 @@ export default function MotivasyonPage() {
               spacing: { after: 200 },
               children: [
                 new TextRun({
-                  text: "Motivation Letter",
+                  text: letterLanguage === "fr" ? "Lettre de Motivation" : "Motivation Letter",
                   bold: true,
                   size: 28,
                   font: "Calibri",
@@ -374,12 +401,12 @@ export default function MotivasyonPage() {
             <input
               type="text"
               value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
+              onChange={(e) => { setStudentName(e.target.value); setFieldErrors((p) => ({ ...p, studentName: false })); }}
               placeholder="Örn: Eren Işıklar"
               className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
               style={{
                 backgroundColor: "var(--surface2)",
-                border: "1px solid var(--border)",
+                border: `1px solid ${fieldErrors.studentName ? "var(--danger)" : "var(--border)"}`,
                 color: "var(--text)",
               }}
             />
@@ -535,16 +562,21 @@ export default function MotivasyonPage() {
             </label>
             <textarea
               value={strengths}
-              onChange={(e) => setStrengths(e.target.value)}
+              onChange={(e) => { setStrengths(e.target.value); setFieldErrors((p) => ({ ...p, strengths: false })); }}
               placeholder="Stajlar, projeler, başarılar, teknik beceriler..."
               rows={3}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none focus:ring-2 focus:ring-blue-200 transition-shadow"
               style={{
                 backgroundColor: "var(--surface2)",
-                border: "1px solid var(--border)",
+                border: `1px solid ${fieldErrors.strengths ? "var(--danger)" : "var(--border)"}`,
                 color: "var(--text)",
               }}
             />
+            {strengths && (
+              <p className="text-[10px] text-right mt-0.5" style={{ color: "var(--muted)" }}>
+                {wordCount(strengths)} kelime
+              </p>
+            )}
           </div>
 
           {/* Motivation */}
@@ -554,16 +586,49 @@ export default function MotivasyonPage() {
             </label>
             <textarea
               value={motivation}
-              onChange={(e) => setMotivation(e.target.value)}
+              onChange={(e) => { setMotivation(e.target.value); setFieldErrors((p) => ({ ...p, motivation: false })); }}
               placeholder="Bu üniversiteyi ve programı neden seçtiniz, sizi ne heyecanlandırıyor..."
               rows={3}
               className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none focus:ring-2 focus:ring-blue-200 transition-shadow"
               style={{
                 backgroundColor: "var(--surface2)",
-                border: "1px solid var(--border)",
+                border: `1px solid ${fieldErrors.motivation ? "var(--danger)" : "var(--border)"}`,
                 color: "var(--text)",
               }}
             />
+            {motivation && (
+              <p className="text-[10px] text-right mt-0.5" style={{ color: "var(--muted)" }}>
+                {wordCount(motivation)} kelime
+              </p>
+            )}
+          </div>
+
+          {/* Letter Language */}
+          <div>
+            <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+              Mektup Dili
+            </label>
+            <div className="flex gap-2">
+              {[
+                { value: "en", label: "English", flag: "🇬🇧" },
+                { value: "fr", label: "Français", flag: "🇫🇷" },
+              ].map((lang) => (
+                <button
+                  key={lang.value}
+                  type="button"
+                  onClick={() => setLetterLanguage(lang.value)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: letterLanguage === lang.value ? "var(--blue-bg)" : "var(--surface2)",
+                    border: `1px solid ${letterLanguage === lang.value ? "var(--blue-border)" : "var(--border)"}`,
+                    color: letterLanguage === lang.value ? "var(--blue)" : "var(--muted)",
+                  }}
+                >
+                  <span>{lang.flag}</span>
+                  {lang.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Advanced toggle */}
@@ -588,7 +653,7 @@ export default function MotivasyonPage() {
                   type="text"
                   value={languageLevel}
                   onChange={(e) => setLanguageLevel(e.target.value)}
-                  placeholder="Örn: IELTS 7.0, TOEFL 95, B2 Almanca"
+                  placeholder={letterLanguage === "fr" ? "Örn: DELF B2, DALF C1, TCF B2" : "Örn: IELTS 7.0, TOEFL 95, B2, C1"}
                   className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
                   style={{
                     backgroundColor: "var(--surface2)",
@@ -806,12 +871,20 @@ export default function MotivasyonPage() {
                           ) : (
                             <>
                               <button
-                                onClick={() => setEditingSection(section.key)}
+                                onClick={() => handleStartInlineEdit(section.key, section.content)}
                                 className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium hover:opacity-80 transition-opacity"
                                 style={{ backgroundColor: "var(--surface2)", color: "var(--muted)" }}
-                                title="Yönlendirmeli yeniden yaz"
+                                title="Metni elle düzenle"
                               >
-                                <PenLine className="w-3 h-3" /> Düzenle
+                                <PenLine className="w-3 h-3" /> Elle Düzenle
+                              </button>
+                              <button
+                                onClick={() => setEditingSection(section.key)}
+                                className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium hover:opacity-80 transition-opacity"
+                                style={{ backgroundColor: "var(--gold-bg)", color: "var(--gold)" }}
+                                title="AI ile yönlendirmeli yeniden yaz"
+                              >
+                                <Sparkles className="w-3 h-3" /> AI Düzenle
                               </button>
                               <button
                                 onClick={() => handleRegenerateSection(section.key)}
@@ -865,16 +938,56 @@ export default function MotivasyonPage() {
                         </div>
                       )}
 
-                      <p
-                        className="text-sm leading-relaxed"
-                        style={{
-                          color: "var(--text)",
-                          opacity: regeneratingSection === section.key ? 0.5 : 1,
-                          transition: "opacity 0.2s",
-                        }}
-                      >
-                        {section.content}
-                      </p>
+                      {inlineEditingSection === section.key ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={inlineEditText}
+                            onChange={(e) => setInlineEditText(e.target.value)}
+                            rows={Math.max(4, inlineEditText.split("\n").length + 2)}
+                            className="w-full px-3 py-2 rounded-lg text-sm leading-relaxed outline-none focus:ring-2 focus:ring-blue-200 transition-shadow resize-y"
+                            style={{
+                              backgroundColor: "var(--surface2)",
+                              border: "1px solid var(--blue-border)",
+                              color: "var(--text)",
+                            }}
+                            autoFocus
+                          />
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px]" style={{ color: "var(--muted)" }}>
+                              {wordCount(inlineEditText)} kelime
+                            </span>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => { setInlineEditingSection(null); setInlineEditText(""); }}
+                                className="px-3 py-1 rounded-lg text-xs font-medium hover:opacity-80 transition-opacity"
+                                style={{ backgroundColor: "var(--surface2)", color: "var(--muted)" }}
+                              >
+                                Vazgeç
+                              </button>
+                              <button
+                                onClick={() => handleSaveInlineEdit(section.key)}
+                                className="px-3 py-1 rounded-lg text-xs font-medium hover:opacity-90 transition-opacity"
+                                style={{ backgroundColor: "var(--blue)", color: "var(--white)" }}
+                              >
+                                Kaydet
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <p
+                          className="text-sm leading-relaxed cursor-text rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors hover:bg-[var(--surface2)]"
+                          style={{
+                            color: "var(--text)",
+                            opacity: regeneratingSection === section.key ? 0.5 : 1,
+                            transition: "opacity 0.2s",
+                          }}
+                          onClick={() => handleStartInlineEdit(section.key, section.content)}
+                          title="Metni düzenlemek için tıklayın"
+                        >
+                          {section.content}
+                        </p>
+                      )}
                     </div>
                   ))
                 : /* While streaming, show raw text */
@@ -907,8 +1020,8 @@ export default function MotivasyonPage() {
                   Henüz mektup oluşturulmadı
                 </p>
                 <p className="text-xs max-w-xs" style={{ color: "var(--muted)" }}>
-                  Sol taraftaki formu doldurun. AI, seçtiğiniz üniversite ve programa özel
-                  İngilizce motivasyon mektubu oluşturacak.
+                  Sol taraftaki formu doldurun. AI, seçtiğiniz üniversite ve programa özel{" "}
+                  {letterLanguage === "fr" ? "Fransızca" : "İngilizce"} motivasyon mektubu oluşturacak.
                 </p>
                 <div className="flex items-center gap-4 mt-6">
                   {[
