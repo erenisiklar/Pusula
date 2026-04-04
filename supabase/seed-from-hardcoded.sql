@@ -1,4 +1,3 @@
-npm warn exec The following package was not found and will be installed: tsx@4.21.0
 -- Auto-generated from lib/universities.ts
 -- 159 bachelor programs
 -- Generated: 2026-04-04T13:00:50.384Z
