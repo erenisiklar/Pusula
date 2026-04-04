@@ -553,49 +553,124 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
           {/* Step 2: Budget */}
           {step === 2 && (
-            <div key="step-2" className="space-y-6 animate-fade-in-up">
+            <div key="step-2" className="space-y-5 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
-                  Yıllık Bütçen
+                  Eğitim Bütçen
                 </h2>
                 <p className="text-sm" style={{ color: "var(--muted)" }}>
-                  Yıllık eğitim harcı için ayırabileceğin bütçe (EUR)
+                  Yıllık eğitim harcı için ayırabileceğin yaklaşık bütçe
                 </p>
               </div>
 
-              <div>
-                <div className="flex items-center gap-4">
+              {/* Quick budget presets */}
+              <div className="space-y-2">
+                {[
+                  { value: 0, label: "Sadece ücretsiz programlar", desc: "Almanya, Norveç, Çekya gibi ülkeler", icon: "🆓", color: "var(--success)" },
+                  { value: 2500, label: "Düşük bütçe", desc: "~2.500€/yıl — Hollanda, İtalya, İspanya", icon: "💶", color: "var(--blue)" },
+                  { value: 5000, label: "Orta bütçe", desc: "~5.000€/yıl — Çoğu Avrupa programı", icon: "💰", color: "var(--gold)" },
+                  { value: 15000, label: "Yüksek bütçe", desc: "15.000€+ — İngiltere, özel üniversiteler", icon: "🏦", color: "var(--gold-light)" },
+                  { value: 99999, label: "Bütçe önemli değil", desc: "Tüm programları göster, fiyat filtreleme", icon: "♾️", color: "var(--muted)" },
+                ].map((preset) => {
+                  const isSelected = budgetEUR === preset.value;
+                  return (
+                    <button
+                      key={preset.value}
+                      type="button"
+                      onClick={() => setBudgetEUR(preset.value)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all"
+                      style={{
+                        backgroundColor: isSelected ? `${preset.color}10` : "var(--surface)",
+                        border: `1.5px solid ${isSelected ? preset.color : "var(--border)"}`,
+                        transform: isSelected ? "scale(1.01)" : "scale(1)",
+                      }}
+                    >
+                      <span className="text-xl flex-shrink-0">{preset.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold" style={{ color: isSelected ? preset.color : "var(--text)" }}>
+                          {preset.label}
+                        </div>
+                        <div className="text-[11px]" style={{ color: "var(--muted)" }}>
+                          {preset.desc}
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <div
+                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: preset.color }}
+                        >
+                          <Check className="w-3 h-3" style={{ color: "#fff" }} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Fine-tune slider — only for non-preset values or when a range is selected */}
+              {budgetEUR !== 99999 && (
+                <div
+                  className="rounded-xl p-4 animate-fade-in"
+                  style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-medium" style={{ color: "var(--muted)" }}>
+                      Tam tutarı ayarla
+                    </span>
+                    <span className="text-sm font-bold" style={{
+                      color: budgetEUR === 0 ? "var(--success)" : "var(--gold)",
+                    }}>
+                      {budgetEUR === 0 ? "Ücretsiz" : `${budgetEUR.toLocaleString("tr-TR")}€`}
+                    </span>
+                  </div>
                   <input
                     type="range"
                     min="0"
                     max="20000"
-                    step="500"
+                    step="250"
                     value={budgetEUR}
                     onChange={(e) => setBudgetEUR(Number(e.target.value))}
-                    className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
-                    style={{ accentColor: "var(--gold)" }}
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                    style={{ accentColor: budgetEUR === 0 ? "var(--success)" : "var(--gold)" }}
                   />
-                  <div
-                    className="text-center text-lg font-bold rounded-lg py-1 px-3 min-w-[90px]"
-                    style={{ backgroundColor: "var(--gold-bg)", color: "var(--gold)" }}
-                  >
-                    {budgetEUR.toLocaleString("tr-TR")}€
+                  <div className="flex justify-between text-[10px] mt-1" style={{ color: "var(--muted)" }}>
+                    <span>0€</span>
+                    <span>5.000€</span>
+                    <span>10.000€</span>
+                    <span>20.000€</span>
                   </div>
                 </div>
-                <div className="flex justify-between text-[10px] mt-1" style={{ color: "var(--muted)" }}>
-                  <span>Ücretsiz</span>
-                  <span>10.000€</span>
-                  <span>20.000€</span>
-                </div>
-              </div>
+              )}
 
+              {/* Country-specific info */}
               <div
-                className="rounded-xl p-4 text-xs leading-relaxed"
-                style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)", color: "var(--muted)" }}
+                className="rounded-xl overflow-hidden"
+                style={{ border: "1px solid var(--border)" }}
               >
-                <span style={{ color: "var(--blue)" }} className="font-semibold">Bilgi: </span>
-                Almanya&apos;da çoğu devlet üniversitesi ücretsiz, Hollanda ~2.200€/yıl, İtalya 0-4.000€ (gelire göre).
-                Bütçen düşükse ücretsiz programlara odaklanacağız.
+                <div className="px-4 py-2.5" style={{ backgroundColor: "var(--surface2)" }}>
+                  <span className="text-[11px] font-semibold" style={{ color: "var(--muted)" }}>
+                    Ülkelere göre yıllık ücretler
+                  </span>
+                </div>
+                <div className="px-4 py-2 space-y-1.5" style={{ backgroundColor: "var(--surface)" }}>
+                  {[
+                    { country: "🇩🇪 Almanya", cost: "Ücretsiz (semester fee ~300€)", highlight: budgetEUR <= 500 },
+                    { country: "🇮🇹 İtalya", cost: "0 – 4.000€ (gelire göre)", highlight: budgetEUR <= 4000 },
+                    { country: "🇳🇱 Hollanda", cost: "~2.200€/yıl", highlight: budgetEUR >= 2000 && budgetEUR <= 3000 },
+                    { country: "🇪🇸 İspanya", cost: "750 – 3.500€", highlight: budgetEUR <= 3500 },
+                    { country: "🇬🇧 İngiltere", cost: "10.000 – 38.000£", highlight: budgetEUR >= 10000 },
+                  ].map((item) => (
+                    <div key={item.country} className="flex items-center justify-between text-[11px] py-1">
+                      <span style={{ color: "var(--text)" }}>{item.country}</span>
+                      <span
+                        className="font-medium"
+                        style={{ color: item.highlight && budgetEUR !== 99999 ? "var(--success)" : "var(--muted)" }}
+                      >
+                        {item.cost}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
