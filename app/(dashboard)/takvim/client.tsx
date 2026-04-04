@@ -427,20 +427,23 @@ export default function TakvimClient({ universities }: { universities: Universit
           <div>
             <div className="text-[11px] font-medium mb-1.5" style={{ color: "var(--muted)" }}>Ülke</div>
             <div className="flex flex-wrap gap-1.5">
-              {COUNTRY_FILTERS.map((f) => (
-                <button
-                  key={f.value}
-                  onClick={() => { setCountryFilter(f.value); setSelectedDay(null); }}
-                  className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    backgroundColor: countryFilter === f.value ? "var(--blue-bg)" : "var(--surface2)",
-                    border: `1px solid ${countryFilter === f.value ? "var(--blue-border)" : "var(--border)"}`,
-                    color: countryFilter === f.value ? "var(--blue)" : "var(--muted)",
-                  }}
-                >
-                  {f.label}
-                </button>
-              ))}
+              {COUNTRY_FILTERS.map((f) => {
+                const isActive = countryFilter === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    onClick={() => { setCountryFilter(f.value); setSelectedDay(null); }}
+                    className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      backgroundColor: isActive ? "var(--blue)" : "var(--surface2)",
+                      border: `1px solid ${isActive ? "var(--blue)" : "var(--border)"}`,
+                      color: isActive ? "var(--white)" : "var(--muted)",
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
