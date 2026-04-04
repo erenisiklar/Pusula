@@ -22,14 +22,12 @@ export default async function DashboardPage() {
   for (const uni of universities) {
     if (!uni.deadline) continue;
     const lower = uni.deadline.toLowerCase();
-    // "15 Ocak", "1 Mayıs", "28 Şubat" gibi formatları parse et
     const match = lower.match(/(\d{1,2})\s+(\S+)/);
     if (!match) continue;
     const day = parseInt(match[1]);
     const monthStr = match[2].replace(/[()]/g, "").trim();
     const month = monthMap[monthStr];
     if (month == null) continue;
-    // Yılı belirle: eğer ay geçmişse gelecek yıl
     let year = now.getFullYear();
     const deadlineDate = new Date(year, month, day);
     if (deadlineDate < now) {
@@ -42,6 +40,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardClient
+      universities={universities}
       totalPrograms={totalPrograms}
       totalCountries={totalCountries}
       freePrograms={freePrograms}

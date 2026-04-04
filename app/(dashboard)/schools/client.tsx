@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { calculateEligibility, getStatusLabel } from "@/lib/eligibility";
+import { useProfile } from "@/lib/profile-context";
 import type { University, EligibilityResult, EligibilityStatus, StudentInput } from "@/types";
 import {
   Trophy,
@@ -63,12 +64,14 @@ const statusConfig: Record<
 };
 
 export default function SchoolsClient({ universities }: { universities: University[] }) {
-  const [gpa, setGpa] = useState<number>(75);
-  const [langCert, setLangCert] = useState<string>("IELTS");
-  const [langScore, setLangScore] = useState<number>(6.5);
-  const [budget, setBudget] = useState<number>(5000);
+  const { profile } = useProfile();
+
+  const [gpa, setGpa] = useState<number>(profile?.gpa ?? 75);
+  const [langCert, setLangCert] = useState<string>(profile?.languageCert || "IELTS");
+  const [langScore, setLangScore] = useState<number>(profile?.languageScore ?? 6.5);
+  const [budget, setBudget] = useState<number>(profile?.budgetEUR ?? 5000);
   const [selectedCountry, setSelectedCountry] = useState<string>("Tümü");
-  const [selectedDept, setSelectedDept] = useState<string>("Tümü");
+  const [selectedDept, setSelectedDept] = useState<string>(profile?.targetDepartment || "Tümü");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 

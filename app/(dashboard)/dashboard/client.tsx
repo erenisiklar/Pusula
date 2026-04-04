@@ -1,37 +1,104 @@
 "use client";
 
-import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap } from "lucide-react";
+import { useMemo } from "react";
+import { School, FileText, Calendar, CheckCircle, ArrowRight, GraduationCap, Target, TrendingUp, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { useProfile } from "@/lib/profile-context";
+import { calculateEligibility } from "@/lib/eligibility";
+import type { University, EligibilityStatus } from "@/types";
 
 interface DashboardProps {
+  universities: University[];
   totalPrograms: number;
   totalCountries: number;
   freePrograms: number;
   upcomingDeadlines: number;
 }
 
-const todos = [
-  { text: "Lise notunu ve dil puanını gir", done: false, href: "/schools" },
-  { text: "Lisans programlarını keşfet", done: false, href: "/schools" },
-  { text: "Motivasyon mektubu oluştur", done: false, href: "/motivasyon" },
-  { text: "Başvuru takvimini kontrol et", done: false, href: "/takvim" },
-  { text: "CV'ni hazırla", done: false, href: "/cv" },
-];
+const statusLabels: Record<EligibilityStatus, string> = {
+  eligible: "Uygun",
+  possible: "Olası",
+  reach: "Zor",
+  unlikely: "Düşük İhtimal",
+};
+
+const statusColors: Record<EligibilityStatus, string> = {
+  eligible: "var(--success)",
+  possible: "var(--blue)",
+  reach: "var(--gold)",
+  unlikely: "var(--danger)",
+};
+
+const statusBgs: Record<EligibilityStatus, string> = {
+  eligible: "var(--success-bg)",
+  possible: "var(--blue-bg)",
+  reach: "var(--gold-bg)",
+  unlikely: "var(--danger-bg)",
+};
 
 export default function DashboardClient({
+  universities,
   totalPrograms,
   totalCountries,
   freePrograms,
   upcomingDeadlines,
 }: DashboardProps) {
-  const progress = 10;
+  const { profile } = useProfile();
 
-  const stats = [
-    { label: "Lisans Programı", value: String(totalPrograms), icon: School, color: "var(--blue)" },
-    { label: "Ülke", value: String(totalCountries), icon: CheckCircle, color: "var(--success)" },
-    { label: "Yaklaşan Deadline", value: String(upcomingDeadlines), icon: Calendar, color: "var(--danger)" },
-    { label: "Ücretsiz Program", value: String(freePrograms), icon: GraduationCap, color: "var(--gold)" },
+  // Calculate eligibility for all universities based on profile
+  const eligibilityResults = useMemo(() => {
+    if (!profile) return [];
+    const input = {
+      gpa: profile.gpa,
+      languageCert: profile.languageCert || null,
+      languageScore: profile.languageScore || null,
+      budgetEUR: profile.budgetEUR,
+      targetCountries: profile.targetCountries,
+      targetDepartment: profile.targetDepartment,
+    };
+    return universities
+      .map((u) => calculateEligibility(input, u))
+      .sort((a, b) => b.score - a.score);
+  }, [universities, profile]);
+
+  const eligibleCount = eligibilityResults.filter((r) => r.status === "eligible").length;
+  const possibleCount = eligibilityResults.filter((r) => r.status === "possible").length;
+  const reachCount = eligibilityResults.filter((r) => r.status === "reach").length;
+
+  // Top 5 best-matching universities
+  const topMatches = eligibilityResults.slice(0, 5);
+
+  // Progress calculation
+  const progressSteps = [
+    profile !== null, // Profile completed
+    eligibleCount > 0, // Has eligible schools
+    false, // Motivation letter (TODO: track)
+    false, // CV created (TODO: track)
+    false, // Calendar checked (TODO: track)
   ];
+  const progress = Math.round((progressSteps.filter(Boolean).length / progressSteps.length) * 100);
+
+  const todos = [
+    { text: "Profilini oluştur", done: profile !== null, href: "/onboarding" },
+    { text: "Uygun programları keşfet", done: eligibleCount > 0, href: "/schools" },
+    { text: "Motivasyon mektubu oluştur", done: false, href: "/motivasyon" },
+    { text: "Başvuru takvimini kontrol et", done: false, href: "/takvim" },
+    { text: "CV'ni hazırla", done: false, href: "/cv" },
+  ];
+
+  const stats = profile
+    ? [
+        { label: "Uygun Program", value: String(eligibleCount), icon: CheckCircle, color: "var(--success)" },
+        { label: "Olası Program", value: String(possibleCount), icon: TrendingUp, color: "var(--blue)" },
+        { label: "Yaklaşan Deadline", value: String(upcomingDeadlines), icon: Calendar, color: "var(--danger)" },
+        { label: "Ücretsiz Program", value: String(freePrograms), icon: GraduationCap, color: "var(--gold)" },
+      ]
+    : [
+        { label: "Lisans Programı", value: String(totalPrograms), icon: School, color: "var(--blue)" },
+        { label: "Ülke", value: String(totalCountries), icon: CheckCircle, color: "var(--success)" },
+        { label: "Yaklaşan Deadline", value: String(upcomingDeadlines), icon: Calendar, color: "var(--danger)" },
+        { label: "Ücretsiz Program", value: String(freePrograms), icon: GraduationCap, color: "var(--gold)" },
+      ];
 
   return (
     <div>
@@ -43,10 +110,12 @@ export default function DashboardClient({
         }}
       >
         <h1 className="text-2xl font-bold mb-2" style={{ color: "#ffffff" }}>
-          Hoş geldin! 👋
+          {profile ? `Merhaba, ${profile.fullName.split(" ")[0]}!` : "Hos geldin!"}
         </h1>
         <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Liseden sonra Avrupa&apos;da lisans okumak için doğru yerdesin.
+          {profile
+            ? `${eligibleCount} programa uygunsun, ${possibleCount} program da olası. Hadi başvuru hazırlıklarına başlayalım.`
+            : "Liseden sonra Avrupa'da lisans okumak icin dogru yerdesin."}
         </p>
 
         {/* Progress bar */}
@@ -94,117 +163,225 @@ export default function DashboardClient({
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {/* Todo list */}
-        <div
-          className="rounded-xl p-5"
-          style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-        >
-          <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
-            Yapılacaklar
-          </h2>
-          <div className="space-y-2">
-            {todos.map((todo) => (
-              <Link
-                key={todo.text}
-                href={todo.href}
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors hover:opacity-80"
-                style={{ backgroundColor: "var(--surface2)" }}
-              >
-                <div className="flex items-center gap-3">
+        {/* Left column */}
+        <div className="space-y-6">
+          {/* Top matches — only if profile exists */}
+          {profile && topMatches.length > 0 && (
+            <div
+              className="rounded-xl p-5"
+              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-sm" style={{ color: "var(--text)" }}>
+                  <Target className="w-4 h-4 inline-block mr-1.5 -mt-0.5" style={{ color: "var(--blue)" }} />
+                  Sana En Uygun Programlar
+                </h2>
+                <Link
+                  href="/schools"
+                  className="text-[11px] font-medium hover:opacity-80"
+                  style={{ color: "var(--blue)" }}
+                >
+                  Tümünü Gör
+                </Link>
+              </div>
+              <div className="space-y-2">
+                {topMatches.map((result) => (
                   <div
-                    className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
-                    style={{
-                      borderColor: todo.done ? "var(--success)" : "var(--border)",
-                      backgroundColor: todo.done ? "var(--success)" : "transparent",
-                    }}
-                  />
-                  <span
-                    className="text-sm"
-                    style={{ color: todo.done ? "var(--muted)" : "var(--text)" }}
+                    key={result.university.id}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-lg"
+                    style={{ backgroundColor: "var(--surface2)" }}
                   >
-                    {todo.text}
-                  </span>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5" style={{ color: "var(--muted)" }} />
-              </Link>
-            ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate" style={{ color: "var(--text)" }}>
+                        {result.university.flag} {result.university.name}
+                      </div>
+                      <div className="text-[11px] truncate" style={{ color: "var(--muted)" }}>
+                        {result.university.program} — {result.university.city}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 ml-3">
+                      <span
+                        className="text-xs font-bold px-2 py-0.5 rounded-full"
+                        style={{
+                          backgroundColor: statusBgs[result.status],
+                          color: statusColors[result.status],
+                        }}
+                      >
+                        {result.score}
+                      </span>
+                      <span
+                        className="text-[10px] font-medium"
+                        style={{ color: statusColors[result.status] }}
+                      >
+                        {statusLabels[result.status]}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Todo list */}
+          <div
+            className="rounded-xl p-5"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
+              Yapılacaklar
+            </h2>
+            <div className="space-y-2">
+              {todos.map((todo) => (
+                <Link
+                  key={todo.text}
+                  href={todo.href}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: "var(--surface2)" }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
+                      style={{
+                        borderColor: todo.done ? "var(--success)" : "var(--border)",
+                        backgroundColor: todo.done ? "var(--success)" : "transparent",
+                      }}
+                    >
+                      {todo.done && <CheckCircle className="w-3 h-3" style={{ color: "#fff" }} />}
+                    </div>
+                    <span
+                      className="text-sm"
+                      style={{
+                        color: todo.done ? "var(--muted)" : "var(--text)",
+                        textDecoration: todo.done ? "line-through" : "none",
+                      }}
+                    >
+                      {todo.text}
+                    </span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5" style={{ color: "var(--muted)" }} />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Quick actions */}
-        <div
-          className="rounded-xl p-5"
-          style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-        >
-          <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
-            Hızlı Erişim
-          </h2>
-          <div className="space-y-3">
-            <Link
-              href="/schools"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)" }}
+        {/* Right column */}
+        <div className="space-y-6">
+          {/* Eligibility summary bars */}
+          {profile && (
+            <div
+              className="rounded-xl p-5"
+              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
             >
-              <School className="w-5 h-5" style={{ color: "var(--blue-light)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--blue-light)" }}>
-                  Okul Bulucu
+              <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
+                Uygunluk Dağılımı
+              </h2>
+              {(["eligible", "possible", "reach", "unlikely"] as EligibilityStatus[]).map((status) => {
+                const count = eligibilityResults.filter((r) => r.status === status).length;
+                const pct = eligibilityResults.length > 0 ? (count / eligibilityResults.length) * 100 : 0;
+                return (
+                  <div key={status} className="mb-3 last:mb-0">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span style={{ color: statusColors[status] }} className="font-medium">
+                        {statusLabels[status]}
+                      </span>
+                      <span style={{ color: "var(--muted)" }}>{count} program</span>
+                    </div>
+                    <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: "var(--surface2)" }}>
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{ width: `${pct}%`, backgroundColor: statusColors[status] }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Quick actions */}
+          <div
+            className="rounded-xl p-5"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <h2 className="font-semibold text-sm mb-4" style={{ color: "var(--text)" }}>
+              Hızlı Erişim
+            </h2>
+            <div className="space-y-3">
+              <Link
+                href="/schools"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
+                style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)" }}
+              >
+                <School className="w-5 h-5" style={{ color: "var(--blue-light)" }} />
+                <div>
+                  <div className="text-sm font-medium" style={{ color: "var(--blue-light)" }}>
+                    Okul Bulucu
+                  </div>
+                  <div className="text-xs" style={{ color: "var(--muted)" }}>
+                    {profile ? `${eligibleCount + possibleCount} uygun program seni bekliyor` : "GPA'nıza uygun okulları keşfedin"}
+                  </div>
                 </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  GPA&apos;nıza uygun okulları keşfedin
+              </Link>
+              <Link
+                href="/motivasyon"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
+                style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}
+              >
+                <FileText className="w-5 h-5" style={{ color: "var(--gold-light)" }} />
+                <div>
+                  <div className="text-sm font-medium" style={{ color: "var(--gold-light)" }}>
+                    Motivasyon Mektubu
+                  </div>
+                  <div className="text-xs" style={{ color: "var(--muted)" }}>
+                    AI ile mektup oluşturun
+                  </div>
                 </div>
-              </div>
-            </Link>
-            <Link
-              href="/motivasyon"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}
-            >
-              <FileText className="w-5 h-5" style={{ color: "var(--gold-light)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--gold-light)" }}>
-                  Motivasyon Mektubu
+              </Link>
+              <Link
+                href="/cv"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
+                style={{ backgroundColor: "var(--success-bg)", border: "1px solid rgba(34,197,94,0.25)" }}
+              >
+                <GraduationCap className="w-5 h-5" style={{ color: "var(--success)" }} />
+                <div>
+                  <div className="text-sm font-medium" style={{ color: "var(--success)" }}>
+                    CV Oluşturucu
+                  </div>
+                  <div className="text-xs" style={{ color: "var(--muted)" }}>
+                    AI ile CV&apos;nizi optimize edin
+                  </div>
                 </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  AI ile mektup oluşturun
+              </Link>
+              <Link
+                href="/takvim"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--danger-bg)",
+                  border: "1px solid rgba(239,68,68,0.25)",
+                }}
+              >
+                <Calendar className="w-5 h-5" style={{ color: "var(--danger)" }} />
+                <div>
+                  <div className="text-sm font-medium" style={{ color: "var(--danger)" }}>
+                    Başvuru Takvimi
+                  </div>
+                  <div className="text-xs" style={{ color: "var(--muted)" }}>
+                    Deadline&apos;ları takip edin
+                  </div>
                 </div>
-              </div>
-            </Link>
-            <Link
-              href="/cv"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--success-bg)", border: "1px solid rgba(34,197,94,0.25)" }}
-            >
-              <GraduationCap className="w-5 h-5" style={{ color: "var(--success)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--success)" }}>
-                  CV Oluşturucu
-                </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  AI ile CV&apos;nizi optimize edin
-                </div>
-              </div>
-            </Link>
-            <Link
-              href="/takvim"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-opacity hover:opacity-80"
-              style={{
-                backgroundColor: "var(--danger-bg)",
-                border: "1px solid rgba(239,68,68,0.25)",
-              }}
-            >
-              <Calendar className="w-5 h-5" style={{ color: "var(--danger)" }} />
-              <div>
-                <div className="text-sm font-medium" style={{ color: "var(--danger)" }}>
-                  Başvuru Takvimi
-                </div>
-                <div className="text-xs" style={{ color: "var(--muted)" }}>
-                  Deadline&apos;ları takip edin
-                </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="mt-6 flex items-start gap-2 px-4 py-3 rounded-xl" style={{ backgroundColor: "var(--gold-bg)", border: "1px solid var(--gold-border)" }}>
+        <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "var(--gold)" }} />
+        <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>
+          Bu tahmindir, üniversitenin resmi sitesini kontrol edin. Uygunluk skorları yönlendirici niteliktedir, kesin kabul garantisi vermez.
+        </p>
       </div>
     </div>
   );

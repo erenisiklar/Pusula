@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useProfile } from "@/lib/profile-context";
 import type { University } from "@/types";
 import {
   FileText,
@@ -201,13 +202,19 @@ function getNextDemoData(): DemoData {
 }
 
 export default function MotivasyonClient({ universities }: { universities: University[] }) {
-  // Form state
-  const [studentName, setStudentName] = useState("");
+  const { profile } = useProfile();
+
+  // Form state — pre-filled from profile
+  const [studentName, setStudentName] = useState(profile?.fullName ?? "");
   const [selectedUni, setSelectedUni] = useState(universities[0]?.id ?? "");
-  const [gpa, setGpa] = useState(75);
+  const [gpa, setGpa] = useState(profile?.gpa ?? 75);
   const [strengths, setStrengths] = useState("");
   const [motivation, setMotivation] = useState("");
-  const [languageLevel, setLanguageLevel] = useState("");
+  const [languageLevel, setLanguageLevel] = useState(
+    profile?.languageCert && profile.languageScore
+      ? `${profile.languageCert} ${profile.languageScore}`
+      : ""
+  );
   const [extracurriculars, setExtracurriculars] = useState("");
   const [careerGoals, setCareerGoals] = useState("");
   const [tone, setTone] = useState("balanced");
