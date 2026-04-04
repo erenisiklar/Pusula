@@ -132,20 +132,30 @@ export default function MapClient({
     setCampusImg(FALLBACK_IMG);
     setImgFallbackUsed(false);
 
-    if (selected.wikiTitle) {
-      // Wikipedia API ile orijinal boyut fotoğrafı çek
-      fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${selected.wikiTitle}&prop=pageimages&format=json&pithumbsize=800&origin=*`)
-        .then((r) => r.json())
-        .then((data) => {
-          const pages = data?.query?.pages;
-          if (!pages) return;
-          const page = Object.values(pages)[0] as { thumbnail?: { source: string } };
-          if (page?.thumbnail?.source) {
-            setCampusImg(page.thumbnail.source);
-          }
-        })
-        .catch(() => {});
-    }
+    if (!selected.wikiTitle) return;
+
+    let cancelled = false;
+
+    // Wikipedia REST API — originalimage.source doğrudan CDN URL'i döner
+    // wikiTitle zaten URL-encoded olabilir (%27 vb.), tekrar encode etme
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("not ok");
+        return r.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        // Önce originalimage (yüksek çözünürlük), sonra thumbnail dene
+        const imgUrl =
+          data?.originalimage?.source ||
+          data?.thumbnail?.source;
+        if (imgUrl) {
+          setCampusImg(imgUrl);
+        }
+      })
+      .catch(() => {});
+
+    return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected?.university.id]);
 
