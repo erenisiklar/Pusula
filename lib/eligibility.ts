@@ -1,10 +1,60 @@
 import type { University, StudentInput, EligibilityResult, EligibilityStatus } from "@/types";
 import { countryModifiers } from "./country-modifiers";
 
+// ── Sabitler ──
+const BASE_SCORE = 38;
+
+// GPA puan sınırları
+const GPA_MAX = 30;
+const GPA_MIN = -25;
+
+// Dil puan sınırları
+const LANG_MATCHED = 25;
+const LANG_CLOSE = -10;
+const LANG_FAILED = -30;
+const LANG_MISSING = -40;
+
+// Bütçe puan sınırları
+const BUDGET_MAX = 10;
+const BUDGET_MIN = -20;
+
+// Eligibility eşikleri
+const THRESHOLD_ELIGIBLE = 80;
+const THRESHOLD_POSSIBLE = 55;
+const THRESHOLD_REACH = 30;
+
+/** parseFloat sarmalayıcı — NaN durumunda null döner */
+function safeParseScore(value: string | undefined | null): number | null {
+  if (value == null) return null;
+  // Avrupa formatı: "8,5" → "8.5"
+  const normalized = value.replace(",", ".");
+  const num = parseFloat(normalized);
+  return isNaN(num) ? null : num;
+}
+
+/** Dil sertifikası normalizasyonu — büyük/küçük harf ve varyant farkını giderir */
+function normalizeCertName(cert: string): string {
+  const c = cert.toLowerCase().trim();
+  if (c === "ielts" || c === "ielts academic" || c === "ielts general") return "ielts";
+  if (c === "toefl" || c === "toefl ibt" || c === "toefl-ibt" || c === "toefl itp") return "toefl";
+  if (c === "testdaf" || c === "test daf") return "testdaf";
+  if (c.startsWith("delf") || c.startsWith("dalf") || c === "delf/dalf") return "delf";
+  if (c === "dele") return "dele";
+  if (c.startsWith("cambridge") || c === "cae" || c === "fce" || c === "cpe") return "cambridge";
+  if (c.startsWith("celi") || c.startsWith("cils") || c === "celi/cils") return "celi";
+  if (c === "goethe" || c.startsWith("goethe-")) return "goethe";
+  return c;
+}
+
 export function calculateEligibility(
   student: StudentInput,
   university: University
 ): EligibilityResult {
+  // ── Input clamping ──
+  const gpa = Math.max(0, Math.min(100, student.gpa || 0));
+  const budgetEUR = Math.max(0, student.budgetEUR || 0);
+  const langScore = student.languageScore != null ? Math.max(0, student.languageScore) : null;
+
   let gpaScore = 0;
   let gpaDetail = "";
   let languageScore = 0;
@@ -18,52 +68,62 @@ export function calculateEligibility(
   let countryScore = 0;
   let countryDetail = "";
 
-  // ── GPA (gradual, max +30) ──
-  const gpaDiff = student.gpa - university.requiredGPA;
+  // ── GPA (kademeli geçiş, max +30, min -25) ──
+  const gpaDiff = gpa - university.requiredGPA;
   if (gpaDiff >= 10) {
     gpaScore = 30;
-    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimi rahatlıkla aşıyor (+${gpaDiff.toFixed(0)} puan)`;
+    gpaDetail = `GPA'nız (${gpa}/100) gereksinimi rahatlıkla aşıyor (+${gpaDiff.toFixed(0)} puan)`;
   } else if (gpaDiff >= 5) {
-    gpaScore = 25;
-    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimi aşıyor (+${gpaDiff.toFixed(0)} puan)`;
+    // +10 ile +5 arası: 25-30 arası lineer
+    gpaScore = Math.round(25 + (gpaDiff - 5) * 1);
+    gpaDetail = `GPA'nız (${gpa}/100) gereksinimi aşıyor (+${gpaDiff.toFixed(0)} puan)`;
   } else if (gpaDiff >= 0) {
-    gpaScore = 20;
-    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimleri karşılıyor`;
+    // 0 ile +5 arası: 15-25 arası lineer
+    gpaScore = Math.round(15 + gpaDiff * 2);
+    gpaDetail = `GPA'nız (${gpa}/100) gereksinimleri karşılıyor`;
   } else if (gpaDiff >= -5) {
-    gpaScore = 5;
-    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinime yakın (${gpaDiff.toFixed(0)} puan)`;
+    // 0 ile -5 arası: 15'ten -5'e lineer (kademeli düşüş, uçurum yok)
+    gpaScore = Math.round(15 + gpaDiff * 4);
+    gpaDetail = `GPA'nız (${gpa}/100) gereksinime yakın (${gpaDiff.toFixed(0)} puan)`;
   } else if (gpaDiff >= -10) {
-    gpaScore = -10;
-    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimin ${Math.abs(gpaDiff).toFixed(0)} puan altında`;
+    // -5 ile -10 arası: -5'ten -15'e lineer
+    gpaScore = Math.round(-5 + (gpaDiff + 5) * 2);
+    gpaDetail = `GPA'nız (${gpa}/100) gereksinimin ${Math.abs(gpaDiff).toFixed(0)} puan altında`;
   } else {
-    gpaScore = Math.max(-25, Math.round(gpaDiff * 2));
-    gpaDetail = `GPA'nız (${student.gpa}/100) gereksinimin çok altında (${gpaDiff.toFixed(0)} puan)`;
+    // -10'dan düşük: lineer düşmeye devam, min -25
+    gpaScore = Math.max(GPA_MIN, Math.round(-15 + (gpaDiff + 10) * 2));
+    gpaDetail = `GPA'nız (${gpa}/100) gereksinimin çok altında (${gpaDiff.toFixed(0)} puan)`;
   }
 
-  // ── Language (multi-language support, max +25) ──
-  if (!student.languageCert || !student.languageScore) {
-    languageScore = -40;
+  // ── Language (exact match, max +25) ──
+  if (!student.languageCert || langScore == null) {
+    languageScore = LANG_MISSING;
     languageDetail = "Dil sertifikası girilmedi";
   } else {
-    const studentLang = student.languageCert.toLowerCase();
+    const studentCert = normalizeCertName(student.languageCert);
     let matched = false;
 
     if (university.acceptedLanguages && university.acceptedLanguages.length > 0) {
       for (const lang of university.acceptedLanguages) {
-        if (lang.test.toLowerCase() === studentLang) {
+        const uniCert = normalizeCertName(lang.test);
+        if (uniCert === studentCert) {
           matched = true;
-          const reqScore = parseFloat(lang.minScore);
-          if (student.languageScore >= reqScore) {
-            languageScore = 25;
-            languageDetail = `${student.languageCert} puanınız (${student.languageScore}) yeterli (min: ${lang.minScore})`;
+          const reqScore = safeParseScore(lang.minScore);
+          if (reqScore == null) {
+            // Veri hatası — puan okunamadı, nötr davran
+            languageScore = 0;
+            languageDetail = `${lang.test} minimum puanı okunamadı — veri hatası`;
+          } else if (langScore >= reqScore) {
+            languageScore = LANG_MATCHED;
+            languageDetail = `${student.languageCert} puanınız (${langScore}) yeterli (min: ${lang.minScore})`;
           } else {
-            const langDiff = student.languageScore - reqScore;
+            const langDiff = langScore - reqScore;
             if (langDiff >= -0.5) {
-              languageScore = -10;
-              languageDetail = `${student.languageCert} puanınız (${student.languageScore}) minimuma çok yakın (${lang.minScore})`;
+              languageScore = LANG_CLOSE;
+              languageDetail = `${student.languageCert} puanınız (${langScore}) minimuma çok yakın (${lang.minScore})`;
             } else {
-              languageScore = -30;
-              languageDetail = `${student.languageCert} puanınız (${student.languageScore}) gerekli ${lang.minScore}'in altında`;
+              languageScore = LANG_FAILED;
+              languageDetail = `${student.languageCert} puanınız (${langScore}) gerekli ${lang.minScore}'in altında`;
             }
           }
           break;
@@ -71,49 +131,60 @@ export function calculateEligibility(
       }
       if (!matched) {
         const accepted = university.acceptedLanguages.map((l) => l.test).join(", ");
-        languageScore = -30;
+        languageScore = LANG_FAILED;
         languageDetail = `${accepted} gerekli, sizde ${student.languageCert} var`;
       }
     } else {
-      const reqLang = university.requiredLanguage.toLowerCase();
-      const isCompatible =
-        (reqLang.includes("ielts") && studentLang.includes("ielts")) ||
-        (reqLang.includes("toefl") && studentLang.includes("toefl")) ||
-        (reqLang.includes("testdaf") && studentLang.includes("testdaf")) ||
-        (reqLang.includes("delf") && studentLang.includes("delf"));
-
-      if (!isCompatible) {
-        languageScore = -30;
+      // Legacy: requiredLanguage alanı (acceptedLanguages tanımlı değilse)
+      const reqCert = normalizeCertName(university.requiredLanguage);
+      if (reqCert !== studentCert) {
+        languageScore = LANG_FAILED;
         languageDetail = `${university.requiredLanguage} gerekli, sizde ${student.languageCert} var`;
       } else {
-        const reqScore = parseFloat(university.requiredLanguageScore);
-        if (student.languageScore >= reqScore) {
-          languageScore = 25;
-          languageDetail = `${student.languageCert} puanınız (${student.languageScore}) yeterli`;
+        const reqScore = safeParseScore(university.requiredLanguageScore);
+        if (reqScore == null) {
+          languageScore = 0;
+          languageDetail = `${university.requiredLanguage} minimum puanı okunamadı — veri hatası`;
+        } else if (langScore >= reqScore) {
+          languageScore = LANG_MATCHED;
+          languageDetail = `${student.languageCert} puanınız (${langScore}) yeterli`;
         } else {
-          const langDiff = student.languageScore - reqScore;
+          const langDiff = langScore - reqScore;
           if (langDiff >= -0.5) {
-            languageScore = -10;
-            languageDetail = `${student.languageCert} puanınız (${student.languageScore}) minimuma çok yakın (${reqScore})`;
+            languageScore = LANG_CLOSE;
+            languageDetail = `${student.languageCert} puanınız (${langScore}) minimuma çok yakın (${reqScore})`;
           } else {
-            languageScore = -30;
-            languageDetail = `${student.languageCert} puanınız (${student.languageScore}) gerekli minimum ${reqScore}'in altında`;
+            languageScore = LANG_FAILED;
+            languageDetail = `${student.languageCert} puanınız (${langScore}) gerekli minimum ${reqScore}'in altında`;
           }
         }
       }
     }
   }
 
-  // ── Budget (max +10) ──
-  if (university.tuitionEUR === 0 || student.budgetEUR >= university.tuitionEUR) {
-    budgetScore = 10;
-    budgetDetail =
-      university.tuitionEUR === 0
-        ? "Ücretsiz program"
-        : `Bütçeniz (€${student.budgetEUR}) yıllık ücreti (€${university.tuitionEUR}) karşılıyor`;
+  // ── Budget (kademeli, max +10, min -20) ──
+  if (university.tuitionEUR === 0) {
+    budgetScore = BUDGET_MAX;
+    budgetDetail = "Ücretsiz program";
+  } else if (budgetEUR >= university.tuitionEUR) {
+    budgetScore = BUDGET_MAX;
+    budgetDetail = `Bütçeniz (€${budgetEUR.toLocaleString()}) yıllık ücreti (€${university.tuitionEUR.toLocaleString()}) karşılıyor`;
   } else {
-    budgetScore = -20;
-    budgetDetail = `Bütçeniz (€${student.budgetEUR}) yıllık ücretin (€${university.tuitionEUR}) altında`;
+    // Kademeli: bütçenin ücreti karşılama oranına göre puan
+    const ratio = budgetEUR / university.tuitionEUR;
+    if (ratio >= 0.8) {
+      // %80-99 arası: 0 ile -8 arası
+      budgetScore = Math.round(-8 * (1 - ratio) / 0.2);
+      budgetDetail = `Bütçeniz (€${budgetEUR.toLocaleString()}) ücreti neredeyse karşılıyor (%${Math.round(ratio * 100)})`;
+    } else if (ratio >= 0.5) {
+      // %50-79 arası: -8 ile -15 arası
+      budgetScore = Math.round(-8 - 7 * (0.8 - ratio) / 0.3);
+      budgetDetail = `Bütçeniz (€${budgetEUR.toLocaleString()}) ücretin bir kısmını karşılıyor (%${Math.round(ratio * 100)})`;
+    } else {
+      // %50'nin altı: -15 ile -20 arası
+      budgetScore = Math.round(Math.max(BUDGET_MIN, -15 - 5 * (0.5 - ratio) / 0.5));
+      budgetDetail = `Bütçeniz (€${budgetEUR.toLocaleString()}) yıllık ücretin (€${university.tuitionEUR.toLocaleString()}) çok altında`;
+    }
   }
 
   // ── Ranking difficulty modifier (max -15, min 0) ──
@@ -177,14 +248,14 @@ export function calculateEligibility(
     0,
     Math.min(
       100,
-      38 + gpaScore + languageScore + budgetScore + rankingScore + acceptanceScore + competitivenessScore + countryScore
+      BASE_SCORE + gpaScore + languageScore + budgetScore + rankingScore + acceptanceScore + competitivenessScore + countryScore
     )
   );
 
   let status: EligibilityStatus;
-  if (totalScore >= 80) status = "eligible";
-  else if (totalScore >= 55) status = "possible";
-  else if (totalScore >= 30) status = "reach";
+  if (totalScore >= THRESHOLD_ELIGIBLE) status = "eligible";
+  else if (totalScore >= THRESHOLD_POSSIBLE) status = "possible";
+  else if (totalScore >= THRESHOLD_REACH) status = "reach";
   else status = "unlikely";
 
   return {
