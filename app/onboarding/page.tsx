@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile, type StudentProfile } from "@/lib/profile-context";
+import DepartmentQuiz from "@/components/department-quiz";
 import {
   Compass,
   GraduationCap,
@@ -60,6 +61,7 @@ export default function OnboardingPage() {
 
 function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile) => void }) {
   const [step, setStep] = useState(0);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   // Form state
   const [fullName, setFullName] = useState("");
@@ -168,9 +170,20 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
         </div>
       </div>
 
-      {/* Right side — form */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
+      {/* Right side — form or quiz */}
+      <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto max-h-screen">
+        <div className="w-full max-w-md py-8">
+          {/* Department Quiz — full-screen overlay */}
+          {showQuiz ? (
+            <DepartmentQuiz
+              onComplete={(dept) => {
+                setTargetDepartment(dept);
+                setShowQuiz(false);
+              }}
+              onSkip={() => setShowQuiz(false)}
+            />
+          ) : (
+          <>
           {/* Mobile step indicator */}
           <div className="lg:hidden flex items-center gap-2 mb-6">
             {STEPS.map((_, i) => (
@@ -254,6 +267,23 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </select>
+
+                {/* Quiz trigger — only when no department selected */}
+                {!targetDepartment && (
+                  <button
+                    type="button"
+                    onClick={() => setShowQuiz(true)}
+                    className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:opacity-90"
+                    style={{
+                      backgroundColor: "var(--gold-bg)",
+                      border: "1px solid var(--gold-border)",
+                      color: "var(--gold)",
+                    }}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Hangi bölüm bana uygun? — Keşfet
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -437,6 +467,8 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               </button>
             )}
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>
