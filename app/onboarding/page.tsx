@@ -31,10 +31,25 @@ import {
 } from "lucide-react";
 
 const COUNTRIES = [
-  "Almanya", "Avusturya", "Belçika", "Çekya", "Danimarka",
-  "Finlandiya", "Fransa", "Hollanda", "İngiltere", "İrlanda",
-  "İspanya", "İsveç", "İsviçre", "İtalya", "Macaristan",
-  "Portekiz",
+  { name: "Almanya", flag: "🇩🇪" },
+  { name: "Avusturya", flag: "🇦🇹" },
+  { name: "Belçika", flag: "🇧🇪" },
+  { name: "Çekya", flag: "🇨🇿" },
+  { name: "Danimarka", flag: "🇩🇰" },
+  { name: "Estonya", flag: "🇪🇪" },
+  { name: "Finlandiya", flag: "🇫🇮" },
+  { name: "Fransa", flag: "🇫🇷" },
+  { name: "Hollanda", flag: "🇳🇱" },
+  { name: "İngiltere", flag: "🇬🇧" },
+  { name: "İrlanda", flag: "🇮🇪" },
+  { name: "İspanya", flag: "🇪🇸" },
+  { name: "İsveç", flag: "🇸🇪" },
+  { name: "İsviçre", flag: "🇨🇭" },
+  { name: "İtalya", flag: "🇮🇹" },
+  { name: "Macaristan", flag: "🇭🇺" },
+  { name: "Norveç", flag: "🇳🇴" },
+  { name: "Polonya", flag: "🇵🇱" },
+  { name: "Portekiz", flag: "🇵🇹" },
 ];
 
 const DEPARTMENTS: { value: string; label: string; icon: typeof Monitor }[] = [
@@ -647,7 +662,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
           {/* Step 3: Target Countries */}
           {step === 3 && (
-            <div key="step-3" className="space-y-6 animate-fade-in-up">
+            <div key="step-3" className="space-y-5 animate-fade-in-up">
               <div>
                 <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>
                   Hedef Ülkelerin
@@ -657,33 +672,78 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              {/* Select all / clear */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {targetCountries.length > 0 && (
+                    <span
+                      className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                      style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)" }}
+                    >
+                      {targetCountries.length} ülke seçildi
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTargetCountries(COUNTRIES.map((c) => c.name))}
+                    className="text-[11px] font-medium hover:opacity-80 transition-opacity"
+                    style={{ color: "var(--blue)" }}
+                  >
+                    Tümünü Seç
+                  </button>
+                  {targetCountries.length > 0 && (
+                    <>
+                      <span style={{ color: "var(--border)" }}>|</span>
+                      <button
+                        type="button"
+                        onClick={() => setTargetCountries([])}
+                        className="text-[11px] font-medium hover:opacity-80 transition-opacity"
+                        style={{ color: "var(--muted)" }}
+                      >
+                        Temizle
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Country grid */}
+              <div className="grid grid-cols-3 gap-2">
                 {COUNTRIES.map((country) => {
-                  const selected = targetCountries.includes(country);
+                  const isSelected = targetCountries.includes(country.name);
                   return (
                     <button
-                      key={country}
+                      key={country.name}
                       type="button"
-                      onClick={() => toggleCountry(country)}
-                      className="px-4 py-3 rounded-xl text-sm font-medium transition-all text-left flex items-center justify-between"
+                      onClick={() => toggleCountry(country.name)}
+                      className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl text-center transition-all"
                       style={{
-                        backgroundColor: selected ? "var(--blue-bg)" : "var(--surface)",
-                        border: `1px solid ${selected ? "var(--blue-border)" : "var(--border)"}`,
-                        color: selected ? "var(--blue)" : "var(--text)",
+                        backgroundColor: isSelected ? "var(--blue-bg)" : "var(--surface)",
+                        border: `1.5px solid ${isSelected ? "var(--blue)" : "var(--border)"}`,
+                        transform: isSelected ? "scale(1.03)" : "scale(1)",
                       }}
                     >
-                      {country}
-                      {selected && <Check className="w-4 h-4" />}
+                      <span className="text-2xl leading-none">{country.flag}</span>
+                      <span
+                        className="text-[11px] font-medium leading-tight"
+                        style={{ color: isSelected ? "var(--blue)" : "var(--text)" }}
+                      >
+                        {country.name}
+                      </span>
+                      {isSelected && (
+                        <div
+                          className="w-4 h-4 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: "var(--blue)" }}
+                        >
+                          <Check className="w-2.5 h-2.5" style={{ color: "#fff" }} />
+                        </div>
+                      )}
                     </button>
                   );
                 })}
               </div>
-
-              {targetCountries.length > 0 && (
-                <p className="text-xs text-center" style={{ color: "var(--blue)" }}>
-                  {targetCountries.length} ülke seçildi
-                </p>
-              )}
             </div>
           )}
 
