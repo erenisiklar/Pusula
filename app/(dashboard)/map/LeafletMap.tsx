@@ -138,11 +138,14 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
       selectedRef.current = null;
 
       universities.forEach((uni) => {
+        // Koordinatlar: önce uni.lat/lng (Supabase), yoksa mapData fallback
         const mapData = universityMapData.find((d) => d.id === uni.id);
-        if (!mapData) return;
+        const lat = uni.lat ?? mapData?.lat;
+        const lng = uni.lng ?? mapData?.lng;
+        if (lat == null || lng == null) return;
         if (!activeCountries.has(uni.country)) return;
 
-        const color = mapData.countryColor;
+        const color = uni.countryColor || mapData?.countryColor || "#3b82f6";
         const eligibility = eligibilityMap.get(uni.id);
 
         let opacity = 1;
@@ -183,7 +186,7 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
         });
 
         const normalIcon = makeIcon(false);
-        const marker = L.marker([mapData.lat, mapData.lng], { icon: normalIcon });
+        const marker = L.marker([lat, lng], { icon: normalIcon });
 
         marker.bindTooltip(
           `<div style="font-size:12px;font-weight:600;color:#1e293b;background:#ffffff;border:1px solid rgba(30,64,175,0.12);padding:4px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.1);">${uni.name}</div>`,
@@ -199,11 +202,11 @@ export default function LeafletMap({ universities, onSelect, activeCountries, el
 
           onSelectRef.current({
             university: uni,
-            imageUrl: mapData.imageUrl,
+            imageUrl: uni.imageUrl || mapData?.imageUrl || "",
             wikiTitle: getWikiTitle(uni.id),
-            website: mapData.website,
-            durationYears: mapData.durationYears,
-            countryColor: mapData.countryColor,
+            website: uni.website || mapData?.website || "",
+            durationYears: uni.durationYears || mapData?.durationYears || 3,
+            countryColor: uni.countryColor || mapData?.countryColor || "#3b82f6",
           });
         });
 
