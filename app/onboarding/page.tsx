@@ -566,11 +566,11 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               {/* Quick budget presets */}
               <div className="space-y-2">
                 {[
-                  { value: 0, label: "Sadece ücretsiz programlar", desc: "Almanya, Norveç, Çekya gibi ülkeler", icon: "🆓", color: "var(--success)" },
-                  { value: 2500, label: "Düşük bütçe", desc: "~2.500€/yıl — Hollanda, İtalya, İspanya", icon: "💶", color: "var(--blue)" },
-                  { value: 5000, label: "Orta bütçe", desc: "~5.000€/yıl — Çoğu Avrupa programı", icon: "💰", color: "var(--gold)" },
-                  { value: 15000, label: "Yüksek bütçe", desc: "15.000€+ — İngiltere, özel üniversiteler", icon: "🏦", color: "var(--gold-light)" },
-                  { value: 99999, label: "Bütçe önemli değil", desc: "Tüm programları göster, fiyat filtreleme", icon: "♾️", color: "var(--muted)" },
+                  { value: 0, label: "Sadece ücretsiz programlar", desc: "Harç ücreti olmayan devlet üniversiteleri", icon: "🆓", color: "var(--success)" },
+                  { value: 2500, label: "Düşük bütçe", desc: "Yılda 2.500€'ya kadar", icon: "💶", color: "var(--blue)" },
+                  { value: 5000, label: "Orta bütçe", desc: "Yılda 5.000€'ya kadar", icon: "💰", color: "var(--gold)" },
+                  { value: 15000, label: "Yüksek bütçe", desc: "Yılda 15.000€ ve üzeri", icon: "🏦", color: "var(--gold-light)" },
+                  { value: 99999, label: "Bütçe önemli değil", desc: "Tüm programları göster", icon: "♾️", color: "var(--muted)" },
                 ].map((preset) => {
                   const isSelected = budgetEUR === preset.value;
                   return (
@@ -642,36 +642,6 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                 </div>
               )}
 
-              {/* Country-specific info */}
-              <div
-                className="rounded-xl overflow-hidden"
-                style={{ border: "1px solid var(--border)" }}
-              >
-                <div className="px-4 py-2.5" style={{ backgroundColor: "var(--surface2)" }}>
-                  <span className="text-[11px] font-semibold" style={{ color: "var(--muted)" }}>
-                    Ülkelere göre yıllık ücretler
-                  </span>
-                </div>
-                <div className="px-4 py-2 space-y-1.5" style={{ backgroundColor: "var(--surface)" }}>
-                  {[
-                    { country: "🇩🇪 Almanya", cost: "Ücretsiz (semester fee ~300€)", highlight: budgetEUR <= 500 },
-                    { country: "🇮🇹 İtalya", cost: "0 – 4.000€ (gelire göre)", highlight: budgetEUR <= 4000 },
-                    { country: "🇳🇱 Hollanda", cost: "~2.200€/yıl", highlight: budgetEUR >= 2000 && budgetEUR <= 3000 },
-                    { country: "🇪🇸 İspanya", cost: "750 – 3.500€", highlight: budgetEUR <= 3500 },
-                    { country: "🇬🇧 İngiltere", cost: "10.000 – 38.000£", highlight: budgetEUR >= 10000 },
-                  ].map((item) => (
-                    <div key={item.country} className="flex items-center justify-between text-[11px] py-1">
-                      <span style={{ color: "var(--text)" }}>{item.country}</span>
-                      <span
-                        className="font-medium"
-                        style={{ color: item.highlight && budgetEUR !== 99999 ? "var(--success)" : "var(--muted)" }}
-                      >
-                        {item.cost}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 
