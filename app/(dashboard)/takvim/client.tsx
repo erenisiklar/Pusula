@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 
-import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search } from "lucide-react";
 import type { University } from "@/types";
 
 // ─── Personal Event Types ───────────────────────────────────
@@ -149,6 +149,8 @@ export default function TakvimClient({ universities }: { universities: Universit
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [countryFilter, setCountryFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
   // ─── Personal Events State ──────────────────────────────
@@ -252,10 +254,33 @@ export default function TakvimClient({ universities }: { universities: Universit
     saveEvents(updated);
   }
 
-  const filteredUniversities = useMemo(
-    () => countryFilter === "all" ? universities : universities.filter((u) => u.country === countryFilter),
-    [universities, countryFilter]
-  );
+  // Dynamic department list from data
+  const departments = useMemo(() => {
+    const set = new Set(universities.map((u) => u.department));
+    return Array.from(set).sort();
+  }, [universities]);
+
+  const filteredUniversities = useMemo(() => {
+    let result = universities;
+    if (countryFilter !== "all") result = result.filter((u) => u.country === countryFilter);
+    if (departmentFilter !== "all") result = result.filter((u) => u.department === departmentFilter);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (u) => u.name.toLowerCase().includes(q) || u.program.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [universities, countryFilter, departmentFilter, searchQuery]);
+
+  const hasActiveFilters = countryFilter !== "all" || departmentFilter !== "all" || searchQuery.trim() !== "";
+
+  function clearAllFilters() {
+    setCountryFilter("all");
+    setDepartmentFilter("all");
+    setSearchQuery("");
+    setSelectedDay(null);
+  }
 
   const allDeadlines = useMemo(
     () => filteredUniversities.flatMap(parseDeadlines).sort((a, b) => a.sortKey - b.sortKey),
@@ -344,13 +369,13 @@ export default function TakvimClient({ universities }: { universities: Universit
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
             style={{
-              backgroundColor: countryFilter !== "all" ? "var(--blue-bg)" : "var(--surface2)",
-              border: `1px solid ${countryFilter !== "all" ? "var(--blue-border)" : "var(--border)"}`,
-              color: countryFilter !== "all" ? "var(--blue)" : "var(--muted)",
+              backgroundColor: hasActiveFilters ? "var(--blue-bg)" : "var(--surface2)",
+              border: `1px solid ${hasActiveFilters ? "var(--blue-border)" : "var(--border)"}`,
+              color: hasActiveFilters ? "var(--blue)" : "var(--muted)",
             }}
           >
             <Filter className="w-3.5 h-3.5" />
-            {countryFilter !== "all" ? COUNTRY_FILTERS.find((f) => f.value === countryFilter)?.label : "Filtrele"}
+            {hasActiveFilters ? `Filtre aktif (${filteredUniversities.length})` : "Filtrele"}
           </button>
           <button
             onClick={handleExportICS}
@@ -368,33 +393,87 @@ export default function TakvimClient({ universities }: { universities: Universit
       </div>
       <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
         Üniversite başvuru tarihlerini takip edin
-        {countryFilter !== "all" && (
+        {hasActiveFilters && (
           <span className="ml-2 text-[11px]" style={{ color: "var(--blue)" }}>
             · {filteredUniversities.length} program gösteriliyor
           </span>
         )}
       </p>
 
-      {/* Country Filters */}
+      {/* Filters Panel */}
       {showFilters && (
         <div
-          className="flex flex-wrap gap-1.5 mb-4 p-3 rounded-xl"
+          className="mb-4 p-4 rounded-xl space-y-3"
           style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
         >
-          {COUNTRY_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => { setCountryFilter(f.value); setSelectedDay(null); }}
-              className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+          {/* Search */}
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--muted)" }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setSelectedDay(null); }}
+              placeholder="Üniversite veya program ara..."
+              className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-none"
               style={{
-                backgroundColor: countryFilter === f.value ? "var(--blue-bg)" : "var(--surface2)",
-                border: `1px solid ${countryFilter === f.value ? "var(--blue-border)" : "var(--border)"}`,
-                color: countryFilter === f.value ? "var(--blue)" : "var(--muted)",
+                backgroundColor: "var(--surface2)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+              }}
+            />
+          </div>
+
+          {/* Country chips */}
+          <div>
+            <div className="text-[11px] font-medium mb-1.5" style={{ color: "var(--muted)" }}>Ülke</div>
+            <div className="flex flex-wrap gap-1.5">
+              {COUNTRY_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => { setCountryFilter(f.value); setSelectedDay(null); }}
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: countryFilter === f.value ? "var(--blue-bg)" : "var(--surface2)",
+                    border: `1px solid ${countryFilter === f.value ? "var(--blue-border)" : "var(--border)"}`,
+                    color: countryFilter === f.value ? "var(--blue)" : "var(--muted)",
+                  }}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Department select */}
+          <div>
+            <div className="text-[11px] font-medium mb-1.5" style={{ color: "var(--muted)" }}>Program / Departman</div>
+            <select
+              value={departmentFilter}
+              onChange={(e) => { setDepartmentFilter(e.target.value); setSelectedDay(null); }}
+              className="w-full px-3 py-2 rounded-lg text-xs outline-none"
+              style={{
+                backgroundColor: "var(--surface2)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
               }}
             >
-              {f.label}
+              <option value="all">Tüm Departmanlar</option>
+              {departments.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Clear filters */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="text-xs font-medium transition-opacity hover:opacity-70"
+              style={{ color: "var(--danger)" }}
+            >
+              Filtreleri Temizle
             </button>
-          ))}
+          )}
         </div>
       )}
 
