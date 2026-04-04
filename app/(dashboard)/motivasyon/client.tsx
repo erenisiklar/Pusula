@@ -18,6 +18,7 @@ import {
   Globe,
   ScanSearch,
   Info,
+  Zap,
 } from "lucide-react";
 
 interface LetterSection {
@@ -124,6 +125,28 @@ function wordCount(text: string): number {
     .filter((w) => w.length > 0).length;
 }
 
+interface DemoData {
+  studentName: string;
+  gpa: number;
+  strengths: string;
+  motivation: string;
+  languageLevel: string;
+  extracurriculars: string;
+  careerGoals: string;
+}
+
+function getDemoData(): DemoData {
+  return {
+    studentName: "Ayşe Kaya",
+    gpa: 88,
+    strengths: "TED Ankara Koleji'nde 4 yıl boyunca onur listesinde yer aldım. AP Physics C ve Statistics sınavlarından 5/5, Chemistry'den 4/5 aldım. Siemens Türkiye'de mühendislik departmanında staj yaptım — endüstriyel otomasyon ürünlerinde kalite kontrol süreçlerine katkıda bulundum ve haftalık üretim verimlilik raporları hazırladım. Python ve veri analizi konusunda deneyimliyim, Boğaziçi Üniversitesi yaz araştırma programında yenilenebilir enerji sistemleri üzerine çalıştım.",
+    motivation: "Küçük yaşlardan itibaren teknolojinin toplumu nasıl dönüştürdüğünü gözlemlemek beni mühendislik alanına yöneltti. Özellikle sürdürülebilir enerji ve akıllı sistemler konusunda çalışmak istiyorum. Avrupa'daki güçlü araştırma altyapısı ve uluslararası iş birliği fırsatları beni çekiyor. Bu programın sunduğu pratik proje deneyimi ve endüstri bağlantıları, kariyer hedeflerime ulaşmam için ideal bir zemin oluşturuyor.",
+    languageLevel: "IELTS 7.0",
+    extracurriculars: "MUN Kulübü Genel Sekreteri — 15 okuldan 200+ katılımcıyla TEDMUN konferansı organize ettim. Bilim ve Teknoloji Kulübü Başkan Yardımcısı — robotik, kodlama ve bilimsel araştırma yöntemleri üzerine haftalık atölyeler düzenledim. 5 yıldır yarışmalı voleybol oynuyorum, okul takımı kaptanıyım. 8 yıldır piyano çalıyorum (ABRSM Grade 7).",
+    careerGoals: "Mezuniyet sonrası yenilenebilir enerji veya akıllı şehir teknolojileri alanında Ar-Ge mühendisi olarak çalışmak istiyorum. Uzun vadede Türkiye'nin sürdürülebilir enerji dönüşümüne katkıda bulunacak projeler geliştirmeyi hedefliyorum. Yüksek lisans yapmayı da planlıyorum.",
+  };
+}
+
 export default function MotivasyonClient({ universities }: { universities: University[] }) {
   // Form state
   const [studentName, setStudentName] = useState("");
@@ -166,6 +189,20 @@ export default function MotivasyonClient({ universities }: { universities: Unive
   // UI state
   const [showTips, setShowTips] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  function handleFillDemo() {
+    const demo = getDemoData();
+    setStudentName(demo.studentName);
+    setGpa(demo.gpa);
+    setStrengths(demo.strengths);
+    setMotivation(demo.motivation);
+    setLanguageLevel(demo.languageLevel);
+    setExtracurriculars(demo.extracurriculars);
+    setCareerGoals(demo.careerGoals);
+    setShowAdvanced(true);
+    setFieldErrors({});
+    setError("");
+  }
 
   const uni = universities.find((u) => u.id === selectedUni)!;
 
@@ -411,18 +448,32 @@ export default function MotivasyonClient({ universities }: { universities: Unive
             AI destekli motivasyon mektubu oluşturun — bölüm bölüm düzenleyin, indirin
           </p>
         </div>
-        <button
-          onClick={() => setShowTips(!showTips)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-80"
-          style={{
-            backgroundColor: showTips ? "var(--gold-bg)" : "var(--surface2)",
-            color: showTips ? "var(--gold)" : "var(--muted)",
-            border: `1px solid ${showTips ? "var(--gold-border)" : "var(--border)"}`,
-          }}
-        >
-          <Lightbulb className="w-3.5 h-3.5" />
-          İpuçları
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleFillDemo}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: "var(--gold-bg)",
+              border: "1px solid var(--gold-border)",
+              color: "var(--gold)",
+            }}
+          >
+            <Zap className="w-3.5 h-3.5" />
+            Demo ile Doldur
+          </button>
+          <button
+            onClick={() => setShowTips(!showTips)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+            style={{
+              backgroundColor: showTips ? "var(--gold-bg)" : "var(--surface2)",
+              color: showTips ? "var(--gold)" : "var(--muted)",
+              border: `1px solid ${showTips ? "var(--gold-border)" : "var(--border)"}`,
+            }}
+          >
+            <Lightbulb className="w-3.5 h-3.5" />
+            İpuçları
+          </button>
+        </div>
       </div>
 
       {/* Tips Panel */}
