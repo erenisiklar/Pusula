@@ -495,11 +495,11 @@ export default function TakvimClient({ universities }: { universities: Universit
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
         <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
           Başvuru Takvimi
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
@@ -749,27 +749,48 @@ export default function TakvimClient({ universities }: { universities: Universit
             </div>
           </div>
 
-          {/* View mode tabs */}
-          <div className="flex items-center gap-1 mb-4">
-            {([
-              { mode: "monthly" as ViewMode, label: "Aylık", icon: LayoutGrid },
-              { mode: "weekly" as ViewMode, label: "Haftalık", icon: CalendarRange },
-              { mode: "daily" as ViewMode, label: "Günlük", icon: List },
-            ]).map(({ mode, label, icon: Icon }) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{
-                  backgroundColor: viewMode === mode ? "var(--blue)" : "var(--surface2)",
-                  color: viewMode === mode ? "var(--white)" : "var(--muted)",
-                  border: `1px solid ${viewMode === mode ? "var(--blue)" : "var(--border)"}`,
-                }}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {label}
-              </button>
-            ))}
+          {/* View mode tabs + Today shortcut */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-1">
+              {([
+                { mode: "monthly" as ViewMode, label: "Aylık", icon: LayoutGrid },
+                { mode: "weekly" as ViewMode, label: "Haftalık", icon: CalendarRange },
+                { mode: "daily" as ViewMode, label: "Günlük", icon: List },
+              ]).map(({ mode, label, icon: Icon }) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: viewMode === mode ? "var(--blue)" : "var(--surface2)",
+                    color: viewMode === mode ? "var(--white)" : "var(--muted)",
+                    border: `1px solid ${viewMode === mode ? "var(--blue)" : "var(--border)"}`,
+                  }}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                setCurrentMonth(today.getMonth());
+                setSelectedDay(today.getDate());
+                setCurrentDayDate(new Date());
+                const d = new Date();
+                const day = d.getDay();
+                const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+                setCurrentWeekStart(new Date(d.getFullYear(), d.getMonth(), diff));
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+              style={{
+                backgroundColor: "var(--blue-bg)",
+                border: "1px solid var(--blue-border)",
+                color: "var(--blue)",
+              }}
+            >
+              Bugün
+            </button>
           </div>
 
           {/* ─── MONTHLY VIEW ─── */}
@@ -801,14 +822,21 @@ export default function TakvimClient({ universities }: { universities: Universit
                   return (
                     <div
                       key={day}
-                      onClick={() => setSelectedDay(isSelected ? null : day)}
-                      className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all"
+                      onClick={() => {
+                        if (hasContent) {
+                          setSelectedDay(isSelected ? null : day);
+                        } else {
+                          setSelectedDay(day);
+                          openAddEvent(day);
+                        }
+                      }}
+                      className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all hover:scale-105 hover:shadow-sm"
                       style={{
                         backgroundColor: isSelected ? "var(--blue)" : isTodayDay ? "var(--blue-bg)" : hasDeadline ? (isPast ? "var(--surface2)" : "var(--danger-bg)") : hasEvent ? "var(--blue-bg)" : "transparent",
                         color: isSelected ? "var(--white)" : isPast && !isTodayDay ? "var(--muted)" : isTodayDay ? "var(--blue-light)" : "var(--text)",
                         border: isSelected ? "1px solid var(--blue)" : isTodayDay ? "1px solid var(--blue-border)" : hasEvent && !hasDeadline ? "1px solid var(--blue-border)" : "1px solid transparent",
                         cursor: "pointer",
-                        opacity: isPast && !hasContent ? 0.4 : 1,
+                        opacity: isPast && !hasContent ? 0.5 : 1,
                       }}
                     >
                       {day}
@@ -845,7 +873,7 @@ export default function TakvimClient({ universities }: { universities: Universit
                 return (
                   <div
                     key={idx}
-                    className="flex gap-3 px-3 py-2.5 rounded-lg transition-all"
+                    className="flex gap-3 px-3 py-2.5 rounded-lg transition-all hover:shadow-sm cursor-pointer"
                     style={{
                       backgroundColor: isToday ? "var(--blue-bg)" : "var(--surface2)",
                       border: isToday ? "1px solid var(--blue-border)" : "1px solid transparent",
@@ -925,6 +953,14 @@ export default function TakvimClient({ universities }: { universities: Universit
                 {dayDeadlines.length === 0 && dayEvents.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-sm" style={{ color: "var(--muted)" }}>Bu gün için etkinlik yok</p>
+                    <button
+                      onClick={() => { setSelectedDay(currentDayDate.getDate()); openAddEvent(currentDayDate.getDate()); }}
+                      className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+                      style={{ backgroundColor: "var(--blue-bg)", border: "1px solid var(--blue-border)", color: "var(--blue)" }}
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Not Ekle
+                    </button>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -1013,6 +1049,65 @@ export default function TakvimClient({ universities }: { universities: Universit
 
         {/* Sidebar */}
         <div className="space-y-4">
+          {/* Stats Overview */}
+          <div
+            className="rounded-xl p-4"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div>
+                <div className="text-lg font-bold" style={{ color: "var(--text)" }}>{monthDeadlines.length}</div>
+                <div className="text-[10px]" style={{ color: "var(--muted)" }}>Bu Ay</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold" style={{ color: "var(--danger)" }}>{urgentDeadlines.length}</div>
+                <div className="text-[10px]" style={{ color: "var(--muted)" }}>Acil</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold" style={{ color: "var(--success)" }}>
+                  {Object.values(appStatuses).filter((s) => s === "submitted" || s === "accepted").length}
+                </div>
+                <div className="text-[10px]" style={{ color: "var(--muted)" }}>Başvurulan</div>
+              </div>
+            </div>
+            {/* Status distribution bar */}
+            {Object.keys(appStatuses).length > 0 && (() => {
+              const counts = { planning: 0, preparing: 0, submitted: 0, accepted: 0, rejected: 0 };
+              Object.values(appStatuses).forEach((s) => { if (s !== "none" && s in counts) counts[s as keyof typeof counts]++; });
+              const total = Object.values(counts).reduce((a, b) => a + b, 0);
+              if (total === 0) return null;
+              return (
+                <div className="mt-3">
+                  <div className="flex rounded-full h-1.5 overflow-hidden">
+                    {(["planning", "preparing", "submitted", "accepted", "rejected"] as const).map((s) => {
+                      if (counts[s] === 0) return null;
+                      return (
+                        <div
+                          key={s}
+                          style={{
+                            width: `${(counts[s] / total) * 100}%`,
+                            backgroundColor: APP_STATUS_CONFIG[s].color,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5">
+                    {(["planning", "preparing", "submitted", "accepted", "rejected"] as const).map((s) => {
+                      if (counts[s] === 0) return null;
+                      return (
+                        <div key={s} className="flex items-center gap-1 text-[9px]" style={{ color: "var(--muted)" }}>
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: APP_STATUS_CONFIG[s].color }} />
+                          {APP_STATUS_CONFIG[s].label} ({counts[s]})
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Personal Events Section — EN ÜSTTE */}
           <div
             className="rounded-xl p-5"
