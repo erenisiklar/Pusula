@@ -266,6 +266,8 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
     fetchAndCalculate();
   }, [profile]);
 
+  const animatedEligible = useCountUp(eligibleCount, 1000);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: "var(--bg)" }}>
       <Confetti />
@@ -290,7 +292,7 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
           {eligibleCount !== null ? (
             <p className="text-sm animate-float-up" style={{ color: "var(--muted)", animationDelay: "0.2s" }}>
               <span className="font-bold text-base" style={{ color: "var(--success)" }}>
-                {useCountUp(eligibleCount)} programa
+                {animatedEligible} programa
               </span>{" "}
               başvurabilirsin
               {totalCount > 0 && <span> ({totalCount} program arasından)</span>}
