@@ -125,38 +125,26 @@ export default function MapClient({
   }, []);
 
   const FALLBACK_IMG = "https://images.unsplash.com/photo-1562774053-701939374585?w=640&q=80";
+  const [imgFallbackUsed, setImgFallbackUsed] = useState(false);
 
   useEffect(() => {
     if (!selected) return;
-    // Önce university-map-data'daki Wikimedia Commons fotoğrafını kullan
-    if (selected.imageUrl && selected.imageUrl !== FALLBACK_IMG) {
-      setCampusImg(selected.imageUrl);
-      return;
-    }
-    // imageUrl yoksa Wikipedia API'den dene
     setCampusImg(FALLBACK_IMG);
+    setImgFallbackUsed(false);
 
-    // Wikipedia API'den gerçek makale thumbnail'ini çek (en güvenilir kaynak)
     if (selected.wikiTitle) {
-      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
+      // Wikipedia API ile orijinal boyut fotoğrafı çek
+      fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${selected.wikiTitle}&prop=pageimages&format=json&pithumbsize=800&origin=*`)
         .then((r) => r.json())
         .then((data) => {
-          if (data?.thumbnail?.source) {
-            setCampusImg(data.thumbnail.source.replace(/\/\d+px-/, "/640px-"));
-          } else if (selected.imageUrl) {
-            // Wikipedia thumbnail yoksa Wikimedia Commons imageUrl'i dene
-            setCampusImg(selected.imageUrl);
+          const pages = data?.query?.pages;
+          if (!pages) return;
+          const page = Object.values(pages)[0] as { thumbnail?: { source: string } };
+          if (page?.thumbnail?.source) {
+            setCampusImg(page.thumbnail.source);
           }
         })
-        .catch(() => {
-          // Wikipedia API başarısızsa imageUrl'i dene
-          if (selected.imageUrl) {
-            setCampusImg(selected.imageUrl);
-          }
-        });
-    } else if (selected.imageUrl) {
-      // wikiTitle yoksa doğrudan imageUrl kullan
-      setCampusImg(selected.imageUrl);
+        .catch(() => {});
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected?.university.id]);
@@ -337,7 +325,12 @@ export default function MapClient({
                   src={campusImg}
                   alt={selected.university.name}
                   className="w-full h-full object-cover"
-                  onError={() => setCampusImg(FALLBACK_IMG)}
+                  onError={() => {
+                    if (!imgFallbackUsed) {
+                      setImgFallbackUsed(true);
+                      setCampusImg(FALLBACK_IMG);
+                    }
+                  }}
                 />
                 <div
                   className="absolute inset-0"
