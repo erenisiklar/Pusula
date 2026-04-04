@@ -181,6 +181,15 @@ const DEMO_PROFILES: DemoData[] = [
     extracurriculars: "Okul sanat kulübü başkanı — yıllık sergi organize ettim. Behance ve Dribbble'da aktif portfolyom var (500+ takipçi). İzmir Büyükşehir Belediyesi için gençlere yönelik bir mobil uygulama arayüzü tasarladım (gönüllü proje). Yoga ve yüzme yapıyorum, doğa fotoğrafçılığıyla ilgileniyorum.",
     careerGoals: "Endüstriyel tasarım veya UX tasarım alanında kariyer yapmak istiyorum. Mezuniyet sonrası bir tasarım stüdyosunda veya teknoloji şirketinde deneyim kazandıktan sonra kendi tasarım ajansımı kurmayı hedefliyorum. Sürdürülebilir tasarım ve sosyal etki odaklı projeler yapmak istiyorum.",
   },
+  {
+    studentName: "Baran Çelik",
+    gpa: 84,
+    strengths: "Saint-Joseph Lisesi'nde Fransızca eğitim aldım, tüm derslerimi Fransızca olarak tamamladım. Matematik ve fizik derslerinde okul birinciliğim var. CERN'ün lise öğrencilerine yönelik yaz programına katılarak parçacık fiziği laboratuvarında 2 hafta geçirdim. École Polytechnique'in online kurslarını tamamladım (Mécanique Quantique, Thermodynamique). LaTeX ile akademik makale yazabiliyorum, MATLAB ve Python'da sayısal analiz yapabiliyorum.",
+    motivation: "Fizik ve mühendisliğin kesişim noktasında çalışmak beni her zaman heyecanlandırdı. CERN deneyimim parçacık fiziğine olan tutkumu pekiştirdi, ancak mühendislik tarafında da güçlü olmak istiyorum. Fransa'nın Grande École sistemi ve mühendislik eğitimindeki mükemmellik geleneği tam olarak aradığım ortam. Teorik bilgiyi endüstriyel uygulamalarla birleştiren bir eğitim almak, hem araştırma hem de sanayi dünyasında etkili olmamı sağlayacak.",
+    languageLevel: "DALF C1",
+    extracurriculars: "Fransızca münazara takımı kaptanı — Frankofon Liseler Münazara Turnuvası'nda Türkiye birincisi olduk. Fizik Olimpiyatları ulusal takım adayıyım (son 20). Alliance Française İstanbul'da gönüllü olarak Fransızca konuşma kulübü yönetiyorum. Satranç turnuvalarına katılıyorum (Elo 1800+), okul takımı kaptanıyım.",
+    careerGoals: "Fransa'da mühendislik eğitimimi tamamladıktan sonra enerji veya havacılık sektöründe Ar-Ge mühendisi olarak çalışmak istiyorum. Airbus, Safran veya EDF gibi şirketlerde kariyer yapmayı hedefliyorum. Uzun vadede nükleer enerji veya füzyon teknolojileri üzerine uzmanlaşmak istiyorum.",
+  },
 ];
 
 let demoIndex = 0;
