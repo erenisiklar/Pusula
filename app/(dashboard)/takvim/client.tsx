@@ -148,7 +148,7 @@ export default function TakvimClient({ universities }: { universities: Universit
   const currentYear = today.getFullYear();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [countryFilter, setCountryFilter] = useState("all");
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(new Set());
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -262,7 +262,7 @@ export default function TakvimClient({ universities }: { universities: Universit
 
   const filteredUniversities = useMemo(() => {
     let result = universities;
-    if (countryFilter !== "all") result = result.filter((u) => u.country === countryFilter);
+    if (selectedCountries.size > 0) result = result.filter((u) => selectedCountries.has(u.country));
     if (departmentFilter !== "all") result = result.filter((u) => u.department === departmentFilter);
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
@@ -271,12 +271,12 @@ export default function TakvimClient({ universities }: { universities: Universit
       );
     }
     return result;
-  }, [universities, countryFilter, departmentFilter, searchQuery]);
+  }, [universities, selectedCountries, departmentFilter, searchQuery]);
 
-  const hasActiveFilters = countryFilter !== "all" || departmentFilter !== "all" || searchQuery.trim() !== "";
+  const hasActiveFilters = selectedCountries.size > 0 || departmentFilter !== "all" || searchQuery.trim() !== "";
 
   function clearAllFilters() {
-    setCountryFilter("all");
+    setSelectedCountries(new Set());
     setDepartmentFilter("all");
     setSearchQuery("");
     setSelectedDay(null);
@@ -428,11 +428,36 @@ export default function TakvimClient({ universities }: { universities: Universit
             <div className="text-[11px] font-medium mb-1.5" style={{ color: "var(--muted)" }}>Ülke</div>
             <div className="flex flex-wrap gap-1.5">
               {COUNTRY_FILTERS.map((f) => {
-                const isActive = countryFilter === f.value;
+                if (f.value === "all") {
+                  const isActive = selectedCountries.size === 0;
+                  return (
+                    <button
+                      key={f.value}
+                      onClick={() => { setSelectedCountries(new Set()); setSelectedDay(null); }}
+                      className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+                      style={{
+                        backgroundColor: isActive ? "var(--blue)" : "var(--surface2)",
+                        border: `1px solid ${isActive ? "var(--blue)" : "var(--border)"}`,
+                        color: isActive ? "var(--white)" : "var(--muted)",
+                      }}
+                    >
+                      {f.label}
+                    </button>
+                  );
+                }
+                const isActive = selectedCountries.has(f.value);
                 return (
                   <button
                     key={f.value}
-                    onClick={() => { setCountryFilter(f.value); setSelectedDay(null); }}
+                    onClick={() => {
+                      setSelectedCountries((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(f.value)) next.delete(f.value);
+                        else next.add(f.value);
+                        return next;
+                      });
+                      setSelectedDay(null);
+                    }}
                     className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
                     style={{
                       backgroundColor: isActive ? "var(--blue)" : "var(--surface2)",
