@@ -586,6 +586,110 @@ export default function TakvimClient({ universities }: { universities: Universit
 
         {/* Sidebar */}
         <div className="space-y-4">
+          {/* Personal Events Section — EN ÜSTTE */}
+          <div
+            className="rounded-xl p-5"
+            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                className="font-semibold text-sm flex items-center gap-2"
+                style={{ color: "var(--text)" }}
+              >
+                <Star className="w-4 h-4" style={{ color: "var(--gold)" }} />
+                Kişisel Notlarım
+                {monthEvents.length > 0 && (
+                  <span
+                    className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                    style={{ backgroundColor: "var(--gold-bg)", color: "var(--gold)" }}
+                  >
+                    {monthEvents.length}
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={() => openAddEvent(selectedDay || undefined)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--blue-bg)",
+                  border: "1px solid var(--blue-border)",
+                  color: "var(--blue)",
+                }}
+              >
+                <Plus className="w-3 h-3" />
+                Ekle
+              </button>
+            </div>
+
+            {/* Show events for selected day, or all month events */}
+            {(selectedDay !== null ? selectedDayEvents : monthEvents).length === 0 ? (
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                {selectedDay !== null
+                  ? "Bu gün için not yok."
+                  : "Bu ay için not yok."}
+                <button
+                  onClick={() => openAddEvent(selectedDay || undefined)}
+                  className="ml-1 underline"
+                  style={{ color: "var(--blue)" }}
+                >
+                  Ekle
+                </button>
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {(selectedDay !== null ? selectedDayEvents : monthEvents).map((evt) => {
+                  const colorDef = EVENT_COLORS.find((c) => c.value === evt.color) || EVENT_COLORS[0];
+                  return (
+                    <div
+                      key={evt.id}
+                      className="px-3 py-2.5 rounded-lg"
+                      style={{
+                        backgroundColor: colorDef.bg,
+                        borderLeft: `3px solid ${colorDef.text}`,
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div
+                            className="text-xs font-medium"
+                            style={{ color: "var(--text)" }}
+                          >
+                            {evt.title}
+                          </div>
+                          {evt.description && (
+                            <div className="text-[11px] mt-0.5" style={{ color: "var(--muted)" }}>
+                              {evt.description}
+                            </div>
+                          )}
+                          <div
+                            className="text-[10px] mt-1 font-medium"
+                            style={{ color: colorDef.text }}
+                          >
+                            {evt.day} {months[evt.month]}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); openEditEvent(evt); }}
+                            className="p-1 rounded hover:opacity-70 transition-opacity"
+                          >
+                            <Pencil className="w-3 h-3" style={{ color: "var(--muted)" }} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id); }}
+                            className="p-1 rounded hover:opacity-70 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3" style={{ color: "var(--danger)" }} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* Month / selected day deadlines */}
           <div
             className="rounded-xl p-5"
@@ -739,110 +843,6 @@ export default function TakvimClient({ universities }: { universities: Universit
                 })
               )}
             </div>
-          </div>
-
-          {/* Personal Events Section */}
-          <div
-            className="rounded-xl p-5"
-            style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h2
-                className="font-semibold text-sm flex items-center gap-2"
-                style={{ color: "var(--text)" }}
-              >
-                <Star className="w-4 h-4" style={{ color: "var(--gold)" }} />
-                Kişisel Notlarım
-                {monthEvents.length > 0 && (
-                  <span
-                    className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                    style={{ backgroundColor: "var(--gold-bg)", color: "var(--gold)" }}
-                  >
-                    {monthEvents.length}
-                  </span>
-                )}
-              </h2>
-              <button
-                onClick={() => openAddEvent(selectedDay || undefined)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-opacity hover:opacity-80"
-                style={{
-                  backgroundColor: "var(--blue-bg)",
-                  border: "1px solid var(--blue-border)",
-                  color: "var(--blue)",
-                }}
-              >
-                <Plus className="w-3 h-3" />
-                Ekle
-              </button>
-            </div>
-
-            {/* Show events for selected day, or all month events */}
-            {(selectedDay !== null ? selectedDayEvents : monthEvents).length === 0 ? (
-              <p className="text-xs" style={{ color: "var(--muted)" }}>
-                {selectedDay !== null
-                  ? "Bu gün için not yok."
-                  : "Bu ay için not yok."}
-                <button
-                  onClick={() => openAddEvent(selectedDay || undefined)}
-                  className="ml-1 underline"
-                  style={{ color: "var(--blue)" }}
-                >
-                  Ekle
-                </button>
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {(selectedDay !== null ? selectedDayEvents : monthEvents).map((evt) => {
-                  const colorDef = EVENT_COLORS.find((c) => c.value === evt.color) || EVENT_COLORS[0];
-                  return (
-                    <div
-                      key={evt.id}
-                      className="px-3 py-2.5 rounded-lg"
-                      style={{
-                        backgroundColor: colorDef.bg,
-                        borderLeft: `3px solid ${colorDef.text}`,
-                      }}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <div
-                            className="text-xs font-medium"
-                            style={{ color: "var(--text)" }}
-                          >
-                            {evt.title}
-                          </div>
-                          {evt.description && (
-                            <div className="text-[11px] mt-0.5" style={{ color: "var(--muted)" }}>
-                              {evt.description}
-                            </div>
-                          )}
-                          <div
-                            className="text-[10px] mt-1 font-medium"
-                            style={{ color: colorDef.text }}
-                          >
-                            {evt.day} {months[evt.month]}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); openEditEvent(evt); }}
-                            className="p-1 rounded hover:opacity-70 transition-opacity"
-                          >
-                            <Pencil className="w-3 h-3" style={{ color: "var(--muted)" }} />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id); }}
-                            className="p-1 rounded hover:opacity-70 transition-opacity"
-                          >
-                            <Trash2 className="w-3 h-3" style={{ color: "var(--danger)" }} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
           {/* Disclaimer */}
