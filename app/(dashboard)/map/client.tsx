@@ -132,29 +132,48 @@ export default function MapClient({
     setCampusImg(FALLBACK_IMG);
     setImgFallbackUsed(false);
 
-    if (!selected.wikiTitle) return;
-
     let cancelled = false;
 
-    // Wikipedia REST API — originalimage.source doğrudan CDN URL'i döner
-    // wikiTitle zaten URL-encoded olabilir (%27 vb.), tekrar encode etme
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("not ok");
-        return r.json();
-      })
-      .then((data) => {
-        if (cancelled) return;
-        // Önce originalimage (yüksek çözünürlük), sonra thumbnail dene
-        const imgUrl =
-          data?.originalimage?.source ||
-          data?.thumbnail?.source;
-        if (imgUrl) {
-          setCampusImg(imgUrl);
-        }
-      })
-      .catch(() => {});
+    async function loadImage() {
+      // 1) Wikipedia REST API dene
+      if (selected.wikiTitle) {
+        try {
+          const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${selected.wikiTitle}`);
+          if (r.ok) {
+            const data = await r.json();
+            const imgUrl = data?.originalimage?.source || data?.thumbnail?.source;
+            if (imgUrl && !cancelled) {
+              setCampusImg(imgUrl);
+              return;
+            }
+          }
+        } catch { /* devam et */ }
+      }
 
+      // 2) Wikimedia Commons imageUrl dene (bazıları çalışıyor)
+      if (selected.imageUrl && !cancelled) {
+        setCampusImg(selected.imageUrl);
+        return;
+      }
+
+      // 3) Hiçbiri yoksa — üniversite adıyla Wikipedia arama yap
+      if (!cancelled) {
+        try {
+          const name = selected.university.name.replace(/ /g, "_");
+          const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${name}`);
+          if (r.ok) {
+            const data = await r.json();
+            const imgUrl = data?.originalimage?.source || data?.thumbnail?.source;
+            if (imgUrl && !cancelled) {
+              setCampusImg(imgUrl);
+              return;
+            }
+          }
+        } catch { /* fallback'te kal */ }
+      }
+    }
+
+    loadImage();
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected?.university.id]);
