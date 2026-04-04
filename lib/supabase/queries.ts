@@ -34,13 +34,21 @@ function mapUniversity(row: Record<string, unknown>): University {
 }
 
 export async function getUniversities(): Promise<University[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("universities")
-    .select("*")
-    .order("name");
-  if (error || !data) return [];
-  return data.map(mapUniversity);
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("universities")
+      .select("*")
+      .order("name");
+    if (error) {
+      console.error("[Supabase] universities fetch error:", error.message);
+      return [];
+    }
+    return (data ?? []).map(mapUniversity);
+  } catch (err) {
+    console.error("[Supabase] universities connection error:", err);
+    return [];
+  }
 }
 
 export interface AcceptanceRow {
@@ -53,12 +61,17 @@ export interface AcceptanceRow {
 }
 
 export async function getAcceptanceStats(): Promise<AcceptanceRow[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("acceptance_stats")
-    .select("*, universities(*)");
-  if (error || !data) return [];
-  return data.map((row: Record<string, unknown>) => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("acceptance_stats")
+      .select("*, universities(*)");
+    if (error) {
+      console.error("[Supabase] acceptance_stats fetch error:", error.message);
+      return [];
+    }
+    if (!data) return [];
+    return data.map((row: Record<string, unknown>) => {
     const uni = row.universities as Record<string, unknown>;
     return {
       universityId: row.university_id as string,
@@ -69,4 +82,8 @@ export async function getAcceptanceStats(): Promise<AcceptanceRow[]> {
       university: mapUniversity(uni),
     };
   });
+  } catch (err) {
+    console.error("[Supabase] acceptance_stats connection error:", err);
+    return [];
+  }
 }
