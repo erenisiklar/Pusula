@@ -217,7 +217,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Örn: Eren Işıklar"
+                  placeholder="Adını ve soyadını yaz"
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
                   style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
                   autoFocus
@@ -228,28 +228,84 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                 <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
                   Lise Not Ortalaması (100 üzerinden)
                 </label>
-                <div className="flex items-center gap-4">
+
+                {/* GPA visual indicator */}
+                <div
+                  className="rounded-xl p-4 mb-3"
+                  style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div
+                      className="text-3xl font-bold"
+                      style={{
+                        color: gpa >= 85 ? "var(--success)" : gpa >= 70 ? "var(--blue)" : gpa >= 55 ? "var(--gold)" : "var(--danger)",
+                      }}
+                    >
+                      {gpa}
+                    </div>
+                    <div
+                      className="text-xs font-medium px-3 py-1 rounded-full"
+                      style={{
+                        backgroundColor: gpa >= 85 ? "var(--success-bg)" : gpa >= 70 ? "var(--blue-bg)" : gpa >= 55 ? "var(--gold-bg)" : "var(--danger-bg)",
+                        color: gpa >= 85 ? "var(--success)" : gpa >= 70 ? "var(--blue)" : gpa >= 55 ? "var(--gold)" : "var(--danger)",
+                      }}
+                    >
+                      {gpa >= 85 ? "Güçlü" : gpa >= 70 ? "İyi" : gpa >= 55 ? "Orta" : "Geliştirilmeli"}
+                    </div>
+                  </div>
+
+                  {/* Segmented bar */}
+                  <div className="flex gap-0.5 h-2 rounded-full overflow-hidden mb-2">
+                    {Array.from({ length: 60 }, (_, i) => {
+                      const val = 40 + i;
+                      const filled = val <= gpa;
+                      let color = "var(--danger)";
+                      if (val >= 85) color = "var(--success)";
+                      else if (val >= 70) color = "var(--blue)";
+                      else if (val >= 55) color = "var(--gold)";
+                      return (
+                        <div
+                          key={val}
+                          className="flex-1 rounded-[1px] transition-all"
+                          style={{
+                            backgroundColor: filled ? color : "var(--surface2)",
+                            opacity: filled ? 1 : 0.4,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+
                   <input
                     type="range"
                     min="40"
                     max="100"
                     value={gpa}
                     onChange={(e) => setGpa(Number(e.target.value))}
-                    className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
-                    style={{ accentColor: "var(--blue)" }}
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      accentColor: gpa >= 85 ? "var(--success)" : gpa >= 70 ? "var(--blue)" : gpa >= 55 ? "var(--gold)" : "var(--danger)",
+                      background: "transparent",
+                    }}
                   />
-                  <div
-                    className="w-14 text-center text-lg font-bold rounded-lg py-1"
-                    style={{ backgroundColor: "var(--blue-bg)", color: "var(--blue)" }}
-                  >
-                    {gpa}
+                  <div className="flex justify-between text-[10px] mt-1" style={{ color: "var(--muted)" }}>
+                    <span>40</span>
+                    <span>55</span>
+                    <span>70</span>
+                    <span>85</span>
+                    <span>100</span>
                   </div>
                 </div>
-                <div className="flex justify-between text-[10px] mt-1" style={{ color: "var(--muted)" }}>
-                  <span>40</span>
-                  <span>70</span>
-                  <span>100</span>
-                </div>
+
+                <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                  {gpa >= 85
+                    ? "Çoğu Avrupa üniversitesine başvurabilirsin. Seçici programlar da dahil."
+                    : gpa >= 70
+                      ? "Birçok güçlü program için uygunsun. Bazı seçici programlar zorlayabilir."
+                      : gpa >= 55
+                        ? "Birçok program için başvurabilirsin. Ücretsiz programlara öncelik verelim."
+                        : "Sınırlı sayıda program için başvurabilirsin. Seçeneklerini birlikte değerlendirelim."}
+                </p>
               </div>
 
               <div>
