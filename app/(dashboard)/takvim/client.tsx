@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 
-import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search, LayoutGrid, List, CalendarRange, Bell, BellRing } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, AlertTriangle, CalendarDays, Filter, Download, ExternalLink, Plus, X, Pencil, Trash2, Star, Search, LayoutGrid, List, CalendarRange, Bell, BellRing, CircleDot } from "lucide-react";
 
 type ViewMode = "monthly" | "weekly" | "daily";
 import type { University } from "@/types";
@@ -26,6 +26,33 @@ const EVENT_COLORS = [
   { value: "success", label: "Yeşil", bg: "var(--success-bg)", border: "1px solid rgba(22,163,74,0.15)", text: "var(--success)" },
   { value: "danger", label: "Kırmızı", bg: "var(--danger-bg)", border: "1px solid rgba(220,38,38,0.15)", text: "var(--danger)" },
 ];
+
+// ─── Application Status Types ───────────────────────────────
+type AppStatus = "none" | "planning" | "preparing" | "submitted" | "accepted" | "rejected";
+
+const APP_STATUS_CONFIG: Record<AppStatus, { label: string; color: string; bg: string }> = {
+  none: { label: "—", color: "var(--muted)", bg: "transparent" },
+  planning: { label: "Planlıyorum", color: "var(--blue)", bg: "var(--blue-bg)" },
+  preparing: { label: "Hazırlanıyor", color: "var(--gold)", bg: "var(--gold-bg)" },
+  submitted: { label: "Gönderildi", color: "var(--blue-light)", bg: "var(--blue-bg)" },
+  accepted: { label: "Kabul", color: "var(--success)", bg: "var(--success-bg)" },
+  rejected: { label: "Red", color: "var(--danger)", bg: "var(--danger-bg)" },
+};
+
+const STATUS_STORAGE_KEY = "pusula-app-statuses";
+
+function loadStatuses(): Record<string, AppStatus> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(STATUS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveStatuses(statuses: Record<string, AppStatus>) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify(statuses));
+}
 
 const STORAGE_KEY = "pusula-personal-events";
 
@@ -169,10 +196,21 @@ export default function TakvimClient({ universities }: { universities: Universit
   const [editingEvent, setEditingEvent] = useState<PersonalEvent | null>(null);
   const [eventForm, setEventForm] = useState({ title: "", description: "", color: "blue", day: 1, month: 0, year: 2026 });
 
-  // Load events from localStorage on mount
+  // ─── Application Status State ──────────────────────────────
+  const [appStatuses, setAppStatuses] = useState<Record<string, AppStatus>>({});
+
+  // Load events and statuses from localStorage on mount
   useEffect(() => {
     setPersonalEvents(loadEvents());
+    setAppStatuses(loadStatuses());
   }, []);
+
+  function setUniversityStatus(universityId: string, status: AppStatus) {
+    const updated = { ...appStatuses, [universityId]: status };
+    if (status === "none") delete updated[universityId];
+    setAppStatuses(updated);
+    saveStatuses(updated);
+  }
 
   // Events for current month
   const monthEvents = useMemo(
@@ -754,6 +792,9 @@ export default function TakvimClient({ universities }: { universities: Universit
                   const dayEvts = eventDays[day] || [];
                   const hasEvent = dayEvts.length > 0;
                   const hasContent = hasDeadline || hasEvent;
+                  // Check if any deadline on this day has an application status
+                  const dayStatuses = deadlines?.map((dl) => appStatuses[dl.university.id]).filter((s) => s && s !== "none") || [];
+                  const hasStatus = dayStatuses.length > 0;
                   const isSelected = selectedDay === day;
                   const isTodayDay = todayMonth === currentMonth && todayDate === day;
                   const isPast = currentMonth < todayMonth || (currentMonth === todayMonth && day < todayDate);
@@ -777,6 +818,7 @@ export default function TakvimClient({ universities }: { universities: Universit
                           : <span className="text-[8px] font-bold leading-none" style={{ color: isSelected ? "var(--white)" : isPast ? "var(--muted)" : "var(--danger)" }}>{count}</span>
                         )}
                         {hasEvent && <div className="w-1 h-1 rounded-full" style={{ backgroundColor: isSelected ? "var(--white)" : `var(--${dayEvts[0].color})` }} />}
+                        {hasStatus && <div className="w-1 h-1 rounded-sm" style={{ backgroundColor: isSelected ? "var(--white)" : APP_STATUS_CONFIG[dayStatuses[0] as AppStatus].color }} />}
                       </div>
                     </div>
                   );
@@ -827,13 +869,20 @@ export default function TakvimClient({ universities }: { universities: Universit
                         <p className="text-xs py-1" style={{ color: "var(--muted)" }}>Etkinlik yok</p>
                       ) : (
                         <div className="space-y-1">
-                          {dayDeadlines.map((d, di) => (
+                          {dayDeadlines.map((d, di) => {
+                            const wStatus = appStatuses[d.university.id] || "none";
+                            const wCfg = APP_STATUS_CONFIG[wStatus];
+                            return (
                             <div key={`wd-${di}`} className="flex items-center gap-2 text-xs">
                               <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--danger)" }} />
                               <span className="truncate" style={{ color: "var(--text)" }}>{d.university.flag} {d.university.name}</span>
+                              {wStatus !== "none" && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style={{ backgroundColor: wCfg.bg, color: wCfg.color }}>{wCfg.label}</span>
+                              )}
                               <span className="text-[10px] flex-shrink-0" style={{ color: "var(--muted)" }}>{d.university.program}{d.label ? ` · ${d.label}` : ""}</span>
                             </div>
-                          ))}
+                            );
+                          })}
                           {dayEvents.map((evt) => {
                             const colorDef = EVENT_COLORS.find((c) => c.value === evt.color) || EVENT_COLORS[0];
                             return (
@@ -1101,67 +1150,78 @@ export default function TakvimClient({ universities }: { universities: Universit
                   const days = daysRemaining(today, d.month, d.day);
                   const countdown = formatCountdown(days);
                   const isPast = days !== null && days < 0;
+                  const status = appStatuses[d.university.id] || "none";
+                  const statusCfg = APP_STATUS_CONFIG[status];
 
                   return (
-                    <Link
-                      href={`/schools?highlight=${d.university.id}`}
+                    <div
                       key={`${d.university.id}-${idx}`}
-                      className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg transition-all hover:opacity-80 block"
+                      className="px-3 py-2.5 rounded-lg"
                       style={{
                         backgroundColor: "var(--surface2)",
                         opacity: isPast ? 0.5 : 1,
                       }}
                     >
-                      <span className="text-base flex-shrink-0">{d.university.flag}</span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1">
-                          <span
-                            className="text-xs font-medium truncate"
-                            style={{ color: "var(--text)" }}
-                          >
-                            {d.university.name}
-                          </span>
-                          <ExternalLink className="w-2.5 h-2.5 flex-shrink-0" style={{ color: "var(--muted)", opacity: 0.5 }} />
-                        </div>
-                        <div className="text-[11px] truncate" style={{ color: "var(--muted)" }}>
-                          {d.university.program}
-                          {d.label ? ` · ${d.label}` : ""}
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span
-                            className="text-[11px] font-medium"
-                            style={{ color: isPast ? "var(--muted)" : "var(--gold)" }}
-                          >
-                            {d.day !== null
-                              ? `${d.day} ${months[d.month]}`
-                              : months[d.month]}
-                          </span>
-                          {countdown && (
-                            <span
-                              className="text-[10px] px-1.5 py-0.5 rounded font-medium"
-                              style={{
-                                backgroundColor: isPast
-                                  ? "var(--danger-bg)"
-                                  : days !== null && days <= 7
-                                  ? "var(--danger-bg)"
-                                  : days !== null && days <= 30
-                                  ? "var(--gold-bg)"
-                                  : "var(--success-bg)",
-                                color: isPast
-                                  ? "var(--danger)"
-                                  : days !== null && days <= 7
-                                  ? "var(--danger)"
-                                  : days !== null && days <= 30
-                                  ? "var(--gold)"
-                                  : "var(--success)",
-                              }}
+                      <div className="flex items-start gap-2.5">
+                        <span className="text-base flex-shrink-0">{d.university.flag}</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1">
+                            <Link
+                              href={`/schools?highlight=${d.university.id}`}
+                              className="text-xs font-medium truncate hover:opacity-80 transition-opacity"
+                              style={{ color: "var(--text)" }}
                             >
-                              {countdown}
+                              {d.university.name}
+                            </Link>
+                            <ExternalLink className="w-2.5 h-2.5 flex-shrink-0" style={{ color: "var(--muted)", opacity: 0.5 }} />
+                          </div>
+                          <div className="text-[11px] truncate" style={{ color: "var(--muted)" }}>
+                            {d.university.program}
+                            {d.label ? ` · ${d.label}` : ""}
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span
+                              className="text-[11px] font-medium"
+                              style={{ color: isPast ? "var(--muted)" : "var(--gold)" }}
+                            >
+                              {d.day !== null ? `${d.day} ${months[d.month]}` : months[d.month]}
                             </span>
-                          )}
+                            {countdown && (
+                              <span
+                                className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                                style={{
+                                  backgroundColor: isPast ? "var(--danger-bg)" : days !== null && days <= 7 ? "var(--danger-bg)" : days !== null && days <= 30 ? "var(--gold-bg)" : "var(--success-bg)",
+                                  color: isPast ? "var(--danger)" : days !== null && days <= 7 ? "var(--danger)" : days !== null && days <= 30 ? "var(--gold)" : "var(--success)",
+                                }}
+                              >
+                                {countdown}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </Link>
+                      {/* Application status selector */}
+                      <div className="mt-1.5 flex items-center gap-1.5">
+                        <CircleDot className="w-3 h-3 flex-shrink-0" style={{ color: statusCfg.color }} />
+                        <select
+                          value={status}
+                          onChange={(e) => setUniversityStatus(d.university.id, e.target.value as AppStatus)}
+                          className="text-[10px] font-medium py-0.5 px-1.5 rounded outline-none cursor-pointer"
+                          style={{
+                            backgroundColor: statusCfg.bg,
+                            color: statusCfg.color,
+                            border: "none",
+                          }}
+                        >
+                          <option value="none">Durum seç...</option>
+                          <option value="planning">Planlıyorum</option>
+                          <option value="preparing">Hazırlanıyor</option>
+                          <option value="submitted">Gönderildi</option>
+                          <option value="accepted">Kabul</option>
+                          <option value="rejected">Red</option>
+                        </select>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
