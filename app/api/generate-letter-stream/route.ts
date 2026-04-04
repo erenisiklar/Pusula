@@ -182,6 +182,7 @@ export async function POST(request: NextRequest) {
       tone = "balanced",
       letterLanguage = "en",
       wordCount = 500,
+      minWordCount = 0,
       universityInsights,
       // University-specific motivation fields
       motivationLetterType,
@@ -271,10 +272,11 @@ IMPORTANT: Reference these specific details naturally in the letter — especial
 
     // Tell the AI a lower limit so it stays under the real one
     const aiLimit = Math.round(wordCount * 0.88);
+    const aiMin = minWordCount > 0 ? Math.round(minWordCount * 1.05) : Math.round(aiLimit * 0.75);
 
     const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in ${langName}. Be specific and personal, avoid generic phrases.${isNonEnglish ? ` The entire letter MUST be written in ${langName}. Do NOT use English anywhere in the letter content.` : ""}
 
-STRICT WORD LIMIT: Write EXACTLY ${aiLimit} words or fewer. Do NOT exceed ${aiLimit} words under any circumstances. This is a hard system limit — the application portal will reject anything longer.
+STRICT WORD LIMIT: Write between ${aiMin} and ${aiLimit} words. Do NOT write fewer than ${aiMin} words or exceed ${aiLimit} words. This is a hard system limit — the application portal will reject anything outside this range.
 ${letterTypeInstruction}
 ${tonePreferenceInstruction}
 ${guidelinesInstruction}

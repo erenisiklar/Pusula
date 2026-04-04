@@ -65,8 +65,22 @@ export default function DashboardClient({
   const possibleCount = eligibilityResults.filter((r) => r.status === "possible").length;
   const reachCount = eligibilityResults.filter((r) => r.status === "reach").length;
 
-  // Top 5 best-matching universities
-  const topMatches = eligibilityResults.slice(0, 5);
+  // Top 5 best-matching universities — filtered by profile preferences
+  const topMatches = useMemo(() => {
+    if (!profile) return [];
+    const filtered = eligibilityResults.filter((r) => {
+      // Filter by target countries
+      if (profile.targetCountries.length > 0 && !profile.targetCountries.includes(r.university.country)) {
+        return false;
+      }
+      // Filter by target department (skip if not specified)
+      if (profile.targetDepartment && r.university.department !== profile.targetDepartment) {
+        return false;
+      }
+      return true;
+    });
+    return filtered.slice(0, 5);
+  }, [eligibilityResults, profile]);
 
   // Progress calculation
   const progressSteps = [
@@ -139,7 +153,7 @@ export default function DashboardClient({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -162,7 +176,7 @@ export default function DashboardClient({
         })}
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left column */}
         <div className="space-y-6">
           {/* Top matches — only if profile exists */}
