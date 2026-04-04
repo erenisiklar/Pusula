@@ -115,7 +115,13 @@ export default function DashboardLayout({
             <div className="flex items-center gap-2 text-[10px]" style={{ color: "rgba(255,255,255,0.45)" }}>
               <span>GPA: {profile.gpa}</span>
               <span>•</span>
-              <span>{profile.languageCert || "Dil yok"} {profile.languageScore > 0 ? profile.languageScore : ""}</span>
+              <span>
+                {profile.languageCerts && profile.languageCerts.length > 0
+                  ? profile.languageCerts.map((c) => `${c.cert} ${c.score}`).join(", ")
+                  : profile.languageCert
+                    ? `${profile.languageCert} ${profile.languageScore > 0 ? profile.languageScore : ""}`
+                    : "Dil yok"}
+              </span>
             </div>
           </div>
         )}

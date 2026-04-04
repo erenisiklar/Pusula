@@ -4,15 +4,22 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 const STORAGE_KEY = "pusula-student-profile";
 
+export interface LanguageCertEntry {
+  cert: string;
+  score: string; // string to support "B2", "7.5", "90" etc.
+}
+
 export interface StudentProfile {
   fullName: string;
   gpa: number;
+  languageCerts: LanguageCertEntry[]; // multiple certs
+  // Legacy compat — derived from first cert for simple consumers
   languageCert: string;
   languageScore: number;
   budgetEUR: number;
   targetCountries: string[];
   targetDepartment: string;
-  completedAt: string; // ISO date — onboarding tamamlanınca set edilir
+  completedAt: string;
 }
 
 interface ProfileContextValue {
