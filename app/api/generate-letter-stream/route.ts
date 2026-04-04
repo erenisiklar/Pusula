@@ -183,6 +183,10 @@ export async function POST(request: NextRequest) {
       letterLanguage = "en",
       wordCount = 500,
       universityInsights,
+      // University-specific motivation fields
+      motivationLetterType,
+      motivationGuidelines,
+      motivationTonePreference,
     } = body;
 
     if (!studentName || !university || !program || !strengths || !motivation) {
@@ -192,8 +196,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const langNameMap: Record<string, string> = {
+      en: "English",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      nl: "Dutch",
+    };
+    const langName = langNameMap[letterLanguage] || "English";
     const isFrench = letterLanguage === "fr";
-    const langName = isFrench ? "French" : "English";
+    const isNonEnglish = letterLanguage !== "en";
 
     const toneMap: Record<string, string> = {
       formal: `Use a formal, professional academic tone. Avoid colloquialisms.`,
@@ -213,6 +225,31 @@ export async function POST(request: NextRequest) {
     ]
       .filter(Boolean)
       .join("\n");
+
+    // University-specific letter type and guidelines
+    const letterTypeMap: Record<string, string> = {
+      personal_statement: "a Personal Statement (UK UCAS style). This is a personal essay about the student and their passion for the subject. Do NOT address a specific university directly — focus on the student's intellectual journey, academic engagement, and subject-specific enthusiasm. Structure it as a flowing essay, not a formal letter.",
+      statement_of_purpose: "a Statement of Purpose. This should be a focused, professional document explaining the student's academic goals, relevant experience, and why they are pursuing this field. Be clear, structured, and forward-looking.",
+      cover_letter: "a Cover Letter. This should be formatted as a professional letter with formal salutation and closing. Be concise, professional, and highlight the student's key qualifications.",
+      motivation_letter: "a Motivation Letter. This should combine personal motivation with academic purpose, explaining why the student chose this specific program and university.",
+    };
+    const letterTypeInstruction = motivationLetterType && letterTypeMap[motivationLetterType]
+      ? `\nLETTER TYPE: Write ${letterTypeMap[motivationLetterType]}`
+      : "";
+
+    const tonePreferenceMap: Record<string, string> = {
+      academic: "Focus heavily on academic achievements, intellectual curiosity, and research interests. Use formal academic language. Emphasize coursework, academic projects, and scholarly engagement.",
+      personal: "Balance academic content with personal stories and genuine enthusiasm. Show the student's personality, values, and unique perspective. Be warm and authentic.",
+      research_focused: "Emphasize research experience, technical projects, and scientific curiosity. Mention specific research areas, methodologies, or technical skills. Show the student can contribute to the research community.",
+      project_focused: "Highlight hands-on projects, technical portfolios, competitions, and practical experience. Show the student is a doer who builds things. Emphasize problem-solving and creative thinking.",
+    };
+    const tonePreferenceInstruction = motivationTonePreference && tonePreferenceMap[motivationTonePreference]
+      ? `\nUNIVERSITY TONE PREFERENCE: ${tonePreferenceMap[motivationTonePreference]}`
+      : "";
+
+    const guidelinesInstruction = motivationGuidelines
+      ? `\nUNIVERSITY-SPECIFIC GUIDELINES (IMPORTANT — follow these closely as they reflect what the admissions committee expects):\n${motivationGuidelines}`
+      : "";
 
     const insightsSection = universityInsights
       ? `\nUNIVERSITY-SPECIFIC INSIGHTS (scraped from their official website — use these to make the letter highly specific and personalized):
@@ -235,11 +272,13 @@ IMPORTANT: Reference these specific details naturally in the letter — especial
     // Tell the AI a lower limit so it stays under the real one
     const aiLimit = Math.round(wordCount * 0.88);
 
-    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in ${langName}. Be specific and personal, avoid generic phrases.${isFrench ? " The entire letter MUST be written in French (Français). Do NOT use English anywhere in the letter content." : ""}
+    const prompt = `You are an expert European university admissions consultant writing motivation letters for Turkish students applying to European universities. ${toneInstruction} Write compelling, authentic motivation letters in ${langName}. Be specific and personal, avoid generic phrases.${isNonEnglish ? ` The entire letter MUST be written in ${langName}. Do NOT use English anywhere in the letter content.` : ""}
 
 STRICT WORD LIMIT: Write EXACTLY ${aiLimit} words or fewer. Do NOT exceed ${aiLimit} words under any circumstances. This is a hard system limit — the application portal will reject anything longer.
-
-${isFrench ? "" : langLevelInstruction}
+${letterTypeInstruction}
+${tonePreferenceInstruction}
+${guidelinesInstruction}
+${isNonEnglish ? "" : langLevelInstruction}
 ${insightsSection}
 Write a motivation letter in ${langName} for the following student:
 
