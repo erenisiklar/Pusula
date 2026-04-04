@@ -135,8 +135,8 @@ interface DemoData {
   careerGoals: string;
 }
 
-function getDemoData(): DemoData {
-  return {
+const DEMO_PROFILES: DemoData[] = [
+  {
     studentName: "Ayşe Kaya",
     gpa: 88,
     strengths: "TED Ankara Koleji'nde 4 yıl boyunca onur listesinde yer aldım. AP Physics C ve Statistics sınavlarından 5/5, Chemistry'den 4/5 aldım. Siemens Türkiye'de mühendislik departmanında staj yaptım — endüstriyel otomasyon ürünlerinde kalite kontrol süreçlerine katkıda bulundum ve haftalık üretim verimlilik raporları hazırladım. Python ve veri analizi konusunda deneyimliyim, Boğaziçi Üniversitesi yaz araştırma programında yenilenebilir enerji sistemleri üzerine çalıştım.",
@@ -144,7 +144,60 @@ function getDemoData(): DemoData {
     languageLevel: "IELTS 7.0",
     extracurriculars: "MUN Kulübü Genel Sekreteri — 15 okuldan 200+ katılımcıyla TEDMUN konferansı organize ettim. Bilim ve Teknoloji Kulübü Başkan Yardımcısı — robotik, kodlama ve bilimsel araştırma yöntemleri üzerine haftalık atölyeler düzenledim. 5 yıldır yarışmalı voleybol oynuyorum, okul takımı kaptanıyım. 8 yıldır piyano çalıyorum (ABRSM Grade 7).",
     careerGoals: "Mezuniyet sonrası yenilenebilir enerji veya akıllı şehir teknolojileri alanında Ar-Ge mühendisi olarak çalışmak istiyorum. Uzun vadede Türkiye'nin sürdürülebilir enerji dönüşümüne katkıda bulunacak projeler geliştirmeyi hedefliyorum. Yüksek lisans yapmayı da planlıyorum.",
-  };
+  },
+  {
+    studentName: "Emre Yılmaz",
+    gpa: 72,
+    strengths: "İstanbul Erkek Lisesi mezunuyum. Matematik ve ekonomi derslerinde güçlüyüm, özellikle istatistik ve veri yorumlama konularında başarılıyım. Bir e-ticaret startup'ında 3 ay staj yaparak dijital pazarlama ve müşteri analitiği üzerinde çalıştım. Google Sheets ve temel SQL bilgim var. Liseler arası ekonomi yarışmasında İstanbul ikincisi oldum.",
+    motivation: "Ekonominin günlük hayatı nasıl şekillendirdiğini anlamak beni her zaman heyecanlandırdı. Türkiye'deki enflasyon ve döviz kuru dalgalanmalarını takip ederken makroekonomi konusundaki tutkumu keşfettim. Avrupa'da ekonomi okumak bana farklı ekonomik modelleri yerinde görme ve uluslararası bir perspektif kazanma fırsatı sunacak. Özellikle gelişmekte olan ülke ekonomileri üzerine uzmanlaşmak istiyorum.",
+    languageLevel: "TOEFL 85",
+    extracurriculars: "Okul münazara takımı kaptanı — 2 yıl boyunca bölge turnuvalarında okulu temsil ettim. Ekonomi ve Girişimcilik Kulübü kurucusu — borsa simülasyonu ve startup sunumları düzenledik. Haftada 3 gün gönüllü olarak bir STK'da dezavantajlı öğrencilere matematik dersi veriyorum. Amatör fotoğrafçılıkla ilgileniyorum.",
+    careerGoals: "Uluslararası bir finans kuruluşunda veya merkez bankasında ekonomist olarak çalışmak istiyorum. Özellikle para politikası ve finansal regülasyon alanlarında uzmanlaşmayı hedefliyorum. Türkiye'ye dönerek ekonomi politikalarına katkıda bulunmak uzun vadeli hedefim.",
+  },
+  {
+    studentName: "Zeynep Arslan",
+    gpa: 95,
+    strengths: "Robert Koleji'nden birincilikle mezun oldum. IB Diploma programında 42/45 puan aldım (HL Mathematics, Physics, Computer Science). MIT PRIMES programına kabul edilerek Prof. Smith ile makine öğrenimi üzerine uzaktan araştırma yaptım — araştırmam bir konferansta poster olarak sunuldu. TÜBİTAK Bilim Olimpiyatları'nda matematik dalında gümüş madalya kazandım. Java, Python ve C++ dillerinde ileri seviye programlama yapabiliyorum.",
+    motivation: "Yapay zeka ve makine öğreniminin geleceği şekillendireceğine inanıyorum. Lise yıllarında kendi kendime öğrendiğim derin öğrenme algoritmalarını sağlık verilerine uygulayarak erken teşhis modelleri geliştirdim. Avrupa'nın en güçlü bilgisayar bilimi programlarından birinde eğitim almak, bu alandaki bilgimi derinleştirmem ve dünya çapındaki araştırmacılarla çalışmam için kritik bir adım olacak.",
+    languageLevel: "IELTS 8.0",
+    extracurriculars: "Google Code Jam ve Codeforces yarışmalarına düzenli katılıyorum (Codeforces rating: 1650+). Okul robotik takımı lideri olarak FIRST Robotics Competition'da Türkiye'yi temsil ettik. Girls Who Code İstanbul bölüm başkanıyım — 50+ kız öğrenciye kodlama eğitimi verdik. Klasik gitar çalıyorum ve okul orkestrasında yer alıyorum.",
+    careerGoals: "Yapay zeka alanında doktora yapmak ve sağlık teknolojileri üzerine araştırma kariyeri kurmak istiyorum. Uzun vadede kendi AI startup'ımı kurarak tıbbi görüntüleme ve erken teşhis alanında yenilikçi çözümler geliştirmeyi planlıyorum.",
+  },
+  {
+    studentName: "Can Demir",
+    gpa: 78,
+    strengths: "Galatasaray Lisesi'nde Fransızca eğitim aldım, dil yetkinliğim güçlü. Tarih ve siyaset bilimi derslerinde başarılıyım — özellikle Avrupa Birliği politikaları ve uluslararası ilişkiler konularında derinleştim. Avrupa Parlamentosu'nun gençlik programına katılarak Brüksel'de 2 haftalık bir simülasyonda yer aldım. Araştırma ve akademik yazım konusunda deneyimliyim, okul dergisinde editörlük yaptım.",
+    motivation: "AB-Türkiye ilişkilerini ve Avrupa'nın genişleme politikalarını yakından takip ediyorum. Galatasaray Lisesi'ndeki Fransızca eğitimim bana Avrupa kültürüne ve düşünce geleneğine yakınlık kazandırdı. Uluslararası ilişkiler veya siyaset bilimi okuyarak diplomatik kariyerime sağlam bir akademik temel oluşturmak istiyorum. Farklı kültürlerden gelen öğrencilerle aynı ortamda eğitim almak global perspektifimi genişletecek.",
+    languageLevel: "DELF B2",
+    extracurriculars: "Avrupa Gençlik Parlamentosu Türkiye delegesi — 3 uluslararası oturuma katıldım. Okul dergisi 'Flambeau' genel yayın yönetmeni — yılda 4 sayı çıkardık. Münazara kulübü üyesi (Fransızca ve İngilizce). Gönüllü olarak mülteci çocuklara Türkçe ve Fransızca dil eğitimi veriyorum.",
+    careerGoals: "Diplomatik kariyere hazırlanıyorum — Dışişleri Bakanlığı veya uluslararası bir kuruluşta (BM, AB kurumları) çalışmak istiyorum. Yüksek lisansımı uluslararası hukuk veya Avrupa çalışmaları alanında yapmayı planlıyorum.",
+  },
+  {
+    studentName: "Defne Öztürk",
+    gpa: 82,
+    strengths: "İzmir Amerikan Koleji'nde sanat ve tasarım ağırlıklı eğitim aldım. Dijital illüstrasyon, UI/UX tasarım ve 3D modelleme konularında yetkinim — Adobe Creative Suite, Figma ve Blender kullanıyorum. Bir yerel kafe zinciri için marka kimliği tasarladım (logo, menü, sosyal medya). İzmir Tasarım Bienali'nde lise öğrencileri kategorisinde sergilenen bir interaktif enstalasyon projesi geliştirdim.",
+    motivation: "Tasarımın sadece estetik değil, problem çözme aracı olduğuna inanıyorum. İnsanların günlük hayatını kolaylaştıran, sürdürülebilir ve kapsayıcı tasarım çözümleri üretmek istiyorum. Avrupa'daki tasarım eğitimi geleneği — özellikle Bauhaus mirası ve İtalyan tasarım okulu — beni derinden etkiliyor. Teorik bilgiyi pratik projelerle birleştiren bir programda eğitim almak hayalim.",
+    languageLevel: "IELTS 6.5",
+    extracurriculars: "Okul sanat kulübü başkanı — yıllık sergi organize ettim. Behance ve Dribbble'da aktif portfolyom var (500+ takipçi). İzmir Büyükşehir Belediyesi için gençlere yönelik bir mobil uygulama arayüzü tasarladım (gönüllü proje). Yoga ve yüzme yapıyorum, doğa fotoğrafçılığıyla ilgileniyorum.",
+    careerGoals: "Endüstriyel tasarım veya UX tasarım alanında kariyer yapmak istiyorum. Mezuniyet sonrası bir tasarım stüdyosunda veya teknoloji şirketinde deneyim kazandıktan sonra kendi tasarım ajansımı kurmayı hedefliyorum. Sürdürülebilir tasarım ve sosyal etki odaklı projeler yapmak istiyorum.",
+  },
+  {
+    studentName: "Baran Çelik",
+    gpa: 84,
+    strengths: "Saint-Joseph Lisesi'nde Fransızca eğitim aldım, tüm derslerimi Fransızca olarak tamamladım. Matematik ve fizik derslerinde okul birinciliğim var. CERN'ün lise öğrencilerine yönelik yaz programına katılarak parçacık fiziği laboratuvarında 2 hafta geçirdim. École Polytechnique'in online kurslarını tamamladım (Mécanique Quantique, Thermodynamique). LaTeX ile akademik makale yazabiliyorum, MATLAB ve Python'da sayısal analiz yapabiliyorum.",
+    motivation: "Fizik ve mühendisliğin kesişim noktasında çalışmak beni her zaman heyecanlandırdı. CERN deneyimim parçacık fiziğine olan tutkumu pekiştirdi, ancak mühendislik tarafında da güçlü olmak istiyorum. Fransa'nın Grande École sistemi ve mühendislik eğitimindeki mükemmellik geleneği tam olarak aradığım ortam. Teorik bilgiyi endüstriyel uygulamalarla birleştiren bir eğitim almak, hem araştırma hem de sanayi dünyasında etkili olmamı sağlayacak.",
+    languageLevel: "DALF C1",
+    extracurriculars: "Fransızca münazara takımı kaptanı — Frankofon Liseler Münazara Turnuvası'nda Türkiye birincisi olduk. Fizik Olimpiyatları ulusal takım adayıyım (son 20). Alliance Française İstanbul'da gönüllü olarak Fransızca konuşma kulübü yönetiyorum. Satranç turnuvalarına katılıyorum (Elo 1800+), okul takımı kaptanıyım.",
+    careerGoals: "Fransa'da mühendislik eğitimimi tamamladıktan sonra enerji veya havacılık sektöründe Ar-Ge mühendisi olarak çalışmak istiyorum. Airbus, Safran veya EDF gibi şirketlerde kariyer yapmayı hedefliyorum. Uzun vadede nükleer enerji veya füzyon teknolojileri üzerine uzmanlaşmak istiyorum.",
+  },
+];
+
+let demoIndex = 0;
+
+function getNextDemoData(): DemoData {
+  const data = DEMO_PROFILES[demoIndex];
+  demoIndex = (demoIndex + 1) % DEMO_PROFILES.length;
+  return data;
 }
 
 export default function MotivasyonClient({ universities }: { universities: University[] }) {
@@ -191,7 +244,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   function handleFillDemo() {
-    const demo = getDemoData();
+    const demo = getNextDemoData();
     setStudentName(demo.studentName);
     setGpa(demo.gpa);
     setStrengths(demo.strengths);
