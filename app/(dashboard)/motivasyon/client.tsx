@@ -128,7 +128,8 @@ export default function MotivasyonClient({ universities }: { universities: Unive
   // University scraping
   const [universityUrl, setUniversityUrl] = useState("");
   const [scraping, setScraping] = useState(false);
-  const [scrapeError, setScrapeError] = useState("");
+  const [scrapeError, setScrapeError] = useState("");    // hard error (red)
+  const [scrapeWarning, setScrapeWarning] = useState(""); // soft warning (gold)
   const [robotsBlocked, setRobotsBlocked] = useState(false);
   const [universityInsights, setUniversityInsights] = useState<UniversityInsights | null>(null);
 
@@ -147,6 +148,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
     if (!universityUrl) return;
     setScraping(true);
     setScrapeError("");
+    setScrapeWarning("");
     setRobotsBlocked(false);
     setUniversityInsights(null);
     try {
@@ -157,10 +159,14 @@ export default function MotivasyonClient({ universities }: { universities: Unive
       });
       const data = await res.json();
       if (!res.ok) {
+        // Hard errors: robots blocked, network issues, invalid URL
         if (data.robotsBlocked) setRobotsBlocked(true);
-        throw new Error(data.error || "Site taranamadı.");
+        setScrapeError(data.error || "Site taranamadı.");
+        return;
       }
+      // Successful response (possibly with a soft warning)
       setUniversityInsights(data.insights);
+      if (data.warning) setScrapeWarning(data.warning);
     } catch (err) {
       setScrapeError(err instanceof Error ? err.message : "Site taranamadı.");
     } finally {
@@ -454,6 +460,7 @@ export default function MotivasyonClient({ universities }: { universities: Unive
                   setUniversityUrl(e.target.value);
                   setUniversityInsights(null);
                   setScrapeError("");
+                  setScrapeWarning("");
                   setRobotsBlocked(false);
                 }}
                 placeholder="https://www.university.edu/program"
@@ -485,12 +492,24 @@ export default function MotivasyonClient({ universities }: { universities: Unive
               <div
                 className="mt-1.5 rounded-lg px-3 py-2 text-[11px] leading-relaxed"
                 style={{
-                  backgroundColor: robotsBlocked ? "var(--gold-bg)" : "var(--danger-bg)",
-                  border: `1px solid ${robotsBlocked ? "var(--gold-border)" : "var(--danger)"}`,
-                  color: robotsBlocked ? "var(--gold-light)" : "var(--danger)",
+                  backgroundColor: "var(--danger-bg)",
+                  border: "1px solid var(--danger)",
+                  color: "var(--danger)",
                 }}
               >
                 {scrapeError}
+              </div>
+            )}
+            {scrapeWarning && (
+              <div
+                className="mt-1.5 rounded-lg px-3 py-2 text-[11px] leading-relaxed"
+                style={{
+                  backgroundColor: "var(--gold-bg)",
+                  border: "1px solid var(--gold-border)",
+                  color: "var(--gold-light)",
+                }}
+              >
+                {scrapeWarning}
               </div>
             )}
 

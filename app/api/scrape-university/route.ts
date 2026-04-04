@@ -131,12 +131,11 @@ export async function POST(request: NextRequest) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      return NextResponse.json(
-        {
-          error: `Site sayfayı yüklemedi (HTTP ${response.status}). Bu site otomatik erişimi engelliyor olabilir. Programın İngilizce sayfasını deneyin.`,
-        },
-        { status: 400 }
-      );
+      // Not a fatal error — site responded but blocked us; fall back gracefully
+      return NextResponse.json({
+        insights: { mission: "", keywords: [], values: [], uniqueAspects: [] },
+        warning: `Site sayfayı yüklemedi (HTTP ${response.status}). Otomatik erişim engellenmiş olabilir. Mektup yine de oluşturulabilir.`,
+      });
     }
 
     html = await response.text();
@@ -159,10 +158,11 @@ export async function POST(request: NextRequest) {
   const truncated = plainText.slice(0, 6000);
 
   if (truncated.trim().length < 50) {
-    return NextResponse.json(
-      { error: "Sayfadan yeterli içerik alınamadı. Bu site JavaScript ile yükleniyor olabilir. Programın İngilizce sayfasını veya farklı bir URL deneyin." },
-      { status: 422 }
-    );
+    // JS-rendered site — degrade gracefully
+    return NextResponse.json({
+      insights: { mission: "", keywords: [], values: [], uniqueAspects: [] },
+      warning: "Bu site JavaScript ile yükleniyor, içerik okunamadı. Programın statik bir sayfasını veya İngilizce versiyonunu deneyin. Mektup yine de oluşturulabilir.",
+    });
   }
 
   try {
@@ -210,9 +210,9 @@ Return ONLY a raw JSON object (no markdown, no explanation, no code fences). Use
     return NextResponse.json({ insights });
   } catch (error) {
     console.error("Gemini error:", error);
-    return NextResponse.json(
-      { error: "İçerik analiz edilirken hata oluştu. Lütfen tekrar deneyin." },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      insights: { mission: "", keywords: [], values: [], uniqueAspects: [] },
+      warning: "Sayfa içeriği analiz edilemedi. Mektup yine de oluşturulabilir.",
+    });
   }
 }
