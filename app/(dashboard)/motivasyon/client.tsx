@@ -1,8 +1,23 @@
-import { getUniversities } from "@/lib/supabase/queries";
-import MotivasyonClient from "./client";
+"use client";
 
-export default async function MotivasyonPage() {
-  const universities = await getUniversities();
+import { useState, useCallback } from "react";
+import type { University } from "@/types";
+import {
+  FileText,
+  Loader2,
+  Copy,
+  Check,
+  Download,
+  RefreshCw,
+  Lightbulb,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  PenLine,
+  X,
+  Globe,
+  ScanSearch,
+} from "lucide-react";
 
 interface LetterSection {
   key: string;
@@ -79,10 +94,10 @@ function wordCount(text: string): number {
     .filter((w) => w.length > 0).length;
 }
 
-export default function MotivasyonPage() {
+export default function MotivasyonClient({ universities }: { universities: University[] }) {
   // Form state
   const [studentName, setStudentName] = useState("");
-  const [selectedUni, setSelectedUni] = useState(universities[0].id);
+  const [selectedUni, setSelectedUni] = useState(universities[0]?.id ?? "");
   const [gpa, setGpa] = useState(75);
   const [strengths, setStrengths] = useState("");
   const [motivation, setMotivation] = useState("");
@@ -146,7 +161,6 @@ export default function MotivasyonPage() {
         throw new Error(data.error || "Site taranamadı.");
       }
       setUniversityInsights(data.insights);
-      if (data.warning) setScrapeError(data.warning); // show as soft warning, not blocking
     } catch (err) {
       setScrapeError(err instanceof Error ? err.message : "Site taranamadı.");
     } finally {
@@ -471,9 +485,9 @@ export default function MotivasyonPage() {
               <div
                 className="mt-1.5 rounded-lg px-3 py-2 text-[11px] leading-relaxed"
                 style={{
-                  backgroundColor: (robotsBlocked || universityInsights) ? "var(--gold-bg)" : "var(--danger-bg)",
-                  border: `1px solid ${(robotsBlocked || universityInsights) ? "var(--gold-border)" : "var(--danger)"}`,
-                  color: (robotsBlocked || universityInsights) ? "var(--gold-light)" : "var(--danger)",
+                  backgroundColor: robotsBlocked ? "var(--gold-bg)" : "var(--danger-bg)",
+                  border: `1px solid ${robotsBlocked ? "var(--gold-border)" : "var(--danger)"}`,
+                  color: robotsBlocked ? "var(--gold-light)" : "var(--danger)",
                 }}
               >
                 {scrapeError}
