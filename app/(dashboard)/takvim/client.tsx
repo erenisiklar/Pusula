@@ -319,8 +319,8 @@ export default function TakvimClient({ universities }: { universities: Universit
               return (
                 <div
                   key={day}
-                  onClick={() => hasDeadline ? setSelectedDay(isSelected ? null : day) : undefined}
-                  className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all"
+                  onClick={() => setSelectedDay(isSelected ? null : day)}
+                  className="h-12 flex flex-col items-center justify-center rounded-lg text-sm relative transition-all cursor-pointer hover:opacity-80"
                   style={{
                     backgroundColor: isSelected
                       ? "var(--blue)"
@@ -341,7 +341,6 @@ export default function TakvimClient({ universities }: { universities: Universit
                       : isTodayDay
                       ? "1px solid var(--blue-border)"
                       : "1px solid transparent",
-                    cursor: hasDeadline ? "pointer" : "default",
                     opacity: isPast && !hasDeadline ? 0.4 : 1,
                   }}
                 >
@@ -439,7 +438,7 @@ export default function TakvimClient({ universities }: { universities: Universit
               style={{ color: "var(--text)" }}
             >
               <CalendarDays className="w-4 h-4" style={{ color: "var(--blue)" }} />
-              {selectedDay !== null
+              {selectedDay !== null && deadlineDays[selectedDay]
                 ? `${selectedDay} ${months[currentMonth]}`
                 : `${months[currentMonth]} Deadline'ları`}
               {sidebarDeadlines.length > 0 && (
