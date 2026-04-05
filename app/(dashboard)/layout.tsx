@@ -135,9 +135,10 @@ export default function DashboardLayout({
 
         {/* Profile mini card */}
         {profile && (
-          <div
-            className="mx-3 mb-2 px-3 py-2.5 rounded-lg"
-            style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
+          <Link
+            href="/profil"
+            className="block mx-3 mb-2 px-3 py-2.5 rounded-lg transition-all hover:opacity-80"
+            style={{ backgroundColor: pathname === "/profil" ? "rgba(59,130,246,0.15)" : "rgba(255,255,255,0.06)" }}
           >
             <div className="flex items-center gap-2 mb-1">
               <div
@@ -161,7 +162,7 @@ export default function DashboardLayout({
                     : "Dil yok"}
               </span>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Footer */}
