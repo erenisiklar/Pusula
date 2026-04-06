@@ -54,7 +54,7 @@ export default function DashboardClient({
       languageScore: profile.languageScore || null,
       budgetEUR: profile.budgetEUR,
       targetCountries: profile.targetCountries,
-      targetDepartment: profile.targetDepartment,
+      targetDepartments: profile.targetDepartments,
     };
     return universities
       .map((u) => calculateEligibility(input, u))
@@ -73,8 +73,8 @@ export default function DashboardClient({
       if (profile.targetCountries.length > 0 && !profile.targetCountries.includes(r.university.country)) {
         return false;
       }
-      // Filter by target department (skip if not specified)
-      if (profile.targetDepartment && r.university.department !== profile.targetDepartment) {
+      // Filter by target departments (skip if none specified)
+      if (profile.targetDepartments.length > 0 && !profile.targetDepartments.includes(r.university.department)) {
         return false;
       }
       return true;

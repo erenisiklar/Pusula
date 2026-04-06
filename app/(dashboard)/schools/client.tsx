@@ -71,7 +71,9 @@ export default function SchoolsClient({ universities }: { universities: Universi
   const [langScore, setLangScore] = useState<number>(profile?.languageScore ?? 6.5);
   const [budget, setBudget] = useState<number>(profile?.budgetEUR ?? 5000);
   const [selectedCountry, setSelectedCountry] = useState<string>("Tümü");
-  const [selectedDept, setSelectedDept] = useState<string>(profile?.targetDepartment || "Tümü");
+  const [selectedDept, setSelectedDept] = useState<string>(
+    profile?.targetDepartments?.length === 1 ? profile.targetDepartments[0] : "Tümü"
+  );
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -81,7 +83,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
     languageScore: langScore,
     budgetEUR: budget,
     targetCountries: selectedCountry === "Tümü" ? [] : [selectedCountry],
-    targetDepartment: selectedDept,
+    targetDepartments: selectedDept === "Tümü" ? [] : [selectedDept],
   };
 
   const results = useMemo(() => {

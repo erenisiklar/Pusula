@@ -55,7 +55,7 @@ export interface UserProfile {
   languageScore: number | null;
   budgetEUR: number;
   targetCountries: string[];
-  targetDepartment: string;
+  targetDepartments: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -100,5 +100,5 @@ export interface StudentInput {
   languageScore: number | null;
   budgetEUR: number;
   targetCountries: string[];
-  targetDepartment: string;
+  targetDepartments: string[];
 }

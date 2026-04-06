@@ -64,7 +64,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
   // Form state
   const [fullName, setFullName] = useState("");
   const [gpa, setGpa] = useState(75);
-  const [targetDepartment, setTargetDepartment] = useState("");
+  const [targetDepartments, setTargetDepartments] = useState<string[]>([]);
   const [languageCert, setLanguageCert] = useState("IELTS");
   const [languageScore, setLanguageScore] = useState(6.5);
   const [budgetEUR, setBudgetEUR] = useState(3000);
@@ -76,6 +76,12 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
     );
   }
 
+  function toggleDepartment(d: string) {
+    setTargetDepartments((prev) =>
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]
+    );
+  }
+
   function handleFinish() {
     onComplete({
       fullName,
@@ -84,7 +90,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
       languageScore: languageCert === "YOK" ? 0 : languageScore,
       budgetEUR,
       targetCountries,
-      targetDepartment,
+      targetDepartments,
       completedAt: new Date().toISOString(),
     });
   }
@@ -241,19 +247,31 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
 
               <div>
                 <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
-                  Hedef Bölüm
+                  Hedef Bölümler {targetDepartments.length > 0 && <span style={{ color: "var(--blue)" }}>({targetDepartments.length})</span>}
                 </label>
-                <select
-                  value={targetDepartment}
-                  onChange={(e) => setTargetDepartment(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
-                  style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
-                >
-                  <option value="">Henüz karar vermedim</option>
-                  {DEPARTMENTS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  {DEPARTMENTS.map((d) => {
+                    const active = targetDepartments.includes(d);
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => toggleDepartment(d)}
+                        className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
+                        style={{
+                          backgroundColor: active ? "var(--blue-bg)" : "var(--surface2)",
+                          border: active ? "1.5px solid var(--blue-border)" : "1.5px solid var(--border)",
+                          color: active ? "var(--blue)" : "var(--muted)",
+                        }}
+                      >
+                        {d}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] mt-1.5" style={{ color: "var(--muted)" }}>
+                  Birden fazla seçebilirsin. Boş bırakırsan tüm bölümler gösterilir.
+                </p>
               </div>
             </div>
           )}
