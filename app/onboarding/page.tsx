@@ -439,8 +439,9 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
   // Form state
   const [fullName, setFullName] = useState("");
   const [gpa, setGpa] = useState(75);
-  const [targetDepartment, setTargetDepartment] = useState("");
-  const [selectedCerts, setSelectedCerts] = useState<Record<string, string>>({}); // cert -> score
+  const [targetDepartments, setTargetDepartments] = useState<string[]>([]);
+  const [languageCert, setLanguageCert] = useState("IELTS");
+  const [languageScore, setLanguageScore] = useState(6.5);
   const [budgetEUR, setBudgetEUR] = useState(3000);
   const [targetCountries, setTargetCountries] = useState<string[]>([]);
   const [applicationTimeline, setApplicationTimeline] = useState("");
@@ -451,20 +452,10 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
     );
   }
 
-  function toggleCert(certValue: string) {
-    setSelectedCerts((prev) => {
-      const next = { ...prev };
-      if (certValue in next) {
-        delete next[certValue];
-      } else {
-        next[certValue] = "";
-      }
-      return next;
-    });
-  }
-
-  function setCertScore(certValue: string, score: string) {
-    setSelectedCerts((prev) => ({ ...prev, [certValue]: score }));
+  function toggleDepartment(d: string) {
+    setTargetDepartments((prev) =>
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]
+    );
   }
 
   function handleFinish() {
@@ -482,8 +473,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
       languageScore: primary ? parseFloat(primary.score) || 0 : 0,
       budgetEUR,
       targetCountries,
-      targetDepartment,
-      applicationTimeline,
+      targetDepartments,
       completedAt: new Date().toISOString(),
     });
   }
@@ -726,81 +716,32 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
               </div>
 
               <div>
-                <label className="text-xs font-medium block mb-2" style={{ color: "var(--muted)" }}>
-                  Hedef Bölüm
+                <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+                  Hedef Bölümler {targetDepartments.length > 0 && <span style={{ color: "var(--blue)" }}>({targetDepartments.length})</span>}
                 </label>
-
-                {/* Department chips grid */}
-                <div className="grid grid-cols-2 gap-1.5 mb-3">
-                  {DEPARTMENTS.map((dept) => {
-                    const Icon = dept.icon;
-                    const isSelected = targetDepartment === dept.value;
+                <div className="grid grid-cols-2 gap-2">
+                  {DEPARTMENTS.map((d) => {
+                    const active = targetDepartments.includes(d);
                     return (
                       <button
-                        key={dept.value}
+                        key={d}
                         type="button"
-                        onClick={() => setTargetDepartment(isSelected ? "" : dept.value)}
-                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
+                        onClick={() => toggleDepartment(d)}
+                        className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
                         style={{
-                          backgroundColor: isSelected ? "var(--blue-bg)" : "var(--surface)",
-                          border: `1.5px solid ${isSelected ? "var(--blue)" : "var(--border)"}`,
-                          color: isSelected ? "var(--blue)" : "var(--text)",
-                          transform: isSelected ? "scale(1.02)" : "scale(1)",
+                          backgroundColor: active ? "var(--blue-bg)" : "var(--surface2)",
+                          border: active ? "1.5px solid var(--blue-border)" : "1.5px solid var(--border)",
+                          color: active ? "var(--blue)" : "var(--muted)",
                         }}
                       >
-                        <Icon className="w-3.5 h-3.5 flex-shrink-0" style={{ opacity: isSelected ? 1 : 0.5 }} />
-                        <span className="truncate">{dept.label}</span>
-                        {isSelected && <Check className="w-3 h-3 ml-auto flex-shrink-0" />}
+                        {d}
                       </button>
                     );
                   })}
                 </div>
-
-                {/* Quiz card — always visible but more prominent when no department */}
-                <button
-                  type="button"
-                  onClick={() => setShowQuiz(true)}
-                  className="w-full rounded-xl p-4 text-left transition-all hover:scale-[1.01] active:scale-[0.99] animate-fade-in"
-                  style={{
-                    background: targetDepartment
-                      ? "var(--surface)"
-                      : "linear-gradient(135deg, rgba(217,119,6,0.08) 0%, rgba(30,64,175,0.06) 100%)",
-                    border: `1.5px solid ${targetDepartment ? "var(--border)" : "var(--gold-border)"}`,
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{
-                        background: targetDepartment
-                          ? "var(--surface2)"
-                          : "linear-gradient(135deg, var(--gold-bg) 0%, var(--blue-bg) 100%)",
-                        border: `1px solid ${targetDepartment ? "var(--border)" : "var(--gold-border)"}`,
-                      }}
-                    >
-                      <HelpCircle className="w-4 h-4" style={{ color: targetDepartment ? "var(--muted)" : "var(--gold)" }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold mb-0.5" style={{ color: targetDepartment ? "var(--muted)" : "var(--text)" }}>
-                        {targetDepartment ? "Bölümünden emin değil misin?" : "Hangi bölüm sana uygun?"}
-                      </div>
-                      <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>
-                        10 soruluk kısa testimizle ilgi alanlarına en uygun bölümü keşfet
-                      </p>
-                    </div>
-                    <div
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold flex-shrink-0 mt-0.5"
-                      style={{
-                        backgroundColor: targetDepartment ? "var(--surface2)" : "var(--gold-bg)",
-                        color: targetDepartment ? "var(--muted)" : "var(--gold)",
-                        border: `1px solid ${targetDepartment ? "var(--border)" : "var(--gold-border)"}`,
-                      }}
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      Teste Başla
-                    </div>
-                  </div>
-                </button>
+                <p className="text-[10px] mt-1.5" style={{ color: "var(--muted)" }}>
+                  Birden fazla seçebilirsin. Boş bırakırsan tüm bölümler gösterilir.
+                </p>
               </div>
             </div>
           )}

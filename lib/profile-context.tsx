@@ -18,9 +18,8 @@ export interface StudentProfile {
   languageScore: number;
   budgetEUR: number;
   targetCountries: string[];
-  targetDepartment: string;
-  applicationTimeline: string; // "this_year" | "next_year" | "later" | "exploring"
-  completedAt: string;
+  targetDepartments: string[];
+  completedAt: string; // ISO date — onboarding tamamlanınca set edilir
 }
 
 interface ProfileContextValue {
@@ -42,7 +41,13 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     try {
       const stored = sessionStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setProfileState(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        // Migrate old targetDepartment (string) → targetDepartments (string[])
+        if (typeof parsed.targetDepartment === "string" && !parsed.targetDepartments) {
+          parsed.targetDepartments = parsed.targetDepartment ? [parsed.targetDepartment] : [];
+          delete parsed.targetDepartment;
+        }
+        setProfileState(parsed);
       }
     } catch {
       // ignore
