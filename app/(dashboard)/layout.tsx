@@ -135,9 +135,10 @@ export default function DashboardLayout({
 
         {/* Profile mini card */}
         {profile && (
-          <div
-            className="mx-3 mb-2 px-3 py-2.5 rounded-lg"
-            style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
+          <Link
+            href="/profil"
+            className="block mx-3 mb-2 px-3 py-2.5 rounded-lg transition-all hover:opacity-80"
+            style={{ backgroundColor: pathname === "/profil" ? "rgba(59,130,246,0.15)" : "rgba(255,255,255,0.06)" }}
           >
             <div className="flex items-center gap-2 mb-1">
               <div
@@ -153,9 +154,15 @@ export default function DashboardLayout({
             <div className="flex items-center gap-2 text-[10px]" style={{ color: "rgba(255,255,255,0.45)" }}>
               <span>GPA: {profile.gpa}</span>
               <span>•</span>
-              <span>{profile.languageCert || "Dil yok"} {profile.languageScore > 0 ? profile.languageScore : ""}</span>
+              <span>
+                {profile.languageCerts && profile.languageCerts.length > 0
+                  ? profile.languageCerts.map((c) => `${c.cert} ${c.score}`).join(", ")
+                  : profile.languageCert
+                    ? `${profile.languageCert} ${profile.languageScore > 0 ? profile.languageScore : ""}`
+                    : "Dil yok"}
+              </span>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Footer */}
@@ -194,8 +201,8 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 pt-14 md:pt-0 md:ml-[220px]">
-        <div className="p-4 md:p-6 max-w-7xl mx-auto">{children}</div>
+      <main className="flex-1" style={{ marginLeft: 220 }}>
+        <div key={pathname} className="p-6 max-w-7xl mx-auto animate-fade-in-up">{children}</div>
       </main>
     </div>
   );

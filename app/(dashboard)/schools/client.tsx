@@ -223,6 +223,23 @@ export default function SchoolsClient({ universities }: { universities: Universi
               <Wallet className="w-3.5 h-3.5" />
               Yıllık Bütçe (EUR)
             </label>
+            {budget >= 99999 ? (
+              <div className="flex items-center justify-between">
+                <span
+                  className="px-3 py-2 rounded-lg text-sm font-medium"
+                  style={{ backgroundColor: "var(--surface2)", color: "var(--muted)" }}
+                >
+                  Fark etmez
+                </span>
+                <button
+                  onClick={() => setBudget(5000)}
+                  className="text-[10px] font-medium hover:opacity-80"
+                  style={{ color: "var(--blue)" }}
+                >
+                  Düzenle
+                </button>
+              </div>
+            ) : (
             <input
               type="number"
               step="500"
@@ -236,6 +253,7 @@ export default function SchoolsClient({ universities }: { universities: Universi
                 color: "var(--text)",
               }}
             />
+            )}
           </div>
 
           {/* Country */}
@@ -313,9 +331,10 @@ export default function SchoolsClient({ universities }: { universities: Universi
             </div>
           )}
 
-          {results.map((result) => (
+          {results.map((result, i) => (
             <UniversityCard
               key={result.university.id}
+              style={{ animationDelay: `${Math.min(i * 0.04, 0.5)}s` }}
               result={result}
               isExpanded={expandedId === result.university.id}
               onToggle={() =>
@@ -345,21 +364,24 @@ function UniversityCard({
   result,
   isExpanded,
   onToggle,
+  style: extraStyle,
 }: {
   result: EligibilityResult;
   isExpanded: boolean;
   onToggle: () => void;
+  style?: React.CSSProperties;
 }) {
   const { university, score, status, breakdown } = result;
   const cfg = statusConfig[status];
 
   return (
     <div
-      className="rounded-xl overflow-hidden transition-all"
+      className="rounded-xl overflow-hidden transition-all animate-fade-in-up"
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
         borderLeft: "3px solid var(--blue)",
+        ...extraStyle,
       }}
     >
       <div

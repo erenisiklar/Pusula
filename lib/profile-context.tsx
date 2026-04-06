@@ -4,9 +4,16 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 const STORAGE_KEY = "pusula-student-profile";
 
+export interface LanguageCertEntry {
+  cert: string;
+  score: string; // string to support "B2", "7.5", "90" etc.
+}
+
 export interface StudentProfile {
   fullName: string;
   gpa: number;
+  languageCerts: LanguageCertEntry[]; // multiple certs
+  // Legacy compat — derived from first cert for simple consumers
   languageCert: string;
   languageScore: number;
   budgetEUR: number;
@@ -32,7 +39,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   // Load from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = sessionStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         // Migrate old targetDepartment (string) → targetDepartments (string[])
@@ -52,9 +59,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     if (profile) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
     } else {
-      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
     }
   }, [profile, loaded]);
 
