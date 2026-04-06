@@ -153,7 +153,7 @@ export default function DashboardClient({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (

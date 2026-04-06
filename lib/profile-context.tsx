@@ -19,6 +19,7 @@ export interface StudentProfile {
   budgetEUR: number;
   targetCountries: string[];
   targetDepartments: string[];
+  applicationTimeline?: string;
   completedAt: string; // ISO date — onboarding tamamlanınca set edilir
 }
 

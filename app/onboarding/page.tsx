@@ -252,7 +252,7 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
           languageScore: profile.languageScore || null,
           budgetEUR: profile.budgetEUR,
           targetCountries: profile.targetCountries,
-          targetDepartment: profile.targetDepartment,
+          targetDepartments: profile.targetDepartments,
         };
 
         const results = universities.map((u) => calculateEligibility(input, u));
@@ -329,7 +329,7 @@ function CompletionScreen({ profile, onContinue }: { profile: StudentProfile; on
                   {profile.fullName}
                 </div>
                 <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {profile.targetDepartment || "Bölüm keşfediliyor"}
+                  {profile.targetDepartments?.length > 0 ? profile.targetDepartments.join(", ") : "Bölüm keşfediliyor"}
                 </div>
               </div>
             </div>
@@ -440,11 +440,25 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
   const [fullName, setFullName] = useState("");
   const [gpa, setGpa] = useState(75);
   const [targetDepartments, setTargetDepartments] = useState<string[]>([]);
+  const [selectedCerts, setSelectedCerts] = useState<Record<string, string>>({});
   const [languageCert, setLanguageCert] = useState("IELTS");
   const [languageScore, setLanguageScore] = useState(6.5);
   const [budgetEUR, setBudgetEUR] = useState(3000);
   const [targetCountries, setTargetCountries] = useState<string[]>([]);
   const [applicationTimeline, setApplicationTimeline] = useState("");
+
+  function toggleCert(cert: string) {
+    setSelectedCerts((prev) => {
+      const next = { ...prev };
+      if (cert in next) delete next[cert];
+      else next[cert] = "";
+      return next;
+    });
+  }
+
+  function setCertScore(cert: string, score: string) {
+    setSelectedCerts((prev) => ({ ...prev, [cert]: score }));
+  }
 
   function toggleCountry(c: string) {
     setTargetCountries((prev) =>
@@ -583,7 +597,7 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
             <div className="animate-fade-in-up">
               <DepartmentQuiz
                 onComplete={(dept) => {
-                  setTargetDepartment(dept);
+                  setTargetDepartments((prev) => prev.includes(dept) ? prev : [...prev, dept]);
                   setShowQuiz(false);
                 }}
                 onSkip={() => setShowQuiz(false)}
@@ -721,20 +735,22 @@ function OnboardingWizard({ onComplete }: { onComplete: (profile: StudentProfile
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {DEPARTMENTS.map((d) => {
-                    const active = targetDepartments.includes(d);
+                    const active = targetDepartments.includes(d.value);
+                    const Icon = d.icon;
                     return (
                       <button
-                        key={d}
+                        key={d.value}
                         type="button"
-                        onClick={() => toggleDepartment(d)}
-                        className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
+                        onClick={() => toggleDepartment(d.value)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
                         style={{
                           backgroundColor: active ? "var(--blue-bg)" : "var(--surface2)",
                           border: active ? "1.5px solid var(--blue-border)" : "1.5px solid var(--border)",
                           color: active ? "var(--blue)" : "var(--muted)",
                         }}
                       >
-                        {d}
+                        <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                        {d.label}
                       </button>
                     );
                   })}

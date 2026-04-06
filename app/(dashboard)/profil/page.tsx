@@ -44,7 +44,7 @@ export default function ProfilPage() {
 
   const [fullName, setFullName] = useState(profile?.fullName ?? "");
   const [gpa, setGpa] = useState(profile?.gpa ?? 75);
-  const [targetDepartment, setTargetDepartment] = useState(profile?.targetDepartment ?? "");
+  const [targetDepartments, setTargetDepartments] = useState<string[]>(profile?.targetDepartments ?? []);
   const [certs, setCerts] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     if (profile?.languageCerts) {
@@ -77,6 +77,12 @@ export default function ProfilPage() {
     );
   }
 
+  function toggleDepartment(d: string) {
+    setTargetDepartments((prev) =>
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]
+    );
+  }
+
   function handleSave() {
     const langCerts = Object.entries(certs)
       .filter(([, s]) => s.trim().length > 0)
@@ -86,7 +92,7 @@ export default function ProfilPage() {
     updateProfile({
       fullName,
       gpa,
-      targetDepartment,
+      targetDepartments,
       languageCerts: langCerts,
       languageCert: primary?.cert || "",
       languageScore: primary ? parseFloat(primary.score) || 0 : 0,
@@ -161,16 +167,29 @@ export default function ProfilPage() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>Hedef Bölüm</label>
-            <select
-              value={targetDepartment}
-              onChange={(e) => setTargetDepartment(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-shadow"
-              style={{ backgroundColor: "var(--surface2)", border: "1px solid var(--border)", color: "var(--text)" }}
-            >
-              <option value="">Henüz karar vermedim</option>
-              {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
+            <label className="text-xs font-medium block mb-1.5" style={{ color: "var(--muted)" }}>
+              Hedef Bölümler {targetDepartments.length > 0 && <span style={{ color: "var(--blue)" }}>({targetDepartments.length})</span>}
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {DEPARTMENTS.map((d) => {
+                const active = targetDepartments.includes(d);
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => toggleDepartment(d)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      backgroundColor: active ? "var(--blue-bg)" : "var(--surface2)",
+                      border: active ? "1.5px solid var(--blue-border)" : "1.5px solid var(--border)",
+                      color: active ? "var(--blue)" : "var(--muted)",
+                    }}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </Section>
 

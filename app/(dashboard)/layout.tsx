@@ -201,8 +201,8 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1" style={{ marginLeft: 220 }}>
-        <div key={pathname} className="p-6 max-w-7xl mx-auto animate-fade-in-up">{children}</div>
+      <main className="flex-1 pt-14 md:pt-0 md:ml-[220px]">
+        <div key={pathname} className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in-up">{children}</div>
       </main>
     </div>
   );
